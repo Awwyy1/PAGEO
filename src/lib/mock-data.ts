@@ -1,0 +1,70 @@
+// Mock data for demo mode (no Supabase needed)
+import type { Profile, Link } from "@/types/database";
+
+export const mockProfile: Profile = {
+  id: "demo-user-id",
+  username: "demo",
+  display_name: "Alex Johnson",
+  bio: "Designer & developer. Building cool things on the internet.",
+  avatar_url: null,
+  theme: "light",
+  created_at: new Date().toISOString(),
+};
+
+export const mockLinks: Link[] = [
+  {
+    id: "1",
+    profile_id: "demo-user-id",
+    title: "My Portfolio",
+    url: "https://example.com",
+    icon: "globe",
+    position: 0,
+    is_active: true,
+    click_count: 142,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    profile_id: "demo-user-id",
+    title: "GitHub",
+    url: "https://github.com",
+    icon: "github",
+    position: 1,
+    is_active: true,
+    click_count: 89,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "3",
+    profile_id: "demo-user-id",
+    title: "Twitter / X",
+    url: "https://x.com",
+    icon: "twitter",
+    position: 2,
+    is_active: true,
+    click_count: 234,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "4",
+    profile_id: "demo-user-id",
+    title: "Read my Blog",
+    url: "https://blog.example.com",
+    icon: "file-text",
+    position: 3,
+    is_active: true,
+    click_count: 56,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    profile_id: "demo-user-id",
+    title: "YouTube Channel",
+    url: "https://youtube.com",
+    icon: "youtube",
+    position: 4,
+    is_active: false,
+    click_count: 12,
+    created_at: new Date().toISOString(),
+  },
+];

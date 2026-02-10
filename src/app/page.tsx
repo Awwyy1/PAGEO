@@ -15,16 +15,16 @@ export default function HomePage() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link
-            href="/auth/register"
+            href="/dashboard"
             className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Get started free
           </Link>
           <Link
-            href="/auth/login"
+            href="/demo"
             className="inline-flex h-12 items-center justify-center rounded-xl border border-input bg-background px-8 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
           >
-            Sign in
+            See demo
           </Link>
         </div>
       </div>
