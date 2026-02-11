@@ -7,10 +7,18 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const gradientBg: Record<string, string> = {
+  gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
+  ocean: "bg-gradient-to-br from-cyan-500 via-blue-600 to-teal-700 text-white",
+  sunset: "bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600 text-white",
+  forest: "bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700 text-white",
+};
+
 export default function DemoPage() {
   const { profile, links, avatarPreview } = useProfile();
   const activeLinks = links.filter((l) => l.is_active);
   const theme = profile.theme;
+  const isGradient = theme !== "light" && theme !== "dark";
 
   const initial = (
     profile.display_name ||
@@ -24,8 +32,8 @@ export default function DemoPage() {
         "min-h-screen flex flex-col items-center px-4 py-12 transition-colors duration-300",
         theme === "dark"
           ? "bg-gray-950 text-white"
-          : theme === "gradient"
-            ? "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white"
+          : isGradient
+            ? gradientBg[theme]
             : "bg-gradient-to-b from-primary/5 to-background text-foreground"
       )}
     >
@@ -34,7 +42,7 @@ export default function DemoPage() {
         href="/dashboard"
         className={cn(
           "self-start mb-8 flex items-center gap-1 text-sm transition-colors",
-          theme === "dark" || theme === "gradient"
+          theme === "dark" || isGradient
             ? "text-white/60 hover:text-white"
             : "text-muted-foreground hover:text-foreground"
         )}
@@ -60,7 +68,7 @@ export default function DemoPage() {
             <div
               className={cn(
                 "w-24 h-24 rounded-full flex items-center justify-center",
-                theme === "gradient"
+                isGradient
                   ? "bg-white/20"
                   : theme === "dark"
                     ? "bg-primary/30"
@@ -70,7 +78,7 @@ export default function DemoPage() {
               <span
                 className={cn(
                   "text-3xl font-bold",
-                  theme === "gradient" ? "text-white" : "text-primary"
+                  isGradient ? "text-white" : "text-primary"
                 )}
               >
                 {initial}
@@ -95,7 +103,7 @@ export default function DemoPage() {
             transition={{ delay: 0.2 }}
             className={cn(
               "text-sm text-center mt-2 mb-8",
-              theme === "gradient"
+              isGradient
                 ? "text-white/70"
                 : theme === "dark"
                   ? "text-gray-400"
@@ -121,7 +129,7 @@ export default function DemoPage() {
               whileTap={{ scale: 0.98 }}
               className={cn(
                 "flex items-center justify-center w-full rounded-2xl p-4 text-sm font-medium transition-shadow",
-                theme === "gradient"
+                isGradient
                   ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
                   : theme === "dark"
                     ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
@@ -140,7 +148,7 @@ export default function DemoPage() {
           transition={{ delay: 0.8 }}
           className={cn(
             "mt-12 text-xs",
-            theme === "gradient" || theme === "dark"
+            isGradient || theme === "dark"
               ? "text-white/40"
               : "text-muted-foreground"
           )}

@@ -11,9 +11,17 @@ interface PhonePreviewProps {
   avatarPreview?: string | null;
 }
 
+const gradientBg: Record<string, string> = {
+  gradient: "border-violet-400/30 bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700",
+  ocean: "border-cyan-400/30 bg-gradient-to-br from-cyan-500 via-blue-600 to-teal-700",
+  sunset: "border-orange-400/30 bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600",
+  forest: "border-emerald-400/30 bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700",
+};
+
 export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProps) {
   const activeLinks = links.filter((l) => l.is_active);
   const theme = profile.theme;
+  const isGradient = theme !== "light" && theme !== "dark";
 
   const initial = (
     profile.display_name ||
@@ -29,8 +37,8 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           "w-[320px] h-[580px] rounded-[3rem] border-[8px] overflow-hidden shadow-xl transition-colors duration-300",
           theme === "dark"
             ? "border-gray-700 bg-gray-950"
-            : theme === "gradient"
-              ? "border-violet-400/30 bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700"
+            : isGradient
+              ? gradientBg[theme]
               : "border-foreground/10 bg-background"
         )}
       >
@@ -41,7 +49,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
               "w-24 h-5 rounded-full",
               theme === "dark"
                 ? "bg-gray-800"
-                : theme === "gradient"
+                : isGradient
                   ? "bg-white/15"
                   : "bg-foreground/10"
             )}
@@ -62,7 +70,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
               <div
                 className={cn(
                   "w-20 h-20 rounded-full flex items-center justify-center",
-                  theme === "gradient"
+                  isGradient
                     ? "bg-white/20"
                     : theme === "dark"
                       ? "bg-primary/30"
@@ -72,7 +80,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
                 <span
                   className={cn(
                     "text-2xl font-bold",
-                    theme === "gradient"
+                    isGradient
                       ? "text-white"
                       : "text-primary"
                   )}
@@ -86,11 +94,9 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           <h2
             className={cn(
               "font-semibold text-base",
-              theme === "dark"
+              theme === "dark" || isGradient
                 ? "text-white"
-                : theme === "gradient"
-                  ? "text-white"
-                  : "text-foreground"
+                : "text-foreground"
             )}
           >
             {profile.display_name || profile.username}
@@ -100,7 +106,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
             <p
               className={cn(
                 "text-xs text-center mt-1 mb-4",
-                theme === "gradient"
+                isGradient
                   ? "text-white/70"
                   : theme === "dark"
                     ? "text-gray-400"
@@ -124,7 +130,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
                   transition={{ delay: i * 0.05 }}
                   className={cn(
                     "w-full rounded-xl p-3 text-center text-sm font-medium transition-colors cursor-pointer",
-                    theme === "gradient"
+                    isGradient
                       ? "bg-white/15 text-white hover:bg-white/25"
                       : theme === "dark"
                         ? "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700"
@@ -141,7 +147,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
             <p
               className={cn(
                 "text-xs mt-8",
-                theme === "gradient" || theme === "dark"
+                isGradient || theme === "dark"
                   ? "text-white/50"
                   : "text-muted-foreground"
               )}

@@ -44,6 +44,24 @@ const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: s
     bg: "bg-gradient-to-br from-violet-500 via-indigo-500 to-purple-600 border-violet-400",
     activeBorder: "ring-violet-400",
   },
+  {
+    id: "ocean",
+    label: "Ocean",
+    bg: "bg-gradient-to-br from-cyan-500 via-blue-500 to-teal-600 border-cyan-400",
+    activeBorder: "ring-cyan-400",
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    bg: "bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600 border-orange-400",
+    activeBorder: "ring-orange-400",
+  },
+  {
+    id: "forest",
+    label: "Forest",
+    bg: "bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700 border-emerald-400",
+    activeBorder: "ring-emerald-400",
+  },
 ];
 
 export default function DashboardPage() {
@@ -106,9 +124,9 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="flex gap-8 max-w-5xl mx-auto">
+    <div className="flex gap-10 max-w-5xl mx-auto">
       {/* Editor */}
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-5">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Links</h1>
           <span className="text-sm text-muted-foreground">
@@ -167,6 +185,9 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Divider */}
+      <div className="hidden lg:block w-px self-stretch bg-border/60" />
 
       {/* Preview */}
       <PhonePreview

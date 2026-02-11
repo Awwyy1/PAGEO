@@ -5,7 +5,7 @@ export type Profile = {
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
-  theme: "light" | "dark" | "gradient";
+  theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest";
   created_at: string;
 };
 
