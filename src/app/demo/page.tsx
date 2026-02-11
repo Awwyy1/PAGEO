@@ -1,21 +1,43 @@
-// Public demo profile page — shows how a Pageo page looks to visitors
+// Public demo profile page — shows how a Pageo page looks (reflects theme + avatar)
 "use client";
 
 import { motion } from "framer-motion";
-import { mockProfile, mockLinks } from "@/lib/mock-data";
+import { useProfile } from "@/lib/profile-context";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function DemoPage() {
-  const profile = mockProfile;
-  const activeLinks = mockLinks.filter((l) => l.is_active);
+  const { profile, links, avatarPreview } = useProfile();
+  const activeLinks = links.filter((l) => l.is_active);
+  const theme = profile.theme;
+
+  const initial = (
+    profile.display_name ||
+    profile.username ||
+    "?"
+  )[0].toUpperCase();
 
   return (
-    <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-gradient-to-b from-primary/5 to-background">
+    <main
+      className={cn(
+        "min-h-screen flex flex-col items-center px-4 py-12 transition-colors duration-300",
+        theme === "dark"
+          ? "bg-gray-950 text-white"
+          : theme === "gradient"
+            ? "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white"
+            : "bg-gradient-to-b from-primary/5 to-background text-foreground"
+      )}
+    >
       {/* Back link */}
       <Link
         href="/dashboard"
-        className="self-start mb-8 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className={cn(
+          "self-start mb-8 flex items-center gap-1 text-sm transition-colors",
+          theme === "dark" || theme === "gradient"
+            ? "text-white/60 hover:text-white"
+            : "text-muted-foreground hover:text-foreground"
+        )}
       >
         <ArrowLeft className="h-4 w-4" /> Back to dashboard
       </Link>
@@ -26,11 +48,35 @@ export default function DemoPage() {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-4"
+          className="mb-4"
         >
-          <span className="text-3xl font-bold text-primary">
-            {(profile.display_name || "?")[0].toUpperCase()}
-          </span>
+          {avatarPreview ? (
+            <img
+              src={avatarPreview}
+              alt="Avatar"
+              className="w-24 h-24 rounded-full object-cover shadow-lg"
+            />
+          ) : (
+            <div
+              className={cn(
+                "w-24 h-24 rounded-full flex items-center justify-center",
+                theme === "gradient"
+                  ? "bg-white/20"
+                  : theme === "dark"
+                    ? "bg-primary/30"
+                    : "bg-primary/20"
+              )}
+            >
+              <span
+                className={cn(
+                  "text-3xl font-bold",
+                  theme === "gradient" ? "text-white" : "text-primary"
+                )}
+              >
+                {initial}
+              </span>
+            </div>
+          )}
         </motion.div>
 
         <motion.h1
@@ -39,7 +85,7 @@ export default function DemoPage() {
           transition={{ delay: 0.1 }}
           className="text-xl font-bold"
         >
-          {profile.display_name}
+          {profile.display_name || profile.username}
         </motion.h1>
 
         {profile.bio && (
@@ -47,7 +93,14 @@ export default function DemoPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-sm text-muted-foreground text-center mt-2 mb-8"
+            className={cn(
+              "text-sm text-center mt-2 mb-8",
+              theme === "gradient"
+                ? "text-white/70"
+                : theme === "dark"
+                  ? "text-gray-400"
+                  : "text-muted-foreground"
+            )}
           >
             {profile.bio}
           </motion.p>
@@ -66,7 +119,14 @@ export default function DemoPage() {
               transition={{ delay: 0.3 + i * 0.08 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center justify-center w-full rounded-2xl border bg-card p-4 text-sm font-medium shadow-sm hover:shadow-md transition-shadow"
+              className={cn(
+                "flex items-center justify-center w-full rounded-2xl p-4 text-sm font-medium transition-shadow",
+                theme === "gradient"
+                  ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
+                  : theme === "dark"
+                    ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
+                    : "border bg-card shadow-sm hover:shadow-md"
+              )}
             >
               {link.title}
             </motion.a>
@@ -78,7 +138,12 @@ export default function DemoPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mt-12 text-xs text-muted-foreground"
+          className={cn(
+            "mt-12 text-xs",
+            theme === "gradient" || theme === "dark"
+              ? "text-white/40"
+              : "text-muted-foreground"
+          )}
         >
           Made with <span className="font-semibold">Pageo</span>
         </motion.p>

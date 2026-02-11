@@ -1,7 +1,8 @@
-// Root layout — applies global styles and font to all pages
+// Root layout — applies global styles, font, and providers to all pages
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -11,7 +12,8 @@ const geistSans = localFont({
 
 export const metadata: Metadata = {
   title: "Pageo — Your links, one page",
-  description: "Create a beautiful page with all your links. Share it with the world.",
+  description:
+    "Create a beautiful page with all your links. Share it with the world.",
 };
 
 export default function RootLayout({
@@ -22,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} font-sans`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

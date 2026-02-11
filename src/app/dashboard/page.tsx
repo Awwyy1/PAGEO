@@ -1,7 +1,7 @@
 // Dashboard main page — link editor with drag-and-drop + live preview
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import {
   DndContext,
   closestCenter,
@@ -17,15 +17,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { mockProfile, mockLinks } from "@/lib/mock-data";
+import { useProfile } from "@/lib/profile-context";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { AddLinkForm } from "@/components/dashboard/add-link-form";
 import { PhonePreview } from "@/components/dashboard/phone-preview";
 import type { Link } from "@/types/database";
 
 export default function DashboardPage() {
-  const [links, setLinks] = useState<Link[]>(mockLinks);
-  const [profile] = useState(mockProfile);
+  const { profile, links, setLinks, avatarPreview } = useProfile();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -46,33 +45,42 @@ export default function DashboardPage() {
         return reordered.map((l, i) => ({ ...l, position: i }));
       });
     },
-    []
+    [setLinks]
   );
 
-  const handleUpdate = useCallback((id: string, data: Partial<Link>) => {
-    setLinks((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, ...data } : l))
-    );
-  }, []);
+  const handleUpdate = useCallback(
+    (id: string, data: Partial<Link>) => {
+      setLinks((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, ...data } : l))
+      );
+    },
+    [setLinks]
+  );
 
-  const handleDelete = useCallback((id: string) => {
-    setLinks((prev) => prev.filter((l) => l.id !== id));
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      setLinks((prev) => prev.filter((l) => l.id !== id));
+    },
+    [setLinks]
+  );
 
-  const handleAdd = useCallback((title: string, url: string) => {
-    const newLink: Link = {
-      id: crypto.randomUUID(),
-      profile_id: profile.id,
-      title,
-      url,
-      icon: null,
-      position: links.length,
-      is_active: true,
-      click_count: 0,
-      created_at: new Date().toISOString(),
-    };
-    setLinks((prev) => [...prev, newLink]);
-  }, [links.length, profile.id]);
+  const handleAdd = useCallback(
+    (title: string, url: string) => {
+      const newLink: Link = {
+        id: crypto.randomUUID(),
+        profile_id: profile.id,
+        title,
+        url,
+        icon: null,
+        position: links.length,
+        is_active: true,
+        click_count: 0,
+        created_at: new Date().toISOString(),
+      };
+      setLinks((prev) => [...prev, newLink]);
+    },
+    [links.length, profile.id, setLinks]
+  );
 
   return (
     <div className="flex gap-8 max-w-5xl mx-auto">
@@ -117,7 +125,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Preview */}
-      <PhonePreview profile={profile} links={links} />
+      <PhonePreview
+        profile={profile}
+        links={links}
+        avatarPreview={avatarPreview}
+      />
     </div>
   );
 }

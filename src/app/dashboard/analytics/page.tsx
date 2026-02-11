@@ -1,12 +1,13 @@
 // Analytics page — click stats overview (demo mode)
 "use client";
 
-import { mockLinks } from "@/lib/mock-data";
+import { useProfile } from "@/lib/profile-context";
 import { BarChart3, MousePointerClick, Eye } from "lucide-react";
 
 export default function AnalyticsPage() {
-  const totalClicks = mockLinks.reduce((sum, l) => sum + l.click_count, 0);
-  const activeLinks = mockLinks.filter((l) => l.is_active).length;
+  const { links } = useProfile();
+  const totalClicks = links.reduce((sum, l) => sum + l.click_count, 0);
+  const activeLinks = links.filter((l) => l.is_active).length;
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -48,7 +49,7 @@ export default function AnalyticsPage() {
           <h2 className="text-sm font-medium">Clicks per link</h2>
         </div>
         <div className="divide-y">
-          {mockLinks
+          {[...links]
             .sort((a, b) => b.click_count - a.click_count)
             .map((link) => (
               <div
