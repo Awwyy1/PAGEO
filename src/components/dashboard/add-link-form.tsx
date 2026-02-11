@@ -28,10 +28,10 @@ export function AddLinkForm({ onAdd }: AddLinkFormProps) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="w-full rounded-2xl h-12"
-        size="lg"
+        className="rounded-xl h-9 px-4"
+        size="sm"
       >
-        <Plus className="h-4 w-4 mr-2" /> Add link
+        <Plus className="h-3.5 w-3.5 mr-1.5" /> Add link
       </Button>
     );
   }

@@ -1,4 +1,4 @@
-// Dashboard main page — link editor with drag-and-drop + live preview
+// Dashboard main page — link editor with drag-and-drop + live preview + inline theme picker
 "use client";
 
 import { useCallback } from "react";
@@ -21,10 +21,33 @@ import { useProfile } from "@/lib/profile-context";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { AddLinkForm } from "@/components/dashboard/add-link-form";
 import { PhonePreview } from "@/components/dashboard/phone-preview";
+import { cn } from "@/lib/utils";
 import type { Link } from "@/types/database";
+import type { Profile } from "@/types/database";
+
+const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: string }[] = [
+  {
+    id: "light",
+    label: "Light",
+    bg: "bg-white border-gray-200",
+    activeBorder: "ring-gray-400",
+  },
+  {
+    id: "dark",
+    label: "Dark",
+    bg: "bg-gray-900 border-gray-700",
+    activeBorder: "ring-gray-500",
+  },
+  {
+    id: "gradient",
+    label: "Gradient",
+    bg: "bg-gradient-to-br from-violet-500 via-indigo-500 to-purple-600 border-violet-400",
+    activeBorder: "ring-violet-400",
+  },
+];
 
 export default function DashboardPage() {
-  const { profile, links, setLinks, avatarPreview } = useProfile();
+  const { profile, updateProfile, links, setLinks, avatarPreview } = useProfile();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -93,7 +116,28 @@ export default function DashboardPage() {
           </span>
         </div>
 
-        <AddLinkForm onAdd={handleAdd} />
+        {/* Theme picker + Add link — compact row */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {themes.map((theme) => (
+              <button
+                key={theme.id}
+                onClick={() => updateProfile({ theme: theme.id })}
+                title={theme.label}
+                className={cn(
+                  "w-8 h-8 rounded-lg border transition-all shrink-0",
+                  theme.bg,
+                  profile.theme === theme.id
+                    ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
+                    : "opacity-70 hover:opacity-100 hover:scale-105"
+                )}
+              />
+            ))}
+          </div>
+          <div className="ml-auto">
+            <AddLinkForm onAdd={handleAdd} />
+          </div>
+        </div>
 
         <DndContext
           sensors={sensors}
