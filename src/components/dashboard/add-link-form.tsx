@@ -26,20 +26,22 @@ export function AddLinkForm({ onAdd }: AddLinkFormProps) {
 
   if (!isOpen) {
     return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="rounded-xl h-9 px-4"
-        size="sm"
-      >
-        <Plus className="h-3.5 w-3.5 mr-1.5" /> Add link
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="rounded-xl h-9 px-4"
+          size="sm"
+        >
+          <Plus className="h-3.5 w-3.5 mr-1.5" /> Add link
+        </Button>
+      </div>
     );
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border bg-card p-4 space-y-3"
+      className="w-full rounded-2xl border bg-card p-4 space-y-3"
     >
       <Input
         placeholder="Title (e.g. My Website)"

@@ -47,19 +47,19 @@ const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: s
   {
     id: "ocean",
     label: "Ocean",
-    bg: "bg-gradient-to-br from-cyan-500 via-blue-500 to-teal-600 border-cyan-400",
-    activeBorder: "ring-cyan-400",
+    bg: "bg-blue-600 border-blue-500",
+    activeBorder: "ring-blue-400",
   },
   {
     id: "sunset",
     label: "Sunset",
-    bg: "bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600 border-orange-400",
-    activeBorder: "ring-orange-400",
+    bg: "bg-rose-500 border-rose-400",
+    activeBorder: "ring-rose-400",
   },
   {
     id: "forest",
     label: "Forest",
-    bg: "bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700 border-emerald-400",
+    bg: "bg-emerald-600 border-emerald-500",
     activeBorder: "ring-emerald-400",
   },
 ];
@@ -152,10 +152,9 @@ export default function DashboardPage() {
               />
             ))}
           </div>
-          <div className="ml-auto">
-            <AddLinkForm onAdd={handleAdd} />
-          </div>
         </div>
+
+        <AddLinkForm onAdd={handleAdd} />
 
         <DndContext
           sensors={sensors}

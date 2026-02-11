@@ -7,11 +7,11 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const gradientBg: Record<string, string> = {
+const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
-  ocean: "bg-gradient-to-br from-cyan-500 via-blue-600 to-teal-700 text-white",
-  sunset: "bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600 text-white",
-  forest: "bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700 text-white",
+  ocean: "bg-blue-600 text-white",
+  sunset: "bg-rose-500 text-white",
+  forest: "bg-emerald-600 text-white",
 };
 
 export default function DemoPage() {
@@ -33,7 +33,7 @@ export default function DemoPage() {
         theme === "dark"
           ? "bg-gray-950 text-white"
           : isGradient
-            ? gradientBg[theme]
+            ? themeBg[theme]
             : "bg-gradient-to-b from-primary/5 to-background text-foreground"
       )}
     >

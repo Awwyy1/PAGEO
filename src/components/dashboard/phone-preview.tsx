@@ -11,11 +11,11 @@ interface PhonePreviewProps {
   avatarPreview?: string | null;
 }
 
-const gradientBg: Record<string, string> = {
+const themeBg: Record<string, string> = {
   gradient: "border-violet-400/30 bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700",
-  ocean: "border-cyan-400/30 bg-gradient-to-br from-cyan-500 via-blue-600 to-teal-700",
-  sunset: "border-orange-400/30 bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600",
-  forest: "border-emerald-400/30 bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700",
+  ocean: "border-blue-500/30 bg-blue-600",
+  sunset: "border-rose-400/30 bg-rose-500",
+  forest: "border-emerald-500/30 bg-emerald-600",
 };
 
 export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProps) {
@@ -38,7 +38,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           theme === "dark"
             ? "border-gray-700 bg-gray-950"
             : isGradient
-              ? gradientBg[theme]
+              ? themeBg[theme]
               : "border-foreground/10 bg-background"
         )}
       >
@@ -155,6 +155,18 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
               No active links yet
             </p>
           )}
+
+          {/* Footer */}
+          <p
+            className={cn(
+              "mt-auto pt-4 text-[10px]",
+              isGradient || theme === "dark"
+                ? "text-white/30"
+                : "text-muted-foreground/50"
+            )}
+          >
+            Powered by <span className="font-semibold">Pageo</span>
+          </p>
         </div>
       </div>
     </div>
