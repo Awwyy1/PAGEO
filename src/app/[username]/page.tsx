@@ -23,14 +23,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Not Found | allme" };
   }
 
-  const title = `${profile.display_name || username} | allme`;
-  const description = profile.bio || `Check out ${profile.display_name || username}'s links on allme`;
+  const displayName = profile.display_name || username;
+  const title = `${displayName} | allme`;
+  const description = profile.bio || `Check out ${displayName}'s links on allme`;
+  const url = `https://allme.site/${username}`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title,
+      type: "profile",
+      title: `${displayName} — @${username}`,
+      description,
+      url,
+      siteName: "Allme",
+      ...(profile.avatar_url
+        ? {
+            images: [
+              {
+                url: profile.avatar_url,
+                width: 400,
+                height: 400,
+                alt: `${displayName}'s avatar`,
+              },
+            ],
+          }
+        : {}),
+    },
+    twitter: {
+      card: profile.avatar_url ? "summary" : "summary",
+      title: `${displayName} — @${username}`,
       description,
       ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
     },

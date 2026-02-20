@@ -11,9 +11,30 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Allme — All your links, one page",
+  title: {
+    default: "Allme — All your links, one page",
+    template: "%s",
+  },
   description:
-    "Create a beautiful page with all your links. Share it with the world. allme.site",
+    "Create a beautiful link-in-bio page in seconds. Share all your important links with a single URL. allme.site",
+  metadataBase: new URL("https://allme.site"),
+  openGraph: {
+    type: "website",
+    siteName: "Allme",
+    title: "Allme — All your links, one page",
+    description:
+      "Create a beautiful link-in-bio page in seconds. Share all your important links with a single URL.",
+    url: "https://allme.site",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Allme — All your links, one page",
+    description:
+      "Create a beautiful link-in-bio page in seconds. Share all your important links with a single URL.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

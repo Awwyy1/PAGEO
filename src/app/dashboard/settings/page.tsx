@@ -109,20 +109,15 @@ export default function SettingsPage() {
 
     // Upload avatar to Supabase Storage if a new file was selected
     if (avatarFile && userId) {
-      const ext = avatarFile.name.split(".").pop() || "jpg";
-      const filePath = `${userId}/avatar.${ext}`;
-
-      // Remove old file first (different extension case)
-      await supabase.storage.from("avatars").remove([
-        `${userId}/avatar.jpg`,
-        `${userId}/avatar.png`,
-        `${userId}/avatar.webp`,
-        `${userId}/avatar.gif`,
-      ]);
+      // Always use same filename so upsert replaces it regardless of extension
+      const filePath = `${userId}.avatar`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, avatarFile, { upsert: true });
+        .upload(filePath, avatarFile, {
+          upsert: true,
+          contentType: avatarFile.type,
+        });
 
       if (uploadError) {
         setSaveError(`Avatar upload failed: ${uploadError.message}. Make sure the "avatars" storage bucket exists in Supabase (Storage → New bucket → "avatars", Public ON).`);
