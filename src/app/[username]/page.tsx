@@ -66,7 +66,7 @@ export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
 
   // Skip static routes that aren't usernames
-  const reserved = ["dashboard", "auth", "demo", "api", "_next"];
+  const reserved = ["dashboard", "auth", "demo", "api", "pricing", "_next"];
   if (reserved.includes(username)) {
     notFound();
   }

@@ -33,6 +33,12 @@ export default function HomePage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
+              href="/pricing"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/demo"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
             >
@@ -473,9 +479,14 @@ export default function HomePage() {
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-sm font-bold tracking-tight">allme</span>
-          <p className="text-sm text-muted-foreground">
-            &copy; 2026 Allme. All rights reserved.
-          </p>
+          <div className="flex items-center gap-6">
+            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Pricing
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              &copy; 2026 Allme. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </main>
