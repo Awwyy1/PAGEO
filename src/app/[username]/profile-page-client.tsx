@@ -1,9 +1,9 @@
 // Client component for public profile — handles animations and click tracking
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import type { Profile, Link } from "@/types/database";
 
 const themeBg: Record<string, string> = {
@@ -19,7 +19,6 @@ interface Props {
 }
 
 export function ProfilePageClient({ profile, links }: Props) {
-  const supabase = createClient();
   const theme = profile.theme;
   const isGradient = theme !== "light" && theme !== "dark";
 
@@ -29,9 +28,22 @@ export function ProfilePageClient({ profile, links }: Props) {
     "?"
   )[0].toUpperCase();
 
+  // Track page view once on mount
+  useEffect(() => {
+    fetch("/api/view", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: profile.username }),
+    }).catch(() => {});
+  }, [profile.username]);
+
   const handleLinkClick = (linkId: string) => {
-    // Fire-and-forget click count increment
-    supabase.rpc("increment_click_count", { link_id: linkId }).then(() => {});
+    // Fire-and-forget click tracking via API
+    fetch("/api/click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ linkId }),
+    }).catch(() => {});
   };
 
   return (

@@ -2,11 +2,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Camera, Check, X, Loader2 } from "lucide-react";
+import { Camera, Check, X, Loader2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const RESERVED_USERNAMES = [
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState(profile.display_name || "");
   const [bio, setBio] = useState(profile.bio || "");
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("idle");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -102,6 +104,7 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setUploading(true);
+    setSaveError(null);
     let avatarUrl: string | undefined;
 
     // Upload avatar to Supabase Storage if a new file was selected
@@ -109,19 +112,29 @@ export default function SettingsPage() {
       const ext = avatarFile.name.split(".").pop() || "jpg";
       const filePath = `${userId}/avatar.${ext}`;
 
+      // Remove old file first (different extension case)
+      await supabase.storage.from("avatars").remove([
+        `${userId}/avatar.jpg`,
+        `${userId}/avatar.png`,
+        `${userId}/avatar.webp`,
+        `${userId}/avatar.gif`,
+      ]);
+
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, avatarFile, { upsert: true });
 
       if (uploadError) {
-        console.error("Avatar upload failed:", uploadError.message);
-      } else {
-        const { data: urlData } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(filePath);
-        avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-        setAvatarFile(null);
+        setSaveError(`Avatar upload failed: ${uploadError.message}. Make sure the "avatars" storage bucket exists in Supabase (Storage → New bucket → "avatars", Public ON).`);
+        setUploading(false);
+        return;
       }
+
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+      avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      setAvatarFile(null);
     }
 
     updateProfile({
@@ -196,6 +209,13 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Error message */}
+      {saveError && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {saveError}
+        </div>
+      )}
 
       {/* Profile info */}
       <div className="rounded-2xl border bg-card p-6 space-y-5">
@@ -294,12 +314,117 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="rounded-2xl border border-destructive/20 bg-card p-6 space-y-3">
+      <DangerZone />
+    </div>
+  );
+}
+
+function DangerZone() {
+  const router = useRouter();
+  const { profile } = useProfile();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const expectedText = profile.username;
+  const canDelete = confirmText === expectedText;
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+
+    const res = await fetch("/api/account", { method: "DELETE" });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setDeleteError(data.error || "Failed to delete account. Please try again.");
+      setDeleting(false);
+      return;
+    }
+
+    router.push("/");
+    router.refresh();
+  };
+
+  return (
+    <div className="rounded-2xl border border-destructive/20 bg-card p-6 space-y-4">
+      <div className="flex items-center gap-2">
+        <AlertTriangle className="h-4 w-4 text-destructive" />
         <h2 className="text-sm font-medium text-destructive">Danger zone</h2>
-        <p className="text-sm text-muted-foreground">
-          Account deletion will be available when Supabase is connected.
-        </p>
       </div>
+
+      {!showConfirm ? (
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">Delete account</p>
+            <p className="text-xs text-muted-foreground">
+              Permanently delete your profile, all links, and analytics data.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive/30 text-destructive hover:bg-destructive hover:text-white"
+            onClick={() => setShowConfirm(true)}
+          >
+            Delete account
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="rounded-xl bg-destructive/5 border border-destructive/20 p-4 space-y-3">
+            <p className="text-sm font-medium text-destructive">
+              This action is irreversible.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              This will permanently delete your profile, all your links, avatar,
+              and analytics data. This cannot be undone.
+            </p>
+            <div className="space-y-2">
+              <label className="text-sm text-muted-foreground">
+                Type <span className="font-mono font-bold text-foreground">{expectedText}</span> to confirm:
+              </label>
+              <Input
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                placeholder={expectedText}
+                className="max-w-xs"
+              />
+            </div>
+
+            {deleteError && (
+              <p className="text-sm text-destructive">{deleteError}</p>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={!canDelete || deleting}
+                onClick={handleDelete}
+              >
+                {deleting ? (
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Deleting...</>
+                ) : (
+                  "Delete my account forever"
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowConfirm(false);
+                  setConfirmText("");
+                  setDeleteError(null);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
