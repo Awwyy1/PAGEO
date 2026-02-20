@@ -69,7 +69,7 @@ export default function RegisterPage() {
             allme
           </Link>
           <p className="text-muted-foreground mt-2 text-sm">
-            Create your free page
+            Create your page
           </p>
         </div>
 

@@ -2,20 +2,35 @@
 insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true)
 on conflict (id) do nothing;
 
--- Allow authenticated users to upload their own avatars
+-- File naming: {user_id}.avatar (e.g. "abc-123.avatar")
+-- Policy: user can only manage files that start with their own user ID
+
+-- Allow authenticated users to upload their own avatar
 create policy "Users can upload their own avatar"
   on storage.objects for insert
-  with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+  with check (
+    bucket_id = 'avatars'
+    and auth.role() = 'authenticated'
+    and name = concat(auth.uid()::text, '.avatar')
+  );
 
--- Allow authenticated users to update (overwrite) their own avatars
+-- Allow authenticated users to update (overwrite) their own avatar
 create policy "Users can update their own avatar"
   on storage.objects for update
-  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+  using (
+    bucket_id = 'avatars'
+    and auth.role() = 'authenticated'
+    and name = concat(auth.uid()::text, '.avatar')
+  );
 
--- Allow authenticated users to delete their own avatars
+-- Allow authenticated users to delete their own avatar
 create policy "Users can delete their own avatar"
   on storage.objects for delete
-  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+  using (
+    bucket_id = 'avatars'
+    and auth.role() = 'authenticated'
+    and name = concat(auth.uid()::text, '.avatar')
+  );
 
 -- Anyone can view avatars (public bucket)
 create policy "Avatars are publicly accessible"

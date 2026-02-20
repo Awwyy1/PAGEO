@@ -77,7 +77,7 @@ export default function HomePage() {
                 </span>
                 <span className="text-muted-foreground">
                   Now in{" "}
-                  <strong className="text-foreground">Open Beta</strong> &mdash; free to join
+                  <strong className="text-foreground">Open Beta</strong> &mdash; join now
                 </span>
               </motion.div>
 
@@ -100,7 +100,7 @@ export default function HomePage() {
                 Create a stunning link&#8209;in&#8209;bio page in seconds. Share
                 all your important links with a single URL.{" "}
                 <span className="text-foreground font-medium">
-                  Free forever.
+                  Try it now.
                 </span>
               </motion.p>
 
@@ -135,7 +135,7 @@ export default function HomePage() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Shield className="h-3.5 w-3.5 text-primary" />
-                  Free forever
+                  No setup needed
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Share2 className="h-3.5 w-3.5 text-primary" />
@@ -306,8 +306,8 @@ export default function HomePage() {
               },
               {
                 icon: Shield,
-                title: "Always Free",
-                desc: "Core features are free forever. No credit card, no hidden fees.",
+                title: "Secure & Private",
+                desc: "Your data is yours. Built with enterprise-grade security from the ground up.",
               },
             ].map((feature, i) => (
               <motion.div
@@ -353,7 +353,7 @@ export default function HomePage() {
               {
                 step: "01",
                 title: "Create your account",
-                desc: "Sign up for free with Google or email. No credit card needed.",
+                desc: "Sign up with email in seconds. Pick your unique username and you're set.",
               },
               {
                 step: "02",
@@ -455,14 +455,14 @@ export default function HomePage() {
               Ready to stand out?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Create your free page in seconds and share everything that matters
+              Create your page in seconds and share everything that matters
               with a single link.
             </p>
             <Link
               href="/dashboard"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Get started &mdash; it&apos;s free
+              Get started now
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
