@@ -17,7 +17,7 @@ const RESERVED_USERNAMES = [
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
 
 export default function SettingsPage() {
-  const { profile, updateProfile, avatarPreview, setAvatarPreview } =
+  const { profile, updateProfile, avatarPreview, setAvatarPreview, userId } =
     useProfile();
 
   const [username, setUsername] = useState(profile.username);
@@ -25,6 +25,15 @@ export default function SettingsPage() {
   const [bio, setBio] = useState(profile.bio || "");
   const [saved, setSaved] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("idle");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Sync local state when real profile data loads from Supabase
+  useEffect(() => {
+    setUsername(profile.username);
+    setDisplayName(profile.display_name || "");
+    setBio(profile.bio || "");
+  }, [profile.username, profile.display_name, profile.bio]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initial = (
@@ -82,6 +91,8 @@ export default function SettingsPage() {
       return;
     }
 
+    setAvatarFile(file);
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setAvatarPreview(reader.result as string);
@@ -89,12 +100,38 @@ export default function SettingsPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setUploading(true);
+    let avatarUrl: string | undefined;
+
+    // Upload avatar to Supabase Storage if a new file was selected
+    if (avatarFile && userId) {
+      const ext = avatarFile.name.split(".").pop() || "jpg";
+      const filePath = `${userId}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, avatarFile, { upsert: true });
+
+      if (uploadError) {
+        console.error("Avatar upload failed:", uploadError.message);
+      } else {
+        const { data: urlData } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+        avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+        setAvatarFile(null);
+      }
+    }
+
     updateProfile({
       username,
       display_name: displayName || null,
       bio: bio || null,
+      ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
     });
+
+    setUploading(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -146,7 +183,11 @@ export default function SettingsPage() {
             </p>
             {avatarPreview && (
               <button
-                onClick={() => setAvatarPreview(null)}
+                onClick={() => {
+                  setAvatarPreview(null);
+                  setAvatarFile(null);
+                  updateProfile({ avatar_url: null });
+                }}
                 className="text-xs text-destructive hover:underline"
               >
                 Remove photo
@@ -240,12 +281,15 @@ export default function SettingsPage() {
         <Button
           onClick={handleSave}
           disabled={
+            uploading ||
             usernameStatus === "taken" ||
             usernameStatus === "invalid" ||
             usernameStatus === "checking"
           }
         >
-          {saved ? "Saved!" : "Save changes"}
+          {uploading ? (
+            <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Saving...</>
+          ) : saved ? "Saved!" : "Save changes"}
         </Button>
       </div>
 

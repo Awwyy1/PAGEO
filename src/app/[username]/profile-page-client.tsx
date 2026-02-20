@@ -1,11 +1,10 @@
-// Public demo profile page — shows how an Allme page looks (reflects theme + avatar)
+// Client component for public profile — handles animations and click tracking
 "use client";
 
 import { motion } from "framer-motion";
-import { useProfile } from "@/lib/profile-context";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import type { Profile, Link } from "@/types/database";
 
 const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
@@ -14,9 +13,13 @@ const themeBg: Record<string, string> = {
   forest: "bg-emerald-600 text-white",
 };
 
-export default function DemoPage() {
-  const { profile, links, avatarPreview } = useProfile();
-  const activeLinks = links.filter((l) => l.is_active);
+interface Props {
+  profile: Profile;
+  links: Link[];
+}
+
+export function ProfilePageClient({ profile, links }: Props) {
+  const supabase = createClient();
   const theme = profile.theme;
   const isGradient = theme !== "light" && theme !== "dark";
 
@@ -25,6 +28,11 @@ export default function DemoPage() {
     profile.username ||
     "?"
   )[0].toUpperCase();
+
+  const handleLinkClick = (linkId: string) => {
+    // Fire-and-forget click count increment
+    supabase.rpc("increment_click_count", { link_id: linkId }).then(() => {});
+  };
 
   return (
     <main
@@ -37,32 +45,6 @@ export default function DemoPage() {
             : "bg-gradient-to-b from-primary/5 to-background text-foreground"
       )}
     >
-      {/* Back link */}
-      <Link
-        href="/dashboard"
-        className={cn(
-          "self-start mb-8 flex items-center gap-1 text-sm transition-colors",
-          theme === "dark" || isGradient
-            ? "text-white/60 hover:text-white"
-            : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to dashboard
-      </Link>
-
-      {/* Hint to visit real page */}
-      <div className={cn(
-        "self-center mb-4 text-xs px-3 py-1.5 rounded-full",
-        theme === "dark" || isGradient
-          ? "bg-white/10 text-white/60"
-          : "bg-primary/5 text-muted-foreground"
-      )}>
-        Preview &mdash; Your public page:{" "}
-        <Link href={`/${profile.username}`} className="underline font-medium">
-          allme.site/{profile.username}
-        </Link>
-      </div>
-
       <div className="w-full max-w-md flex flex-col items-center">
         {/* Avatar */}
         <motion.div
@@ -71,10 +53,10 @@ export default function DemoPage() {
           transition={{ duration: 0.4 }}
           className="mb-4"
         >
-          {avatarPreview ? (
+          {profile.avatar_url ? (
             <img
-              src={avatarPreview}
-              alt="Avatar"
+              src={profile.avatar_url}
+              alt={profile.display_name || profile.username}
               className="w-24 h-24 rounded-full object-cover shadow-lg"
             />
           ) : (
@@ -128,13 +110,14 @@ export default function DemoPage() {
         )}
 
         {/* Links */}
-        <div className="w-full space-y-3">
-          {activeLinks.map((link, i) => (
+        <div className="w-full space-y-3 mt-4">
+          {links.map((link, i) => (
             <motion.a
               key={link.id}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => handleLinkClick(link.id)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.08 }}
@@ -154,6 +137,19 @@ export default function DemoPage() {
           ))}
         </div>
 
+        {links.length === 0 && (
+          <p
+            className={cn(
+              "text-sm mt-8",
+              isGradient || theme === "dark"
+                ? "text-white/50"
+                : "text-muted-foreground"
+            )}
+          >
+            No links yet
+          </p>
+        )}
+
         {/* Footer */}
         <motion.p
           initial={{ opacity: 0 }}
@@ -166,7 +162,10 @@ export default function DemoPage() {
               : "text-muted-foreground"
           )}
         >
-          Made with <span className="font-semibold">Allme</span>
+          Made with{" "}
+          <a href="/" className="font-semibold hover:underline">
+            allme
+          </a>
         </motion.p>
       </div>
     </main>

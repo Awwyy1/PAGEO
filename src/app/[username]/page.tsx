@@ -1,0 +1,74 @@
+// Public profile page — server-rendered, fetches from Supabase by username
+import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type { Profile, Link } from "@/types/database";
+import type { Metadata } from "next";
+import { ProfilePageClient } from "./profile-page-client";
+
+interface Props {
+  params: Promise<{ username: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+  const supabase = createClient();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, bio, avatar_url")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (!profile) {
+    return { title: "Not Found | allme" };
+  }
+
+  const title = `${profile.display_name || username} | allme`;
+  const description = profile.bio || `Check out ${profile.display_name || username}'s links on allme`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
+    },
+  };
+}
+
+export default async function UserProfilePage({ params }: Props) {
+  const { username } = await params;
+
+  // Skip static routes that aren't usernames
+  const reserved = ["dashboard", "auth", "demo", "api", "_next"];
+  if (reserved.includes(username)) {
+    notFound();
+  }
+
+  const supabase = createClient();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (!profile) {
+    notFound();
+  }
+
+  const { data: links } = await supabase
+    .from("links")
+    .select("*")
+    .eq("profile_id", profile.id)
+    .eq("is_active", true)
+    .order("position", { ascending: true });
+
+  return (
+    <ProfilePageClient
+      profile={profile as Profile}
+      links={(links || []) as Link[]}
+    />
+  );
+}
