@@ -22,6 +22,9 @@ create policy "Avatars are publicly accessible"
   on storage.objects for select
   using (bucket_id = 'avatars');
 
+-- Add page_views column to profiles
+alter table public.profiles add column if not exists page_views integer not null default 0;
+
 -- RPC to increment link click count (called from public profile pages)
 create or replace function public.increment_click_count(link_id uuid)
 returns void as $$
@@ -29,5 +32,15 @@ begin
   update public.links
   set click_count = click_count + 1
   where id = link_id;
+end;
+$$ language plpgsql security definer;
+
+-- RPC to increment page views for a profile
+create or replace function public.increment_page_views(profile_username text)
+returns void as $$
+begin
+  update public.profiles
+  set page_views = page_views + 1
+  where username = profile_username;
 end;
 $$ language plpgsql security definer;

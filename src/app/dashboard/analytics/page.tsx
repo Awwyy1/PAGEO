@@ -1,13 +1,19 @@
-// Analytics page — click stats overview (demo mode)
+// Analytics page — real click stats from Supabase
 "use client";
 
 import { useProfile } from "@/lib/profile-context";
-import { BarChart3, MousePointerClick, Eye } from "lucide-react";
+import { BarChart3, MousePointerClick, Eye, TrendingUp, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AnalyticsPage() {
-  const { links } = useProfile();
+  const { profile, links } = useProfile();
   const totalClicks = links.reduce((sum, l) => sum + l.click_count, 0);
   const activeLinks = links.filter((l) => l.is_active).length;
+  const pageViews = profile.page_views || 0;
+  const ctr = pageViews > 0 ? ((totalClicks / pageViews) * 100).toFixed(1) : "0.0";
+
+  const sortedLinks = [...links].sort((a, b) => b.click_count - a.click_count);
+  const topLink = sortedLinks[0];
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -19,7 +25,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="rounded-2xl border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground mb-2">
             <MousePointerClick className="h-4 w-4" />
@@ -32,7 +38,14 @@ export default function AnalyticsPage() {
             <Eye className="h-4 w-4" />
             <span className="text-xs font-medium">Page Views</span>
           </div>
-          <p className="text-3xl font-bold">1.2k</p>
+          <p className="text-3xl font-bold">{pageViews}</p>
+        </div>
+        <div className="rounded-2xl border bg-card p-5">
+          <div className="flex items-center gap-2 text-muted-foreground mb-2">
+            <TrendingUp className="h-4 w-4" />
+            <span className="text-xs font-medium">CTR</span>
+          </div>
+          <p className="text-3xl font-bold">{ctr}%</p>
         </div>
         <div className="rounded-2xl border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground mb-2">
@@ -43,42 +56,84 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
+      {/* Top performing link */}
+      {topLink && topLink.click_count > 0 && (
+        <div className="rounded-2xl border bg-card p-5">
+          <div className="flex items-center gap-2 text-muted-foreground mb-3">
+            <TrendingUp className="h-4 w-4" />
+            <span className="text-xs font-medium">Top Performing Link</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="min-w-0">
+              <p className="font-medium truncate">{topLink.title}</p>
+              <p className="text-xs text-muted-foreground truncate">{topLink.url}</p>
+            </div>
+            <div className="text-right ml-4">
+              <p className="text-2xl font-bold">{topLink.click_count}</p>
+              <p className="text-xs text-muted-foreground">clicks</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Per-link breakdown */}
       <div className="rounded-2xl border bg-card">
         <div className="p-5 border-b">
           <h2 className="text-sm font-medium">Clicks per link</h2>
         </div>
-        <div className="divide-y">
-          {[...links]
-            .sort((a, b) => b.click_count - a.click_count)
-            .map((link) => (
+        {links.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground">
+            <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No links yet. Add links to start tracking clicks.</p>
+          </div>
+        ) : (
+          <div className="divide-y">
+            {sortedLinks.map((link) => (
               <div
                 key={link.id}
                 className="flex items-center justify-between p-4"
               >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{link.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {link.url}
-                  </p>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className={cn(
+                    "w-2 h-2 rounded-full shrink-0",
+                    link.is_active ? "bg-emerald-500" : "bg-muted-foreground/30"
+                  )} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{link.title}</p>
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-muted-foreground truncate hover:underline flex items-center gap-1"
+                    >
+                      {link.url}
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 ml-4">
                   <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full bg-primary rounded-full"
+                      className="h-full bg-primary rounded-full transition-all"
                       style={{
-                        width: `${(link.click_count / Math.max(totalClicks, 1)) * 100}%`,
+                        width: `${totalClicks > 0 ? (link.click_count / totalClicks) * 100 : 0}%`,
                       }}
                     />
                   </div>
-                  <span className="text-sm font-medium w-10 text-right">
+                  <span className="text-sm font-medium w-10 text-right tabular-nums">
                     {link.click_count}
                   </span>
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Info */}
+      <p className="text-xs text-muted-foreground text-center">
+        Analytics update in real-time as visitors interact with your page.
+      </p>
     </div>
   );
 }

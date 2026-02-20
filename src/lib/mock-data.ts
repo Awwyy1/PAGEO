@@ -8,6 +8,7 @@ export const mockProfile: Profile = {
   bio: "Designer & developer. Building cool things on the internet.",
   avatar_url: null,
   theme: "light",
+  page_views: 0,
   created_at: new Date().toISOString(),
 };
 
