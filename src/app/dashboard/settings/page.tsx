@@ -3,26 +3,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/lib/profile-context";
+import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Camera, Check, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const TAKEN_USERNAMES = [
-  "admin",
-  "demo",
-  "allme",
-  "test",
-  "user",
-  "help",
-  "support",
-  "about",
-  "blog",
-  "api",
-  "app",
-  "www",
-  "mail",
-  "ftp",
+const RESERVED_USERNAMES = [
+  "admin", "demo", "allme", "test", "user", "help",
+  "support", "about", "blog", "api", "app", "www", "mail",
 ];
 
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
@@ -44,31 +33,45 @@ export default function SettingsPage() {
     "?"
   )[0].toUpperCase();
 
-  // Debounced username availability check
+  const supabase = createClient();
+
+  // Debounced username availability check (via Supabase)
   useEffect(() => {
     if (!username || username.length < 2) {
       setUsernameStatus(username.length === 0 ? "invalid" : "idle");
       return;
     }
 
-    // Only allow lowercase letters, numbers, hyphens, underscores
     if (!/^[a-z0-9_-]+$/.test(username)) {
       setUsernameStatus("invalid");
       return;
     }
 
+    // Same as current → skip check
+    if (username === profile.username) {
+      setUsernameStatus("available");
+      return;
+    }
+
+    if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
+      setUsernameStatus("taken");
+      return;
+    }
+
     setUsernameStatus("checking");
 
-    const timer = setTimeout(() => {
-      if (TAKEN_USERNAMES.includes(username.toLowerCase())) {
-        setUsernameStatus("taken");
-      } else {
-        setUsernameStatus("available");
-      }
+    const timer = setTimeout(async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+
+      setUsernameStatus(data ? "taken" : "available");
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [username]);
+  }, [username, profile.username]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

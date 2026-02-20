@@ -3,8 +3,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link2, BarChart3, Settings, ExternalLink } from "lucide-react";
+import { Link2, BarChart3, Settings, ExternalLink, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/lib/profile-context";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", label: "Links", icon: Link2 },
@@ -18,6 +20,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useProfile();
 
   return (
     <div className="flex min-h-screen">
@@ -51,13 +55,26 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        <Link
-          href="/demo"
-          className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          <ExternalLink className="h-4 w-4" />
-          View my page
-        </Link>
+        <div className="space-y-2">
+          <Link
+            href="/demo"
+            className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            <ExternalLink className="h-4 w-4" />
+            View my page
+          </Link>
+          <button
+            onClick={async () => {
+              await signOut();
+              router.push("/");
+              router.refresh();
+            }}
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </button>
+        </div>
       </aside>
 
       {/* Mobile header */}

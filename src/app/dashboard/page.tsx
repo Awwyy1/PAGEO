@@ -65,7 +65,7 @@ const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: s
 ];
 
 export default function DashboardPage() {
-  const { profile, updateProfile, links, setLinks, avatarPreview } = useProfile();
+  const { profile, updateProfile, links, addLink, removeLink, updateLink, reorderLinks, avatarPreview } = useProfile();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -79,48 +79,36 @@ export default function DashboardPage() {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
-      setLinks((prev) => {
-        const oldIndex = prev.findIndex((l) => l.id === active.id);
-        const newIndex = prev.findIndex((l) => l.id === over.id);
-        const reordered = arrayMove(prev, oldIndex, newIndex);
-        return reordered.map((l, i) => ({ ...l, position: i }));
-      });
+      const oldIndex = links.findIndex((l) => l.id === active.id);
+      const newIndex = links.findIndex((l) => l.id === over.id);
+      const reordered = arrayMove(links, oldIndex, newIndex).map((l, i) => ({
+        ...l,
+        position: i,
+      }));
+      reorderLinks(reordered);
     },
-    [setLinks]
+    [links, reorderLinks]
   );
 
   const handleUpdate = useCallback(
     (id: string, data: Partial<Link>) => {
-      setLinks((prev) =>
-        prev.map((l) => (l.id === id ? { ...l, ...data } : l))
-      );
+      updateLink(id, data);
     },
-    [setLinks]
+    [updateLink]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
-      setLinks((prev) => prev.filter((l) => l.id !== id));
+      removeLink(id);
     },
-    [setLinks]
+    [removeLink]
   );
 
   const handleAdd = useCallback(
     (title: string, url: string) => {
-      const newLink: Link = {
-        id: crypto.randomUUID(),
-        profile_id: profile.id,
-        title,
-        url,
-        icon: null,
-        position: links.length,
-        is_active: true,
-        click_count: 0,
-        created_at: new Date().toISOString(),
-      };
-      setLinks((prev) => [...prev, newLink]);
+      addLink(title, url);
     },
-    [links.length, profile.id, setLinks]
+    [addLink]
   );
 
   return (

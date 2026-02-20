@@ -1,0 +1,53 @@
+// OAuth callback handler — exchanges auth code for session
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/dashboard";
+
+  if (code) {
+    const supabase = createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error) {
+      // Check if user has a profile, create one if missing (Google OAuth users)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (!profile) {
+          const username =
+            user.user_metadata?.username ||
+            user.email?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
+            `user_${user.id.slice(0, 8)}`;
+
+          await supabase.from("profiles").insert({
+            id: user.id,
+            username,
+            display_name:
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
+              username,
+            bio: null,
+            avatar_url: user.user_metadata?.avatar_url || null,
+            theme: "light",
+          });
+        }
+      }
+
+      return NextResponse.redirect(`${origin}${next}`);
+    }
+  }
+
+  // Something went wrong — redirect to login with error
+  return NextResponse.redirect(`${origin}/auth/login`);
+}
