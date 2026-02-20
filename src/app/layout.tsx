@@ -11,9 +11,9 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Pageo — Your links, one page",
+  title: "Allme — All your links, one page",
   description:
-    "Create a beautiful page with all your links. Share it with the world.",
+    "Create a beautiful page with all your links. Share it with the world. allme.site",
 };
 
 export default function RootLayout({

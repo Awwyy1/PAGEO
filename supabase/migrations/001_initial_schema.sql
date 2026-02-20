@@ -7,7 +7,7 @@ create table public.profiles (
   display_name text,
   bio text,
   avatar_url text,
-  theme text not null default 'light' check (theme in ('light', 'dark', 'gradient')),
+  theme text not null default 'light' check (theme in ('light', 'dark', 'gradient', 'ocean', 'sunset', 'forest')),
   created_at timestamptz not null default now()
 );
 

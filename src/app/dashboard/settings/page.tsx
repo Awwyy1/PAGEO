@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const TAKEN_USERNAMES = [
   "admin",
   "demo",
-  "pageo",
+  "allme",
   "test",
   "user",
   "help",
@@ -160,7 +160,7 @@ export default function SettingsPage() {
           <label className="text-sm font-medium">Username</label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground whitespace-nowrap">
-              pageo.app/
+              allme.site/
             </span>
             <div className="relative flex-1 max-w-[240px]">
               <Input
@@ -196,7 +196,7 @@ export default function SettingsPage() {
           <div className="min-h-[20px]">
             {usernameStatus === "available" && (
               <p className="text-xs text-emerald-600">
-                pageo.app/{username} is available!
+                allme.site/{username} is available!
               </p>
             )}
             {usernameStatus === "taken" && (

@@ -24,7 +24,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card p-6 gap-6">
         <Link href="/" className="text-xl font-bold tracking-tight">
-          pageo
+          allme
         </Link>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -64,7 +64,7 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col">
         <header className="flex md:hidden items-center justify-between border-b p-4">
           <Link href="/" className="text-lg font-bold">
-            pageo
+            allme
           </Link>
           <Link
             href="/demo"

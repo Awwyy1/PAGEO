@@ -1,4 +1,4 @@
-// Landing page — stunning hero with social proof, features, testimonials & CTA
+// Landing page — hero with features, use-cases & CTA
 "use client";
 
 import Link from "next/link";
@@ -11,7 +11,6 @@ import {
   Shield,
   MousePointer2,
   Share2,
-  Star,
 } from "lucide-react";
 
 const fadeUp = {
@@ -30,7 +29,7 @@ export default function HomePage() {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold tracking-tight">
-            pageo
+            allme
           </Link>
           <div className="flex items-center gap-4">
             <Link
@@ -77,8 +76,8 @@ export default function HomePage() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-muted-foreground">
-                  Trusted by{" "}
-                  <strong className="text-foreground">1,458+</strong> creators
+                  Now in{" "}
+                  <strong className="text-foreground">Open Beta</strong> &mdash; free to join
                 </span>
               </motion.div>
 
@@ -125,40 +124,23 @@ export default function HomePage() {
                 </Link>
               </motion.div>
 
-              {/* Social proof row */}
+              {/* Value props row */}
               <motion.div
                 variants={fadeUp}
-                className="mt-11 flex items-center gap-4 justify-center lg:justify-start"
+                className="mt-11 flex items-center gap-5 justify-center lg:justify-start text-sm text-muted-foreground"
               >
-                <div className="flex -space-x-2.5">
-                  {[
-                    "bg-violet-500",
-                    "bg-pink-500",
-                    "bg-amber-500",
-                    "bg-emerald-500",
-                    "bg-sky-500",
-                  ].map((color, i) => (
-                    <div
-                      key={i}
-                      className={`w-8 h-8 rounded-full ${color} border-2 border-background flex items-center justify-center text-[10px] font-bold text-white shadow-sm`}
-                    >
-                      {["A", "M", "S", "K", "J"][i]}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-sm">
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                  <span className="text-muted-foreground">
-                    from 400+ reviews
-                  </span>
-                </div>
+                <span className="flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 text-primary" />
+                  Setup in 30 sec
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-primary" />
+                  Free forever
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Share2 className="h-3.5 w-3.5 text-primary" />
+                  One link for all
+                </span>
               </motion.div>
             </motion.div>
 
@@ -238,7 +220,7 @@ export default function HomePage() {
                     >
                       Made with{" "}
                       <span className="font-semibold text-foreground/60">
-                        Pageo
+                        Allme
                       </span>
                     </motion.p>
                   </div>
@@ -253,10 +235,10 @@ export default function HomePage() {
       <section className="py-16 px-6 border-y border-border/40 bg-muted/30">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {[
-            { value: "1,458+", label: "Active creators" },
-            { value: "2.4M+", label: "Links clicked" },
+            { value: "6", label: "Beautiful themes" },
+            { value: "\u221E", label: "Links per page" },
             { value: "99.9%", label: "Uptime" },
-            { value: "< 1 min", label: "Setup time" },
+            { value: "< 30s", label: "Setup time" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -381,7 +363,7 @@ export default function HomePage() {
               {
                 step: "03",
                 title: "Share your page",
-                desc: "Get your unique pageo.app/username URL. Share it everywhere.",
+                desc: "Get your unique allme.site/username URL. Share it everywhere.",
               },
             ].map((item, i) => (
               <motion.div
@@ -405,7 +387,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
+      {/* ── Built for ── */}
       <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -415,69 +397,44 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Loved by creators
+              Built for everyone
             </h2>
             <p className="text-muted-foreground mt-3">
-              See what our community has to say.
+              Whether you&apos;re a creator, freelancer, or business &mdash; Allme fits your workflow.
             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
-                name: "Sarah K.",
-                role: "Content Creator",
-                text: "Pageo replaced 3 tools for me. It\u2019s simple, beautiful, and my audience loves it.",
-                initial: "S",
-                color: "bg-pink-500",
+                emoji: "\uD83C\uDFA8",
+                title: "Creators & Influencers",
+                desc: "One link in your bio for all platforms. YouTube, TikTok, Instagram &mdash; everything in one place.",
               },
               {
-                name: "Mike R.",
-                role: "Developer",
-                text: "Finally a link-in-bio that doesn\u2019t look generic. The themes are absolutely gorgeous.",
-                initial: "M",
-                color: "bg-violet-500",
+                emoji: "\uD83D\uDCBB",
+                title: "Developers & Freelancers",
+                desc: "Showcase your portfolio, GitHub, resume, and contact info with a clean, professional page.",
               },
               {
-                name: "Emma L.",
-                role: "Photographer",
-                text: "Set it up in 30 seconds. My portfolio clicks went up 40% the first week.",
-                initial: "E",
-                color: "bg-amber-500",
+                emoji: "\uD83C\uDFEA",
+                title: "Small Businesses",
+                desc: "Menu, booking, social media, reviews &mdash; give your customers everything they need instantly.",
               },
-            ].map((t, i) => (
+            ].map((item, i) => (
               <motion.div
-                key={t.name}
+                key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ delay: i * 0.1 }}
                 className="rounded-2xl border border-border/60 bg-card p-6"
               >
-                <div className="flex items-center gap-0.5 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star
-                      key={j}
-                      className="h-4 w-4 fill-amber-400 text-amber-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed mb-6">
-                  &ldquo;{t.text}&rdquo;
+                <div className="text-3xl mb-4">{item.emoji}</div>
+                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {item.desc}
                 </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-9 h-9 rounded-full ${t.color} flex items-center justify-center text-sm font-bold text-white shadow-sm`}
-                  >
-                    {t.initial}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {t.role}
-                    </div>
-                  </div>
-                </div>
               </motion.div>
             ))}
           </div>
@@ -498,8 +455,8 @@ export default function HomePage() {
               Ready to stand out?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Join 1,458+ creators who use Pageo to share their world with one
-              beautiful page.
+              Create your free page in seconds and share everything that matters
+              with a single link.
             </p>
             <Link
               href="/dashboard"
@@ -515,9 +472,9 @@ export default function HomePage() {
       {/* ── Footer ── */}
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold tracking-tight">pageo</span>
+          <span className="text-sm font-bold tracking-tight">allme</span>
           <p className="text-sm text-muted-foreground">
-            &copy; 2026 Pageo. All rights reserved.
+            &copy; 2026 Allme. All rights reserved.
           </p>
         </div>
       </footer>

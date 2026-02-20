@@ -165,7 +165,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
                 : "text-muted-foreground/50"
             )}
           >
-            Powered by <span className="font-semibold">Pageo</span>
+            Powered by <span className="font-semibold">Allme</span>
           </p>
         </div>
       </div>

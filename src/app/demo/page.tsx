@@ -1,4 +1,4 @@
-// Public demo profile page — shows how a Pageo page looks (reflects theme + avatar)
+// Public demo profile page — shows how an Allme page looks (reflects theme + avatar)
 "use client";
 
 import { motion } from "framer-motion";
@@ -153,7 +153,7 @@ export default function DemoPage() {
               : "text-muted-foreground"
           )}
         >
-          Made with <span className="font-semibold">Pageo</span>
+          Made with <span className="font-semibold">Allme</span>
         </motion.p>
       </div>
     </main>
