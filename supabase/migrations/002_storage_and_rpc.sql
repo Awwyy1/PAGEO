@@ -1,0 +1,33 @@
+-- Storage bucket for avatar uploads
+insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+-- Allow authenticated users to upload their own avatars
+create policy "Users can upload their own avatar"
+  on storage.objects for insert
+  with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Allow authenticated users to update (overwrite) their own avatars
+create policy "Users can update their own avatar"
+  on storage.objects for update
+  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Allow authenticated users to delete their own avatars
+create policy "Users can delete their own avatar"
+  on storage.objects for delete
+  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Anyone can view avatars (public bucket)
+create policy "Avatars are publicly accessible"
+  on storage.objects for select
+  using (bucket_id = 'avatars');
+
+-- RPC to increment link click count (called from public profile pages)
+create or replace function public.increment_click_count(link_id uuid)
+returns void as $$
+begin
+  update public.links
+  set click_count = click_count + 1
+  where id = link_id;
+end;
+$$ language plpgsql security definer;

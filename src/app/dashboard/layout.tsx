@@ -21,7 +21,8 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { signOut } = useProfile();
+  const { signOut, profile } = useProfile();
+  const publicUrl = `/${profile.username}`;
 
   return (
     <div className="flex min-h-screen">
@@ -57,7 +58,7 @@ export default function DashboardLayout({
 
         <div className="space-y-2">
           <Link
-            href="/demo"
+            href={publicUrl}
             className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             <ExternalLink className="h-4 w-4" />
@@ -84,7 +85,7 @@ export default function DashboardLayout({
             allme
           </Link>
           <Link
-            href="/demo"
+            href={publicUrl}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             <ExternalLink className="h-4 w-4" />
