@@ -7,6 +7,8 @@ export type CustomColors = {
   buttonText: string;
 };
 
+export type Plan = "free" | "pro" | "business";
+
 export type Profile = {
   id: string;
   username: string;
@@ -15,6 +17,7 @@ export type Profile = {
   avatar_url: string | null;
   theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "custom";
   custom_colors: CustomColors | null;
+  plan: Plan;
   page_views: number;
   created_at: string;
 };

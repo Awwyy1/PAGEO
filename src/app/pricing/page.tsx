@@ -2,10 +2,11 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowLeft, Check, X, Sparkles, Crown, Building2, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Check, X as XIcon, Sparkles, Crown, Building2, ArrowRight, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { PromoCodeModal } from "@/components/promo-code-modal";
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -25,7 +26,7 @@ const plans = [
     icon: Sparkles,
     desc: "Everything you need to get started.",
     price: { monthly: 0, yearly: 0 },
-    cta: "Get started",
+    cta: "Create free",
     ctaHref: "/auth/register",
     highlighted: false,
     features: [
@@ -90,6 +91,8 @@ const plans = [
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>("monthly");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [promoOpen, setPromoOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-background overflow-hidden">
@@ -99,21 +102,55 @@ export default function PricingPage() {
           <Link href="/" className="text-xl font-bold tracking-tight">
             allme
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-4">
             <Link
               href="/pricing"
-              className="text-sm font-medium text-foreground transition-colors hidden sm:block"
+              className="text-sm font-medium text-foreground transition-colors"
             >
               Pricing
             </Link>
             <Link
-              href="/dashboard"
+              href="/auth/login"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/auth/register"
               className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
             >
-              Get started
+              Create
             </Link>
           </div>
+          <button
+            className="sm:hidden p-2 -mr-2 text-muted-foreground hover:text-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <XIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="sm:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
+            >
+              <div className="flex flex-col p-4 gap-3">
+                <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-sm text-muted-foreground hover:text-foreground px-3 py-2">
+                  Pricing
+                </Link>
+                <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className="text-sm text-muted-foreground hover:text-foreground px-3 py-2">
+                  Sign in
+                </Link>
+                <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)} className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground">
+                  Sign up
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Background */}
@@ -271,18 +308,31 @@ export default function PricingPage() {
                   </div>
 
                   {/* CTA */}
-                  <Link
-                    href={plan.ctaHref}
-                    className={cn(
-                      "group inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium transition-all gap-2 mb-8",
-                      plan.highlighted
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
-                        : "border border-border/60 bg-background hover:bg-accent hover:-translate-y-0.5"
-                    )}
-                  >
-                    {plan.cta}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
+                  {plan.id === "free" ? (
+                    <Link
+                      href={plan.ctaHref}
+                      className={cn(
+                        "group inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium transition-all gap-2 mb-8",
+                        "border border-border/60 bg-background hover:bg-accent hover:-translate-y-0.5"
+                      )}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => setPromoOpen(true)}
+                      className={cn(
+                        "group inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium transition-all gap-2 mb-8",
+                        plan.highlighted
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
+                          : "border border-border/60 bg-background hover:bg-accent hover:-translate-y-0.5"
+                      )}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  )}
 
                   {/* Divider */}
                   <div className="h-px bg-border/60 mb-6" />
@@ -305,7 +355,7 @@ export default function PricingPage() {
                           </div>
                         ) : (
                           <div className="mt-0.5 w-4 h-4 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <X className="h-2.5 w-2.5 text-muted-foreground/40" />
+                            <XIcon className="h-2.5 w-2.5 text-muted-foreground/40" />
                           </div>
                         )}
                         {feature.text}
@@ -391,7 +441,7 @@ export default function PricingPage() {
               href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Get started now
+              Create your page
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -407,6 +457,8 @@ export default function PricingPage() {
           </p>
         </div>
       </footer>
+
+      <PromoCodeModal open={promoOpen} onClose={() => setPromoOpen(false)} />
     </main>
   );
 }

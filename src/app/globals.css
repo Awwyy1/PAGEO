@@ -56,4 +56,10 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  /* Prevent FOUC on mobile — smooth entrance */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }

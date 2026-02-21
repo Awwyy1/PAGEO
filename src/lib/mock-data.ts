@@ -9,6 +9,7 @@ export const mockProfile: Profile = {
   avatar_url: null,
   theme: "light",
   custom_colors: null,
+  plan: "free",
   page_views: 0,
   created_at: new Date().toISOString(),
 };
