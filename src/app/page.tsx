@@ -38,6 +38,12 @@ export default function HomePage() {
           </Link>
           <div className="hidden sm:flex items-center gap-4">
             <Link
+              href="/pricing"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/auth/login"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -68,6 +74,13 @@ export default function HomePage() {
               className="sm:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
             >
               <div className="flex flex-col p-4 gap-3">
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                >
+                  Pricing
+                </Link>
                 <Link
                   href="/auth/login"
                   onClick={() => setMobileMenuOpen(false)}
@@ -155,12 +168,6 @@ export default function HomePage() {
                 >
                   Create your page
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-border/60 bg-background px-8 text-sm font-medium transition-all hover:bg-accent hover:-translate-y-0.5"
-                >
-                  View pricing
                 </Link>
               </motion.div>
 
