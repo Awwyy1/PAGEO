@@ -40,24 +40,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url,
       siteName: "Allme",
-      ...(profile.avatar_url
-        ? {
-            images: [
-              {
-                url: profile.avatar_url,
-                width: 400,
-                height: 400,
-                alt: `${displayName}'s avatar`,
-              },
-            ],
-          }
-        : {}),
+      images: [
+        {
+          url: `/api/og?username=${username}`,
+          width: 1200,
+          height: 630,
+          alt: `${displayName}'s allme page`,
+        },
+      ],
     },
     twitter: {
-      card: profile.avatar_url ? "summary" : "summary",
+      card: "summary_large_image",
       title: `${displayName} — @${username}`,
       description,
-      ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
+      images: [`/api/og?username=${username}`],
     },
   };
 }
