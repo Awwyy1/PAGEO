@@ -3,12 +3,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link2, BarChart3, Settings, ExternalLink, LogOut } from "lucide-react";
+import { Link2, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
 import { useRouter } from "next/navigation";
 import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { QrCodeButton } from "@/components/dashboard/qr-code-modal";
+import type { Plan } from "@/types/database";
+
+const planConfig: Record<Plan, { label: string; icon: typeof Sparkles; color: string; bg: string }> = {
+  free: { label: "Free", icon: Sparkles, color: "text-muted-foreground", bg: "bg-muted" },
+  pro: { label: "Pro", icon: Crown, color: "text-violet-600", bg: "bg-violet-500/10" },
+  business: { label: "Business", icon: Building2, color: "text-amber-600", bg: "bg-amber-500/10" },
+};
 
 const navItems = [
   { href: "/dashboard", label: "Links", icon: Link2 },
@@ -25,14 +32,29 @@ export default function DashboardLayout({
   const router = useRouter();
   const { signOut, profile, links, avatarPreview } = useProfile();
   const publicUrl = `/${profile.username}`;
+  const currentPlan = planConfig[profile.plan || "free"];
+  const PlanIcon = currentPlan.icon;
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card p-6 gap-6">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          allme
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold tracking-tight">
+            allme
+          </Link>
+          <Link
+            href="/pricing"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+              currentPlan.bg,
+              currentPlan.color
+            )}
+          >
+            <PlanIcon className="h-3 w-3" />
+            {currentPlan.label}
+          </Link>
+        </div>
 
         <nav className="flex flex-col gap-1 flex-1">
           {navItems.map((item) => {
@@ -84,9 +106,22 @@ export default function DashboardLayout({
       {/* Mobile header */}
       <div className="flex flex-1 flex-col">
         <header className="flex md:hidden items-center justify-between border-b p-4">
-          <Link href="/" className="text-lg font-bold">
-            allme
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="text-lg font-bold">
+              allme
+            </Link>
+            <Link
+              href="/pricing"
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                currentPlan.bg,
+                currentPlan.color
+              )}
+            >
+              <PlanIcon className="h-2.5 w-2.5" />
+              {currentPlan.label}
+            </Link>
+          </div>
           <div className="flex items-center gap-3">
             <Link
               href={publicUrl}

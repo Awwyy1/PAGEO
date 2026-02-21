@@ -15,11 +15,12 @@ const RESERVED_USERNAMES = [
   "support", "about", "blog", "api", "app", "www", "mail",
 ];
 
-type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
+type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "plan_required";
 
 export default function SettingsPage() {
   const { profile, updateProfile, updateProfileLocal, avatarPreview, setAvatarPreview, userId } =
     useProfile();
+  const plan = profile.plan || "free";
 
   const [username, setUsername] = useState(profile.username);
   const [displayName, setDisplayName] = useState(profile.display_name || "");
@@ -64,6 +65,18 @@ export default function SettingsPage() {
       return;
     }
 
+    // 1-2 char usernames blocked for everyone
+    if (username.length <= 2) {
+      setUsernameStatus("invalid");
+      return;
+    }
+
+    // 3 char usernames only for Pro/Business
+    if (username.length === 3 && plan === "free") {
+      setUsernameStatus("plan_required");
+      return;
+    }
+
     if (!/^[a-z0-9_-]+$/.test(username)) {
       setUsernameStatus("invalid");
       return;
@@ -93,7 +106,7 @@ export default function SettingsPage() {
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [username, profile.username]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [username, profile.username, plan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -241,7 +254,7 @@ export default function SettingsPage() {
                     "border-emerald-500 focus-visible:ring-emerald-500",
                   usernameStatus === "taken" &&
                     "border-destructive focus-visible:ring-destructive",
-                  usernameStatus === "invalid" &&
+                  (usernameStatus === "invalid" || usernameStatus === "plan_required") &&
                     "border-destructive focus-visible:ring-destructive"
                 )}
                 placeholder="yourname"
@@ -255,7 +268,8 @@ export default function SettingsPage() {
                   <Check className="h-4 w-4 text-emerald-500" />
                 )}
                 {(usernameStatus === "taken" ||
-                  usernameStatus === "invalid") && (
+                  usernameStatus === "invalid" ||
+                  usernameStatus === "plan_required") && (
                   <X className="h-4 w-4 text-destructive" />
                 )}
               </div>
@@ -273,9 +287,16 @@ export default function SettingsPage() {
                 This username is already taken.
               </p>
             )}
+            {usernameStatus === "plan_required" && (
+              <p className="text-xs text-destructive">
+                3-character usernames require Pro or Business plan.
+              </p>
+            )}
             {usernameStatus === "invalid" && username.length > 0 && (
               <p className="text-xs text-destructive">
-                Only lowercase letters, numbers, hyphens, and underscores.
+                {username.length <= 2
+                  ? "Username must be at least 3 characters."
+                  : "Only lowercase letters, numbers, hyphens, and underscores."}
               </p>
             )}
           </div>
@@ -309,7 +330,8 @@ export default function SettingsPage() {
             uploading ||
             usernameStatus === "taken" ||
             usernameStatus === "invalid" ||
-            usernameStatus === "checking"
+            usernameStatus === "checking" ||
+            usernameStatus === "plan_required"
           }
         >
           {uploading ? (

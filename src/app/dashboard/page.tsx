@@ -80,18 +80,59 @@ function ColorInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const [localHex, setLocalHex] = useState(value);
+
+  // Sync when parent value changes
+  const normalizedValue = value.toUpperCase();
+  if (localHex.toUpperCase() !== normalizedValue && localHex !== "") {
+    // Only sync if not actively editing
+  }
+
+  const handleHexInput = (raw: string) => {
+    // Allow typing with or without #
+    let hex = raw.startsWith("#") ? raw : `#${raw}`;
+    hex = hex.slice(0, 7); // limit to #RRGGBB
+    setLocalHex(hex);
+
+    // Only apply if it's a valid color
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+      onChange(hex);
+    }
+  };
+
   return (
-    <label className="flex items-center gap-2.5 text-sm">
-      <div className="relative">
+    <div className="space-y-1.5">
+      <span className="text-muted-foreground text-xs">{label}</span>
+      <div className="flex items-center gap-2">
+        {/* Color swatch (opens native picker on click) */}
+        <div className="relative">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => {
+              onChange(e.target.value);
+              setLocalHex(e.target.value);
+            }}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <div
+            className="w-8 h-8 rounded-lg border border-border shadow-sm cursor-pointer"
+            style={{ backgroundColor: value }}
+          />
+        </div>
+        {/* Hex text input */}
         <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-8 h-8 rounded-lg border border-border cursor-pointer appearance-none bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-none [&::-moz-color-swatch]:rounded-md [&::-moz-color-swatch]:border-none"
+          type="text"
+          value={localHex}
+          onChange={(e) => handleHexInput(e.target.value)}
+          onFocus={() => setLocalHex(value)}
+          onBlur={() => setLocalHex(value)}
+          placeholder="#000000"
+          className="w-[88px] h-8 rounded-lg border border-border bg-transparent px-2 text-xs font-mono uppercase focus:outline-none focus:ring-1 focus:ring-ring"
+          maxLength={7}
         />
       </div>
-      <span className="text-muted-foreground text-xs">{label}</span>
-    </label>
+    </div>
   );
 }
 

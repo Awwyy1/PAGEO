@@ -1,8 +1,9 @@
 // Landing page — hero with features, use-cases & CTA
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Zap,
@@ -11,6 +12,8 @@ import {
   Shield,
   MousePointer2,
   Share2,
+  Menu,
+  X,
 } from "lucide-react";
 
 const fadeUp = {
@@ -23,6 +26,8 @@ const stagger = {
 };
 
 export default function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen bg-background overflow-hidden">
       {/* ── Navbar ── */}
@@ -31,27 +36,69 @@ export default function HomePage() {
           <Link href="/" className="text-xl font-bold tracking-tight">
             allme
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-4">
             <Link
               href="/pricing"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Pricing
             </Link>
             <Link
-              href="/demo"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+              href="/auth/login"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Demo
+              Sign in
             </Link>
             <Link
-              href="/dashboard"
+              href="/auth/register"
               className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
             >
-              Get started
+              Create
             </Link>
           </div>
+          {/* Mobile burger */}
+          <button
+            className="sm:hidden p-2 -mr-2 text-muted-foreground hover:text-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
+        {/* Mobile menu dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="sm:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
+            >
+              <div className="flex flex-col p-4 gap-3">
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  href="/auth/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+                >
+                  Sign up
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* ── Hero ── */}
@@ -116,35 +163,35 @@ export default function HomePage() {
                 className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
               >
                 <Link
-                  href="/dashboard"
+                  href="/auth/register"
                   className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
                 >
                   Create your page
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
-                  href="/demo"
+                  href="/pricing"
                   className="inline-flex h-12 items-center justify-center rounded-full border border-border/60 bg-background px-8 text-sm font-medium transition-all hover:bg-accent hover:-translate-y-0.5"
                 >
-                  See live demo
+                  View pricing
                 </Link>
               </motion.div>
 
               {/* Value props row */}
               <motion.div
                 variants={fadeUp}
-                className="mt-11 flex items-center gap-5 justify-center lg:justify-start text-sm text-muted-foreground"
+                className="mt-11 flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start text-sm text-muted-foreground"
               >
-                <span className="flex items-center gap-1.5">
-                  <Zap className="h-3.5 w-3.5 text-primary" />
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Zap className="h-3.5 w-3.5 text-primary shrink-0" />
                   Setup in 30 sec
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <Shield className="h-3.5 w-3.5 text-primary" />
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
                   No setup needed
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <Share2 className="h-3.5 w-3.5 text-primary" />
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
                   One link for all
                 </span>
               </motion.div>
@@ -465,10 +512,10 @@ export default function HomePage() {
               with a single link.
             </p>
             <Link
-              href="/dashboard"
+              href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Get started now
+              Create your page
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>

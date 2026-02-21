@@ -4,11 +4,6 @@ import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "edge";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const username = searchParams.get("username");
@@ -17,32 +12,34 @@ export async function GET(request: Request) {
     return new Response("Missing username", { status: 400 });
   }
 
-  // Fetch profile
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return new Response("Not configured", { status: 500 });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Fetch profile + id in one query
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, bio, avatar_url, username, theme")
+    .select("id, display_name, bio, avatar_url, username, theme")
     .eq("username", username)
     .maybeSingle();
 
-  // Fetch link count
-  const { count } = await supabase
-    .from("links")
-    .select("id", { count: "exact", head: true })
-    .eq("is_active", true)
-    .eq(
-      "profile_id",
-      (
-        await supabase
-          .from("profiles")
-          .select("id")
-          .eq("username", username)
-          .maybeSingle()
-      ).data?.id || ""
-    );
+  let linkCount = 0;
+  if (profile?.id) {
+    const { count } = await supabase
+      .from("links")
+      .select("id", { count: "exact", head: true })
+      .eq("is_active", true)
+      .eq("profile_id", profile.id);
+    linkCount = count || 0;
+  }
 
   const displayName = profile?.display_name || username;
-  const bio = profile?.bio || "";
-  const linkCount = count || 0;
+  const bio = profile?.bio ? profile.bio.slice(0, 100) : "";
   const avatarUrl = profile?.avatar_url;
   const initial = displayName[0]?.toUpperCase() || "?";
 
@@ -50,39 +47,37 @@ export async function GET(request: Request) {
     (
       <div
         style={{
-          width: "1200px",
-          height: "630px",
+          width: "1200",
+          height: "630",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           background: "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 30%, #2d1b69 60%, #1a0a2e 100%)",
-          fontFamily: "system-ui, sans-serif",
           position: "relative",
-          overflow: "hidden",
         }}
       >
-        {/* Decorative circles */}
+        {/* Decorative circles — simple solid colors (satori doesn't support radial-gradient) */}
         <div
           style={{
             position: "absolute",
-            top: "-100px",
-            right: "-100px",
-            width: "400px",
-            height: "400px",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%)",
+            top: "-100",
+            right: "-100",
+            width: "400",
+            height: "400",
+            borderRadius: "200",
+            backgroundColor: "rgba(139,92,246,0.08)",
           }}
         />
         <div
           style={{
             position: "absolute",
-            bottom: "-80px",
-            left: "-80px",
-            width: "350px",
-            height: "350px",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(236,72,153,0.12), transparent 70%)",
+            bottom: "-80",
+            left: "-80",
+            width: "350",
+            height: "350",
+            borderRadius: "175",
+            backgroundColor: "rgba(236,72,153,0.06)",
           }}
         />
 
@@ -90,31 +85,29 @@ export async function GET(request: Request) {
         {avatarUrl ? (
           <img
             src={avatarUrl}
-            alt=""
             width={120}
             height={120}
             style={{
-              borderRadius: "50%",
-              objectFit: "cover",
+              borderRadius: "60",
               border: "4px solid rgba(255,255,255,0.15)",
-              marginBottom: "24px",
+              marginBottom: "24",
             }}
           />
         ) : (
           <div
             style={{
-              width: "120px",
-              height: "120px",
-              borderRadius: "50%",
+              width: "120",
+              height: "120",
+              borderRadius: "60",
               background: "linear-gradient(135deg, #8b5cf6, #ec4899)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: "24px",
+              marginBottom: "24",
               border: "4px solid rgba(255,255,255,0.15)",
             }}
           >
-            <span style={{ fontSize: "48px", fontWeight: 700, color: "#fff" }}>
+            <span style={{ fontSize: "48", fontWeight: 700, color: "#fff" }}>
               {initial}
             </span>
           </div>
@@ -123,11 +116,10 @@ export async function GET(request: Request) {
         {/* Name */}
         <div
           style={{
-            fontSize: "48px",
+            fontSize: "48",
             fontWeight: 700,
             color: "#ffffff",
-            lineHeight: 1.2,
-            marginBottom: "8px",
+            marginBottom: "8",
           }}
         >
           {displayName}
@@ -136,32 +128,26 @@ export async function GET(request: Request) {
         {/* Username */}
         <div
           style={{
-            fontSize: "22px",
+            fontSize: "22",
             color: "rgba(255,255,255,0.5)",
-            marginBottom: "16px",
+            marginBottom: "16",
           }}
         >
           @{username}
         </div>
 
-        {/* Bio */}
+        {/* Bio — simple text, no -webkit properties */}
         {bio && (
           <div
             style={{
-              fontSize: "20px",
+              fontSize: "20",
               color: "rgba(255,255,255,0.6)",
-              maxWidth: "600px",
+              maxWidth: "600",
               textAlign: "center",
-              lineHeight: 1.4,
-              marginBottom: "24px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
+              marginBottom: "24",
             }}
           >
-            {bio.slice(0, 120)}
+            {bio}
           </div>
         )}
 
@@ -170,20 +156,20 @@ export async function GET(request: Request) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: "50px",
+            gap: "12",
+            backgroundColor: "rgba(255,255,255,0.08)",
+            borderRadius: "50",
             padding: "10px 28px",
             border: "1px solid rgba(255,255,255,0.1)",
           }}
         >
-          <span style={{ fontSize: "18px", color: "rgba(255,255,255,0.7)" }}>
+          <span style={{ fontSize: "18", color: "rgba(255,255,255,0.7)" }}>
             {linkCount} {linkCount === 1 ? "link" : "links"}
           </span>
-          <span style={{ fontSize: "18px", color: "rgba(255,255,255,0.3)" }}>
+          <span style={{ fontSize: "18", color: "rgba(255,255,255,0.3)" }}>
             •
           </span>
-          <span style={{ fontSize: "18px", color: "rgba(255,255,255,0.7)" }}>
+          <span style={{ fontSize: "18", color: "rgba(255,255,255,0.7)" }}>
             allme.site/{username}
           </span>
         </div>
@@ -192,8 +178,8 @@ export async function GET(request: Request) {
         <div
           style={{
             position: "absolute",
-            bottom: "30px",
-            fontSize: "16px",
+            bottom: "30",
+            fontSize: "16",
             fontWeight: 600,
             color: "rgba(255,255,255,0.25)",
             letterSpacing: "0.05em",
