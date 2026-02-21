@@ -1,4 +1,4 @@
-// Client component for public profile — handles animations, click tracking, and social icons
+// Client component for public profile — handles animations, click tracking, social icons, and custom themes
 "use client";
 
 import { useEffect } from "react";
@@ -21,7 +21,9 @@ interface Props {
 
 export function ProfilePageClient({ profile, links }: Props) {
   const theme = profile.theme;
-  const isGradient = theme !== "light" && theme !== "dark";
+  const isCustom = theme === "custom";
+  const cc = profile.custom_colors;
+  const isGradient = !isCustom && theme !== "light" && theme !== "dark";
 
   const initial = (
     profile.display_name ||
@@ -39,23 +41,32 @@ export function ProfilePageClient({ profile, links }: Props) {
   }, [profile.username]);
 
   const handleLinkClick = (linkId: string) => {
-    fetch("/api/click", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ linkId }),
-    }).catch(() => {});
+    const data = JSON.stringify({ linkId });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/click", new Blob([data], { type: "application/json" }));
+    } else {
+      fetch("/api/click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: data,
+        keepalive: true,
+      }).catch(() => {});
+    }
   };
 
   return (
     <main
       className={cn(
         "min-h-screen flex flex-col items-center px-4 py-12 transition-colors duration-300",
-        theme === "dark"
-          ? "bg-gray-950 text-white"
-          : isGradient
-            ? themeBg[theme]
-            : "bg-gradient-to-b from-primary/5 to-background text-foreground"
+        isCustom
+          ? ""
+          : theme === "dark"
+            ? "bg-gray-950 text-white"
+            : isGradient
+              ? themeBg[theme]
+              : "bg-gradient-to-b from-primary/5 to-background text-foreground"
       )}
+      style={isCustom && cc ? { backgroundColor: cc.bg, color: cc.text } : undefined}
     >
       <div className="w-full max-w-md flex flex-col items-center">
         {/* Avatar */}
@@ -75,18 +86,24 @@ export function ProfilePageClient({ profile, links }: Props) {
             <div
               className={cn(
                 "w-24 h-24 rounded-full flex items-center justify-center",
-                isGradient
-                  ? "bg-white/20"
-                  : theme === "dark"
-                    ? "bg-primary/30"
-                    : "bg-primary/20"
+                isCustom
+                  ? ""
+                  : isGradient
+                    ? "bg-white/20"
+                    : theme === "dark"
+                      ? "bg-primary/30"
+                      : "bg-primary/20"
               )}
+              style={isCustom && cc ? { backgroundColor: `${cc.buttonBg}30` } : undefined}
             >
               <span
                 className={cn(
                   "text-3xl font-bold",
-                  isGradient ? "text-white" : "text-primary"
+                  isCustom
+                    ? ""
+                    : isGradient ? "text-white" : "text-primary"
                 )}
+                style={isCustom && cc ? { color: cc.text } : undefined}
               >
                 {initial}
               </span>
@@ -99,6 +116,7 @@ export function ProfilePageClient({ profile, links }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="text-xl font-bold"
+          style={isCustom && cc ? { color: cc.text } : undefined}
         >
           {profile.display_name || profile.username}
         </motion.h1>
@@ -110,12 +128,15 @@ export function ProfilePageClient({ profile, links }: Props) {
             transition={{ delay: 0.2 }}
             className={cn(
               "text-sm text-center mt-2 mb-8",
-              isGradient
-                ? "text-white/70"
-                : theme === "dark"
-                  ? "text-gray-400"
-                  : "text-muted-foreground"
+              isCustom
+                ? ""
+                : isGradient
+                  ? "text-white/70"
+                  : theme === "dark"
+                    ? "text-gray-400"
+                    : "text-muted-foreground"
             )}
+            style={isCustom && cc ? { color: `${cc.text}99` } : undefined}
           >
             {profile.bio}
           </motion.p>
@@ -139,19 +160,27 @@ export function ProfilePageClient({ profile, links }: Props) {
                 whileTap={{ scale: 0.98 }}
                 className={cn(
                   "flex items-center w-full rounded-2xl p-4 text-sm font-medium transition-shadow gap-3",
-                  isGradient
-                    ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
-                    : theme === "dark"
-                      ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
-                      : "border bg-card shadow-sm hover:shadow-md"
+                  isCustom
+                    ? "shadow-sm hover:shadow-md"
+                    : isGradient
+                      ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
+                      : theme === "dark"
+                        ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
+                        : "border bg-card shadow-sm hover:shadow-md"
                 )}
+                style={isCustom && cc ? {
+                  backgroundColor: cc.buttonBg,
+                  color: cc.buttonText,
+                } : undefined}
               >
                 <social.Icon
                   className="h-5 w-5 shrink-0"
                   style={{
-                    color: isGradient || theme === "dark"
-                      ? "rgba(255,255,255,0.7)"
-                      : social.color,
+                    color: isCustom && cc
+                      ? `${cc.buttonText}cc`
+                      : isGradient || theme === "dark"
+                        ? "rgba(255,255,255,0.7)"
+                        : social.color,
                   }}
                 />
                 <span className="flex-1 text-center pr-8">{link.title}</span>
@@ -164,10 +193,13 @@ export function ProfilePageClient({ profile, links }: Props) {
           <p
             className={cn(
               "text-sm mt-8",
-              isGradient || theme === "dark"
-                ? "text-white/50"
-                : "text-muted-foreground"
+              isCustom
+                ? ""
+                : isGradient || theme === "dark"
+                  ? "text-white/50"
+                  : "text-muted-foreground"
             )}
+            style={isCustom && cc ? { color: `${cc.text}60` } : undefined}
           >
             No links yet
           </p>
@@ -180,10 +212,13 @@ export function ProfilePageClient({ profile, links }: Props) {
           transition={{ delay: 0.8 }}
           className={cn(
             "mt-12 text-xs",
-            isGradient || theme === "dark"
-              ? "text-white/40"
-              : "text-muted-foreground"
+            isCustom
+              ? ""
+              : isGradient || theme === "dark"
+                ? "text-white/40"
+                : "text-muted-foreground"
           )}
+          style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
         >
           Made with{" "}
           <a href="/" className="font-semibold hover:underline">

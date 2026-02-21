@@ -1,4 +1,4 @@
-// Real-time phone mockup preview — reflects theme, avatar, social icons, and profile changes
+// Real-time phone mockup preview — reflects theme, custom colors, avatar, social icons, and profile changes
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +22,9 @@ const themeBg: Record<string, string> = {
 export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProps) {
   const activeLinks = links.filter((l) => l.is_active);
   const theme = profile.theme;
-  const isGradient = theme !== "light" && theme !== "dark";
+  const isCustom = theme === "custom";
+  const cc = profile.custom_colors;
+  const isGradient = !isCustom && theme !== "light" && theme !== "dark";
 
   const initial = (
     profile.display_name ||
@@ -36,24 +38,30 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
       <div
         className={cn(
           "w-[320px] h-[580px] rounded-[3rem] border-[8px] overflow-hidden shadow-xl transition-colors duration-300",
-          theme === "dark"
-            ? "border-gray-700 bg-gray-950"
-            : isGradient
-              ? themeBg[theme]
-              : "border-foreground/10 bg-background"
+          isCustom
+            ? ""
+            : theme === "dark"
+              ? "border-gray-700 bg-gray-950"
+              : isGradient
+                ? themeBg[theme]
+                : "border-foreground/10 bg-background"
         )}
+        style={isCustom && cc ? { backgroundColor: cc.bg, borderColor: `${cc.buttonBg}40` } : undefined}
       >
         {/* Notch */}
         <div className="flex justify-center pt-2 pb-4">
           <div
             className={cn(
               "w-24 h-5 rounded-full",
-              theme === "dark"
-                ? "bg-gray-800"
-                : isGradient
-                  ? "bg-white/15"
-                  : "bg-foreground/10"
+              isCustom
+                ? ""
+                : theme === "dark"
+                  ? "bg-gray-800"
+                  : isGradient
+                    ? "bg-white/15"
+                    : "bg-foreground/10"
             )}
+            style={isCustom && cc ? { backgroundColor: `${cc.text}15` } : undefined}
           />
         </div>
 
@@ -71,20 +79,26 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
               <div
                 className={cn(
                   "w-20 h-20 rounded-full flex items-center justify-center",
-                  isGradient
-                    ? "bg-white/20"
-                    : theme === "dark"
-                      ? "bg-primary/30"
-                      : "bg-primary/20"
+                  isCustom
+                    ? ""
+                    : isGradient
+                      ? "bg-white/20"
+                      : theme === "dark"
+                        ? "bg-primary/30"
+                        : "bg-primary/20"
                 )}
+                style={isCustom && cc ? { backgroundColor: `${cc.buttonBg}30` } : undefined}
               >
                 <span
                   className={cn(
                     "text-2xl font-bold",
-                    isGradient
-                      ? "text-white"
-                      : "text-primary"
+                    isCustom
+                      ? ""
+                      : isGradient
+                        ? "text-white"
+                        : "text-primary"
                   )}
+                  style={isCustom && cc ? { color: cc.text } : undefined}
                 >
                   {initial}
                 </span>
@@ -95,10 +109,13 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           <h2
             className={cn(
               "font-semibold text-base",
-              theme === "dark" || isGradient
-                ? "text-white"
-                : "text-foreground"
+              isCustom
+                ? ""
+                : theme === "dark" || isGradient
+                  ? "text-white"
+                  : "text-foreground"
             )}
+            style={isCustom && cc ? { color: cc.text } : undefined}
           >
             {profile.display_name || profile.username}
           </h2>
@@ -107,12 +124,15 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
             <p
               className={cn(
                 "text-xs text-center mt-1 mb-4",
-                isGradient
-                  ? "text-white/70"
-                  : theme === "dark"
-                    ? "text-gray-400"
-                    : "text-muted-foreground"
+                isCustom
+                  ? ""
+                  : isGradient
+                    ? "text-white/70"
+                    : theme === "dark"
+                      ? "text-gray-400"
+                      : "text-muted-foreground"
               )}
+              style={isCustom && cc ? { color: `${cc.text}99` } : undefined}
             >
               {profile.bio}
             </p>
@@ -133,19 +153,27 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
                     transition={{ delay: i * 0.05 }}
                     className={cn(
                       "w-full rounded-xl p-3 text-sm font-medium transition-colors cursor-pointer flex items-center gap-2.5",
-                      isGradient
-                        ? "bg-white/15 text-white hover:bg-white/25"
-                        : theme === "dark"
-                          ? "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700"
-                          : "border bg-card text-foreground hover:bg-accent"
+                      isCustom
+                        ? ""
+                        : isGradient
+                          ? "bg-white/15 text-white hover:bg-white/25"
+                          : theme === "dark"
+                            ? "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700"
+                            : "border bg-card text-foreground hover:bg-accent"
                     )}
+                    style={isCustom && cc ? {
+                      backgroundColor: cc.buttonBg,
+                      color: cc.buttonText,
+                    } : undefined}
                   >
                     <social.Icon
                       className="h-4 w-4 shrink-0"
                       style={{
-                        color: isGradient || theme === "dark"
-                          ? "rgba(255,255,255,0.7)"
-                          : social.color,
+                        color: isCustom && cc
+                          ? `${cc.buttonText}cc`
+                          : isGradient || theme === "dark"
+                            ? "rgba(255,255,255,0.7)"
+                            : social.color,
                       }}
                     />
                     <span className="truncate">{link.title}</span>
@@ -159,10 +187,13 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
             <p
               className={cn(
                 "text-xs mt-8",
-                isGradient || theme === "dark"
-                  ? "text-white/50"
-                  : "text-muted-foreground"
+                isCustom
+                  ? ""
+                  : isGradient || theme === "dark"
+                    ? "text-white/50"
+                    : "text-muted-foreground"
               )}
+              style={isCustom && cc ? { color: `${cc.text}60` } : undefined}
             >
               No active links yet
             </p>
@@ -172,10 +203,13 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           <p
             className={cn(
               "mt-auto pt-4 text-[10px]",
-              isGradient || theme === "dark"
-                ? "text-white/30"
-                : "text-muted-foreground/50"
+              isCustom
+                ? ""
+                : isGradient || theme === "dark"
+                  ? "text-white/30"
+                  : "text-muted-foreground/50"
             )}
+            style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
           >
             Powered by <span className="font-semibold">Allme</span>
           </p>
