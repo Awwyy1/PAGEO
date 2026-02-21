@@ -1,7 +1,7 @@
-// Dashboard main page — link editor with drag-and-drop + inline theme picker
+// Dashboard main page — link editor with drag-and-drop + inline theme picker + custom colors
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -20,9 +20,17 @@ import {
 import { useProfile } from "@/lib/profile-context";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { AddLinkForm } from "@/components/dashboard/add-link-form";
+import { Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Link } from "@/types/database";
+import type { Link, CustomColors } from "@/types/database";
 import type { Profile } from "@/types/database";
+
+const DEFAULT_CUSTOM: CustomColors = {
+  bg: "#1a1a2e",
+  text: "#ffffff",
+  buttonBg: "#e94560",
+  buttonText: "#ffffff",
+};
 
 const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: string }[] = [
   {
@@ -63,8 +71,35 @@ const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: s
   },
 ];
 
+function ColorInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="flex items-center gap-2.5 text-sm">
+      <div className="relative">
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-8 h-8 rounded-lg border border-border cursor-pointer appearance-none bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-none [&::-moz-color-swatch]:rounded-md [&::-moz-color-swatch]:border-none"
+        />
+      </div>
+      <span className="text-muted-foreground text-xs">{label}</span>
+    </label>
+  );
+}
+
 export default function DashboardPage() {
   const { profile, updateProfile, links, addLink, removeLink, updateLink, reorderLinks } = useProfile();
+  const [showCustom, setShowCustom] = useState(profile.theme === "custom");
+
+  const colors = profile.custom_colors || DEFAULT_CUSTOM;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -110,6 +145,16 @@ export default function DashboardPage() {
     [addLink]
   );
 
+  const handleCustomColorChange = (key: keyof CustomColors, value: string) => {
+    const newColors = { ...colors, [key]: value };
+    updateProfile({ theme: "custom", custom_colors: newColors });
+  };
+
+  const handleSelectCustom = () => {
+    setShowCustom(true);
+    updateProfile({ theme: "custom", custom_colors: colors });
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -119,24 +164,83 @@ export default function DashboardPage() {
         </span>
       </div>
 
-      {/* Theme picker + Add link — compact row */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          {themes.map((theme) => (
+      {/* Theme picker */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {themes.map((theme) => (
+              <button
+                key={theme.id}
+                onClick={() => {
+                  updateProfile({ theme: theme.id });
+                  setShowCustom(false);
+                }}
+                title={theme.label}
+                className={cn(
+                  "w-8 h-8 rounded-lg border transition-all shrink-0",
+                  theme.bg,
+                  profile.theme === theme.id
+                    ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
+                    : "opacity-70 hover:opacity-100 hover:scale-105"
+                )}
+              />
+            ))}
+            {/* Custom theme button */}
             <button
-              key={theme.id}
-              onClick={() => updateProfile({ theme: theme.id })}
-              title={theme.label}
+              onClick={handleSelectCustom}
+              title="Custom"
               className={cn(
-                "w-8 h-8 rounded-lg border transition-all shrink-0",
-                theme.bg,
-                profile.theme === theme.id
-                  ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
+                "w-8 h-8 rounded-lg border transition-all shrink-0 flex items-center justify-center",
+                profile.theme === "custom"
+                  ? "ring-2 ring-offset-1 ring-offset-background ring-pink-400 scale-110"
                   : "opacity-70 hover:opacity-100 hover:scale-105"
               )}
-            />
-          ))}
+              style={
+                profile.theme === "custom"
+                  ? { backgroundColor: colors.bg, borderColor: colors.buttonBg }
+                  : undefined
+              }
+            >
+              <Palette className="h-4 w-4" style={
+                profile.theme === "custom"
+                  ? { color: colors.buttonBg }
+                  : undefined
+              } />
+            </button>
+          </div>
         </div>
+
+        {/* Custom color pickers */}
+        {(showCustom || profile.theme === "custom") && (
+          <div className="rounded-2xl border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Palette className="h-4 w-4" />
+              Custom colors
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <ColorInput
+                label="Background"
+                value={colors.bg}
+                onChange={(v) => handleCustomColorChange("bg", v)}
+              />
+              <ColorInput
+                label="Text"
+                value={colors.text}
+                onChange={(v) => handleCustomColorChange("text", v)}
+              />
+              <ColorInput
+                label="Button"
+                value={colors.buttonBg}
+                onChange={(v) => handleCustomColorChange("buttonBg", v)}
+              />
+              <ColorInput
+                label="Button text"
+                value={colors.buttonText}
+                onChange={(v) => handleCustomColorChange("buttonText", v)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <AddLinkForm onAdd={handleAdd} />

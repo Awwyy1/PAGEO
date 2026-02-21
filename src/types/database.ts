@@ -1,11 +1,20 @@
 // TypeScript types matching the Supabase database schema
+
+export type CustomColors = {
+  bg: string;
+  text: string;
+  buttonBg: string;
+  buttonText: string;
+};
+
 export type Profile = {
   id: string;
   username: string;
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
-  theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest";
+  theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "custom";
+  custom_colors: CustomColors | null;
   page_views: number;
   created_at: string;
 };

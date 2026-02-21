@@ -1,6 +1,10 @@
-// API route to track page views — increments page_views for a profile
-import { createClient } from "@/lib/supabase/server";
+// API route to track page views — increments page_views via security-definer RPC
+// Uses a standalone Supabase client (not SSR) for reliable anonymous access
+import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -10,26 +14,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "username required" }, { status: 400 });
   }
 
-  const supabase = createClient();
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json({ error: "Not configured" }, { status: 500 });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   const { error } = await supabase.rpc("increment_page_views", {
     profile_username: username,
   });
 
   if (error) {
-    // Fallback if RPC doesn't exist yet
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("page_views")
-      .eq("username", username)
-      .single();
-
-    if (profile) {
-      await supabase
-        .from("profiles")
-        .update({ page_views: (profile.page_views || 0) + 1 })
-        .eq("username", username);
-    }
+    console.error("View RPC failed:", error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 200 });
   }
 
   return NextResponse.json({ success: true });
