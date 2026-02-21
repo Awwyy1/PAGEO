@@ -8,20 +8,31 @@ import { cn } from "@/lib/utils";
 
 interface QrCodeModalProps {
   username: string;
+  variant?: "desktop" | "mobile";
 }
 
-export function QrCodeButton({ username }: QrCodeModalProps) {
+export function QrCodeButton({ username, variant = "desktop" }: QrCodeModalProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        <QrCode className="h-4 w-4" />
-        QR Code
-      </button>
+      {variant === "mobile" ? (
+        <button
+          onClick={() => setOpen(true)}
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          title="QR Code"
+        >
+          <QrCode className="h-4 w-4" />
+        </button>
+      ) : (
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          <QrCode className="h-4 w-4" />
+          QR Code
+        </button>
+      )}
 
       {open && <QrCodeModal username={username} onClose={() => setOpen(false)} />}
     </>

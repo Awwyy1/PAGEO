@@ -30,6 +30,7 @@ interface ProfileContextType {
   isLoading: boolean;
   userId: string | null;
   signOut: () => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -225,6 +226,30 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     [userId, supabase]
   );
 
+  const refreshData = useCallback(async () => {
+    if (!userId) return;
+
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profileData) {
+      setProfile(profileData as Profile);
+    }
+
+    const { data: linksData } = await supabase
+      .from("links")
+      .select("*")
+      .eq("profile_id", userId)
+      .order("position", { ascending: true });
+
+    if (linksData) {
+      setLinks(linksData as Link[]);
+    }
+  }, [userId, supabase]);
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUserId(null);
@@ -250,6 +275,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         isLoading,
         userId,
         signOut,
+        refreshData,
       }}
     >
       {children}

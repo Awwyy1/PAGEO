@@ -110,8 +110,7 @@ export default function DashboardLayout({
             <Link href="/" className="text-lg font-bold">
               allme
             </Link>
-            <Link
-              href="/pricing"
+            <span
               className={cn(
                 "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
                 currentPlan.bg,
@@ -120,15 +119,28 @@ export default function DashboardLayout({
             >
               <PlanIcon className="h-2.5 w-2.5" />
               {currentPlan.label}
-            </Link>
+            </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href={publicUrl}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="View my page"
             >
               <ExternalLink className="h-4 w-4" />
             </Link>
+            <QrCodeButton username={profile.username} variant="mobile" />
+            <button
+              onClick={async () => {
+                await signOut();
+                router.push("/");
+                router.refresh();
+              }}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </header>
 
@@ -160,7 +172,7 @@ export default function DashboardLayout({
         <main className="flex-1 p-6">
           <div className="flex gap-10 max-w-5xl mx-auto">
             <div className="flex-1 min-w-0">{children}</div>
-            {/* Divider + Phone preview — visible on all dashboard pages */}
+            {/* Divider + Phone preview — desktop only (side) */}
             <div className="hidden lg:block w-px self-stretch bg-border/60" />
             <div className="hidden lg:block">
               <PhonePreview
@@ -169,6 +181,14 @@ export default function DashboardLayout({
                 avatarPreview={avatarPreview}
               />
             </div>
+          </div>
+          {/* Phone preview — mobile only (below content) */}
+          <div className="lg:hidden mt-8 flex justify-center pb-8">
+            <PhonePreview
+              profile={profile}
+              links={links}
+              avatarPreview={avatarPreview}
+            />
           </div>
         </main>
       </div>

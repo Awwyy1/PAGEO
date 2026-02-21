@@ -27,32 +27,46 @@ export async function POST(request: NextRequest) {
 
   const supabase = createClient(supabaseUrl, serviceKey || anonKey);
 
-  const { error } = await supabase.rpc("increment_page_views", {
-    profile_username: username,
-  });
-
-  if (error) {
-    console.error("View RPC failed:", error.message);
-
-    if (serviceKey) {
-      const { data: p } = await supabase
+  // Strategy 1: Direct select + update (most reliable, works without RPC)
+  if (serviceKey) {
+    try {
+      const { data: profile, error: selectError } = await supabase
         .from("profiles")
         .select("page_views")
         .eq("username", username)
         .maybeSingle();
 
-      if (p) {
-        await supabase
+      if (selectError) {
+        console.error("View select failed:", selectError.message);
+      } else if (profile) {
+        const { error: updateError } = await supabase
           .from("profiles")
-          .update({ page_views: (p.page_views || 0) + 1 })
+          .update({ page_views: (profile.page_views || 0) + 1 })
           .eq("username", username);
 
-        return NextResponse.json({ success: true });
+        if (!updateError) {
+          return NextResponse.json({ success: true });
+        }
+        console.error("View update failed:", updateError.message);
       }
+    } catch (e) {
+      console.error("View direct update error:", e);
     }
-
-    return NextResponse.json({ success: false }, { status: 200 });
   }
 
-  return NextResponse.json({ success: true });
+  // Strategy 2: Try RPC as fallback
+  try {
+    const { error } = await supabase.rpc("increment_page_views", {
+      profile_username: username,
+    });
+
+    if (!error) {
+      return NextResponse.json({ success: true });
+    }
+    console.error("View RPC failed:", error.message);
+  } catch (e) {
+    console.error("View RPC error:", e);
+  }
+
+  return NextResponse.json({ success: false }, { status: 200 });
 }
