@@ -33,7 +33,11 @@ export const metadata: Metadata = {
       "Create a beautiful link-in-bio page in seconds. Share all your important links with a single URL.",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/icon.png",
   },
 };
 
