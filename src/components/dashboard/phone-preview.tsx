@@ -1,8 +1,9 @@
-// Real-time phone mockup preview — reflects theme, avatar, and profile changes
+// Real-time phone mockup preview — reflects theme, avatar, social icons, and profile changes
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getSocialIcon } from "@/lib/social-icons";
 import type { Profile, Link } from "@/types/database";
 
 interface PhonePreviewProps {
@@ -30,7 +31,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
   )[0].toUpperCase();
 
   return (
-    <div className="hidden lg:flex items-start justify-center pt-8 sticky top-8">
+    <div className="flex items-start justify-center pt-8 sticky top-8">
       {/* Phone frame */}
       <div
         className={cn(
@@ -120,26 +121,37 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           {/* Links */}
           <div className="w-full space-y-2.5 mt-2">
             <AnimatePresence mode="popLayout">
-              {activeLinks.map((link, i) => (
-                <motion.div
-                  key={link.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: i * 0.05 }}
-                  className={cn(
-                    "w-full rounded-xl p-3 text-center text-sm font-medium transition-colors cursor-pointer",
-                    isGradient
-                      ? "bg-white/15 text-white hover:bg-white/25"
-                      : theme === "dark"
-                        ? "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700"
-                        : "border bg-card text-foreground hover:bg-accent"
-                  )}
-                >
-                  {link.title}
-                </motion.div>
-              ))}
+              {activeLinks.map((link, i) => {
+                const social = getSocialIcon(link.url);
+                return (
+                  <motion.div
+                    key={link.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ delay: i * 0.05 }}
+                    className={cn(
+                      "w-full rounded-xl p-3 text-sm font-medium transition-colors cursor-pointer flex items-center gap-2.5",
+                      isGradient
+                        ? "bg-white/15 text-white hover:bg-white/25"
+                        : theme === "dark"
+                          ? "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700"
+                          : "border bg-card text-foreground hover:bg-accent"
+                    )}
+                  >
+                    <social.Icon
+                      className="h-4 w-4 shrink-0"
+                      style={{
+                        color: isGradient || theme === "dark"
+                          ? "rgba(255,255,255,0.7)"
+                          : social.color,
+                      }}
+                    />
+                    <span className="truncate">{link.title}</span>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
 

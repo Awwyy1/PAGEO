@@ -1,4 +1,4 @@
-// Settings page — profile editor with avatar upload + username availability check
+// Settings page — profile editor with avatar upload + live preview + username availability check
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -18,7 +18,7 @@ const RESERVED_USERNAMES = [
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
 
 export default function SettingsPage() {
-  const { profile, updateProfile, avatarPreview, setAvatarPreview, userId } =
+  const { profile, updateProfile, updateProfileLocal, avatarPreview, setAvatarPreview, userId } =
     useProfile();
 
   const [username, setUsername] = useState(profile.username);
@@ -45,6 +45,17 @@ export default function SettingsPage() {
   )[0].toUpperCase();
 
   const supabase = createClient();
+
+  // Live preview: update context locally (without DB) as user types
+  const handleDisplayNameChange = (value: string) => {
+    setDisplayName(value);
+    updateProfileLocal({ display_name: value || null });
+  };
+
+  const handleBioChange = (value: string) => {
+    setBio(value);
+    updateProfileLocal({ bio: value || null });
+  };
 
   // Debounced username availability check (via Supabase)
   useEffect(() => {
@@ -109,7 +120,6 @@ export default function SettingsPage() {
 
     // Upload avatar to Supabase Storage if a new file was selected
     if (avatarFile && userId) {
-      // Always use same filename so upsert replaces it regardless of extension
       const filePath = `${userId}.avatar`;
 
       const { error: uploadError } = await supabase.storage
@@ -276,7 +286,7 @@ export default function SettingsPage() {
           <label className="text-sm font-medium">Display name</label>
           <Input
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e) => handleDisplayNameChange(e.target.value)}
             placeholder="Your Name"
           />
         </div>
@@ -286,7 +296,7 @@ export default function SettingsPage() {
           <label className="text-sm font-medium">Bio</label>
           <textarea
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={(e) => handleBioChange(e.target.value)}
             rows={3}
             className="flex w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             placeholder="Tell people about yourself..."

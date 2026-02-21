@@ -1,4 +1,4 @@
-// Dashboard main page — link editor with drag-and-drop + live preview + inline theme picker
+// Dashboard main page — link editor with drag-and-drop + inline theme picker
 "use client";
 
 import { useCallback } from "react";
@@ -20,7 +20,6 @@ import {
 import { useProfile } from "@/lib/profile-context";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { AddLinkForm } from "@/components/dashboard/add-link-form";
-import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { cn } from "@/lib/utils";
 import type { Link } from "@/types/database";
 import type { Profile } from "@/types/database";
@@ -65,7 +64,7 @@ const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: s
 ];
 
 export default function DashboardPage() {
-  const { profile, updateProfile, links, addLink, removeLink, updateLink, reorderLinks, avatarPreview } = useProfile();
+  const { profile, updateProfile, links, addLink, removeLink, updateLink, reorderLinks } = useProfile();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -112,76 +111,63 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="flex gap-10 max-w-5xl mx-auto">
-      {/* Editor */}
-      <div className="flex-1 space-y-5">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Links</h1>
-          <span className="text-sm text-muted-foreground">
-            {links.filter((l) => l.is_active).length} active
-          </span>
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Links</h1>
+        <span className="text-sm text-muted-foreground">
+          {links.filter((l) => l.is_active).length} active
+        </span>
+      </div>
 
-        {/* Theme picker + Add link — compact row */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            {themes.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => updateProfile({ theme: theme.id })}
-                title={theme.label}
-                className={cn(
-                  "w-8 h-8 rounded-lg border transition-all shrink-0",
-                  theme.bg,
-                  profile.theme === theme.id
-                    ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
-                    : "opacity-70 hover:opacity-100 hover:scale-105"
-                )}
+      {/* Theme picker + Add link — compact row */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {themes.map((theme) => (
+            <button
+              key={theme.id}
+              onClick={() => updateProfile({ theme: theme.id })}
+              title={theme.label}
+              className={cn(
+                "w-8 h-8 rounded-lg border transition-all shrink-0",
+                theme.bg,
+                profile.theme === theme.id
+                  ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
+                  : "opacity-70 hover:opacity-100 hover:scale-105"
+              )}
+            />
+          ))}
+        </div>
+      </div>
+
+      <AddLinkForm onAdd={handleAdd} />
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={links.map((l) => l.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-2">
+            {links.map((link) => (
+              <LinkCard
+                key={link.id}
+                link={link}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
               />
             ))}
           </div>
+        </SortableContext>
+      </DndContext>
+
+      {links.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>No links yet. Add your first one above!</p>
         </div>
-
-        <AddLinkForm onAdd={handleAdd} />
-
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={links.map((l) => l.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-2">
-              {links.map((link) => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  onUpdate={handleUpdate}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-
-        {links.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>No links yet. Add your first one above!</p>
-          </div>
-        )}
-      </div>
-
-      {/* Divider */}
-      <div className="hidden lg:block w-px self-stretch bg-border/60" />
-
-      {/* Preview */}
-      <PhonePreview
-        profile={profile}
-        links={links}
-        avatarPreview={avatarPreview}
-      />
+      )}
     </div>
   );
 }

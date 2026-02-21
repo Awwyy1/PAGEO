@@ -1,4 +1,4 @@
-// Dashboard layout — sidebar + main content area
+// Dashboard layout — sidebar + main content area + persistent phone preview on all pages
 "use client";
 
 import Link from "next/link";
@@ -7,6 +7,8 @@ import { Link2, BarChart3, Settings, ExternalLink, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
 import { useRouter } from "next/navigation";
+import { PhonePreview } from "@/components/dashboard/phone-preview";
+import { QrCodeButton } from "@/components/dashboard/qr-code-modal";
 
 const navItems = [
   { href: "/dashboard", label: "Links", icon: Link2 },
@@ -21,7 +23,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { signOut, profile } = useProfile();
+  const { signOut, profile, links, avatarPreview } = useProfile();
   const publicUrl = `/${profile.username}`;
 
   return (
@@ -64,6 +66,7 @@ export default function DashboardLayout({
             <ExternalLink className="h-4 w-4" />
             View my page
           </Link>
+          <QrCodeButton username={profile.username} />
           <button
             onClick={async () => {
               await signOut();
@@ -84,12 +87,14 @@ export default function DashboardLayout({
           <Link href="/" className="text-lg font-bold">
             allme
           </Link>
-          <Link
-            href={publicUrl}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={publicUrl}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </div>
         </header>
 
         {/* Mobile nav */}
@@ -117,7 +122,20 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6">
+          <div className="flex gap-10 max-w-5xl mx-auto">
+            <div className="flex-1 min-w-0">{children}</div>
+            {/* Divider + Phone preview — visible on all dashboard pages */}
+            <div className="hidden lg:block w-px self-stretch bg-border/60" />
+            <div className="hidden lg:block">
+              <PhonePreview
+                profile={profile}
+                links={links}
+                avatarPreview={avatarPreview}
+              />
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

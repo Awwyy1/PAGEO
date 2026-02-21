@@ -18,6 +18,7 @@ import type { Profile, Link } from "@/types/database";
 interface ProfileContextType {
   profile: Profile;
   updateProfile: (data: Partial<Profile>) => void;
+  updateProfileLocal: (data: Partial<Profile>) => void;
   links: Link[];
   setLinks: Dispatch<SetStateAction<Link[]>>;
   addLink: (title: string, url: string) => Promise<void>;
@@ -104,6 +105,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update profile locally only (for live preview without DB calls)
+  const updateProfileLocal = useCallback(
+    (data: Partial<Profile>) => {
+      setProfile((prev) => ({ ...prev, ...data }));
+    },
+    []
+  );
 
   const updateProfile = useCallback(
     (data: Partial<Profile>) => {
@@ -229,6 +238,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       value={{
         profile,
         updateProfile,
+        updateProfileLocal,
         links,
         setLinks,
         addLink,

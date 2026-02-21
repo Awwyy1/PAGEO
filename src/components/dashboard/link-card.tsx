@@ -1,4 +1,4 @@
-// Single link card in the dashboard editor with edit/delete/toggle
+// Single link card in the dashboard editor with edit/delete/toggle + social icon
 "use client";
 
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { GripVertical, Pencil, Trash2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { getSocialIcon } from "@/lib/social-icons";
 import type { Link } from "@/types/database";
 
 interface LinkCardProps {
@@ -45,6 +46,8 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
     setUrl(link.url);
     setIsEditing(false);
   };
+
+  const social = getSocialIcon(link.url);
 
   return (
     <div
@@ -87,14 +90,26 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
             </div>
           </div>
         ) : (
-          <div>
-            <p className="font-medium truncate">{link.title}</p>
-            <p className="text-sm text-muted-foreground truncate">{link.url}</p>
-            {link.click_count > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {link.click_count} clicks
-              </p>
-            )}
+          <div className="flex items-center gap-3">
+            {/* Social icon badge */}
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+              style={{ backgroundColor: `${social.color}15` }}
+            >
+              <social.Icon
+                className="h-4 w-4"
+                style={{ color: social.color }}
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="font-medium truncate">{link.title}</p>
+              <p className="text-sm text-muted-foreground truncate">{link.url}</p>
+              {link.click_count > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {link.click_count} clicks
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>

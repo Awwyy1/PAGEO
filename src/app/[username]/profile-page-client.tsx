@@ -1,9 +1,10 @@
-// Client component for public profile — handles animations and click tracking
+// Client component for public profile — handles animations, click tracking, and social icons
 "use client";
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getSocialIcon } from "@/lib/social-icons";
 import type { Profile, Link } from "@/types/database";
 
 const themeBg: Record<string, string> = {
@@ -38,7 +39,6 @@ export function ProfilePageClient({ profile, links }: Props) {
   }, [profile.username]);
 
   const handleLinkClick = (linkId: string) => {
-    // Fire-and-forget click tracking via API
     fetch("/api/click", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -121,32 +121,43 @@ export function ProfilePageClient({ profile, links }: Props) {
           </motion.p>
         )}
 
-        {/* Links */}
+        {/* Links with social icons */}
         <div className="w-full space-y-3 mt-4">
-          {links.map((link, i) => (
-            <motion.a
-              key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => handleLinkClick(link.id)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.08 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={cn(
-                "flex items-center justify-center w-full rounded-2xl p-4 text-sm font-medium transition-shadow",
-                isGradient
-                  ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
-                  : theme === "dark"
-                    ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
-                    : "border bg-card shadow-sm hover:shadow-md"
-              )}
-            >
-              {link.title}
-            </motion.a>
-          ))}
+          {links.map((link, i) => {
+            const social = getSocialIcon(link.url);
+            return (
+              <motion.a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => handleLinkClick(link.id)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.08 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "flex items-center w-full rounded-2xl p-4 text-sm font-medium transition-shadow gap-3",
+                  isGradient
+                    ? "bg-white/15 text-white shadow-sm hover:shadow-md hover:bg-white/20 backdrop-blur"
+                    : theme === "dark"
+                      ? "bg-gray-800 border border-gray-700 text-gray-200 shadow-sm hover:shadow-md hover:bg-gray-700"
+                      : "border bg-card shadow-sm hover:shadow-md"
+                )}
+              >
+                <social.Icon
+                  className="h-5 w-5 shrink-0"
+                  style={{
+                    color: isGradient || theme === "dark"
+                      ? "rgba(255,255,255,0.7)"
+                      : social.color,
+                  }}
+                />
+                <span className="flex-1 text-center pr-8">{link.title}</span>
+              </motion.a>
+            );
+          })}
         </div>
 
         {links.length === 0 && (
