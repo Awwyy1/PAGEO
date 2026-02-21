@@ -1,12 +1,26 @@
 // Analytics page — real click stats from Supabase
 "use client";
 
+import { useEffect } from "react";
 import { useProfile } from "@/lib/profile-context";
-import { BarChart3, MousePointerClick, Eye, TrendingUp, ExternalLink } from "lucide-react";
+import { BarChart3, MousePointerClick, Eye, TrendingUp, ExternalLink, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export default function AnalyticsPage() {
-  const { profile, links } = useProfile();
+  const { profile, links, refreshData } = useProfile();
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Refresh data on mount to get latest analytics
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshData();
+    setRefreshing(false);
+  };
   const totalClicks = links.reduce((sum, l) => sum + l.click_count, 0);
   const activeLinks = links.filter((l) => l.is_active).length;
   const pageViews = profile.page_views || 0;
@@ -17,11 +31,21 @@ export default function AnalyticsPage() {
 
   return (
     <div className="max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Analytics</h1>
-        <p className="text-muted-foreground mt-1">
-          Track how your links are performing.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Analytics</h1>
+          <p className="text-muted-foreground mt-1">
+            Track how your links are performing.
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+        >
+          <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
+          Refresh
+        </button>
       </div>
 
       {/* Stats cards */}
