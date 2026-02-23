@@ -14,7 +14,8 @@ export default function PrivacyPage() {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-lg" />
             allme
           </Link>
           <div className="flex items-center gap-4">
@@ -89,7 +90,7 @@ export default function PrivacyPage() {
                 <li>
                   <strong>Payment data:</strong> if you subscribe to a paid plan,
                   payment information is processed by our third&#8209;party
-                  payment processor (Stripe). We do not store your full credit
+                  payment processor (Creem). We do not store your full credit
                   card number.
                 </li>
                 <li>
@@ -151,7 +152,7 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-5 space-y-1.5 mt-2 text-foreground/80">
                 <li>
                   <strong>Service providers:</strong> such as Supabase
-                  (authentication &amp; database), Stripe (payments), and
+                  (authentication &amp; database), Creem (payments), and
                   hosting providers that help us operate the platform.
                 </li>
                 <li>
@@ -270,8 +271,11 @@ export default function PrivacyPage() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold tracking-tight">allme</span>
-          <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+            allme
+          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link
               href="/pricing"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -290,9 +294,9 @@ export default function PrivacyPage() {
             >
               Terms
             </Link>
-            <p className="text-sm text-muted-foreground">
-              &copy; 2026 Allme. All rights reserved.
-            </p>
+            <span className="text-sm text-muted-foreground">
+              &copy; 2026 Allme
+            </span>
           </div>
         </div>
       </footer>

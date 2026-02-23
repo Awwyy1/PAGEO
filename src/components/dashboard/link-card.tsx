@@ -53,15 +53,14 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-start gap-3 rounded-2xl border bg-card p-4 transition-shadow ${
-        isDragging ? "shadow-lg opacity-50" : "shadow-sm"
-      }`}
+      className={`group flex items-center gap-3 rounded-2xl border bg-card p-4 transition-shadow ${isDragging ? "shadow-lg opacity-50" : "shadow-sm"
+        }`}
     >
       {/* Drag handle */}
       <button
         {...attributes}
         {...listeners}
-        className="mt-1 cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
         <GripVertical className="h-5 w-5" />
       </button>

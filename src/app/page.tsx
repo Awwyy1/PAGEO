@@ -33,7 +33,8 @@ export default function HomePage() {
       {/* ── Navbar ── */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-lg" />
             allme
           </Link>
           <div className="hidden sm:flex items-center gap-4">
@@ -246,6 +247,7 @@ export default function HomePage() {
                       "My Portfolio",
                       "GitHub",
                       "Twitter / X",
+                      "YouTube",
                       "Read my Blog",
                     ].map((title, i) => (
                       <motion.div
@@ -454,17 +456,14 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
-                emoji: "\uD83C\uDFA8",
                 title: "Creators & Influencers",
                 desc: "One link in your bio for all platforms. YouTube, TikTok, Instagram &mdash; everything in one place.",
               },
               {
-                emoji: "\uD83D\uDCBB",
                 title: "Developers & Freelancers",
                 desc: "Showcase your portfolio, GitHub, resume, and contact info with a clean, professional page.",
               },
               {
-                emoji: "\uD83C\uDFEA",
                 title: "Small Businesses",
                 desc: "Menu, booking, social media, reviews &mdash; give your customers everything they need instantly.",
               },
@@ -477,7 +476,6 @@ export default function HomePage() {
                 transition={{ delay: i * 0.1 }}
                 className="rounded-2xl border border-border/60 bg-card p-6"
               >
-                <div className="text-3xl mb-4">{item.emoji}</div>
                 <h3 className="font-semibold mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.desc}
@@ -519,8 +517,11 @@ export default function HomePage() {
       {/* ── Footer ── */}
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold tracking-tight">allme</span>
-          <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+            allme
+          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
@@ -530,9 +531,9 @@ export default function HomePage() {
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Terms
             </Link>
-            <p className="text-sm text-muted-foreground">
-              &copy; 2026 Allme. All rights reserved.
-            </p>
+            <span className="text-sm text-muted-foreground">
+              &copy; 2026 Allme
+            </span>
           </div>
         </div>
       </footer>
