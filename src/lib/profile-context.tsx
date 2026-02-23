@@ -12,8 +12,20 @@ import {
   type SetStateAction,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { mockProfile, mockLinks } from "@/lib/mock-data";
 import type { Profile, Link } from "@/types/database";
+
+const emptyProfile: Profile = {
+  id: "",
+  username: "",
+  display_name: null,
+  bio: null,
+  avatar_url: null,
+  theme: "light",
+  custom_colors: null,
+  plan: "free",
+  page_views: 0,
+  created_at: new Date().toISOString(),
+};
 
 interface ProfileContextType {
   profile: Profile;
@@ -37,8 +49,8 @@ const ProfileContext = createContext<ProfileContextType | null>(null);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const supabase = createClient();
-  const [profile, setProfile] = useState<Profile>(mockProfile);
-  const [links, setLinks] = useState<Link[]>(mockLinks);
+  const [profile, setProfile] = useState<Profile>(emptyProfile);
+  const [links, setLinks] = useState<Link[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -95,8 +107,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session?.user) {
         setUserId(null);
-        setProfile(mockProfile);
-        setLinks(mockLinks);
+        setProfile(emptyProfile);
+        setLinks([]);
         setAvatarPreview(null);
       }
     });
@@ -253,8 +265,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUserId(null);
-    setProfile(mockProfile);
-    setLinks(mockLinks);
+    setProfile(emptyProfile);
+    setLinks([]);
     setAvatarPreview(null);
   }, [supabase]);
 

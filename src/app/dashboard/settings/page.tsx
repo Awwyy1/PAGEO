@@ -7,7 +7,8 @@ import { useProfile } from "@/lib/profile-context";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Camera, Check, X, Loader2, AlertTriangle } from "lucide-react";
+import { Camera, Check, X, Loader2, AlertTriangle, Plus } from "lucide-react";
+import { AvatarEditor } from "@/components/dashboard/avatar-editor";
 import { cn } from "@/lib/utils";
 
 const RESERVED_USERNAMES = [
@@ -30,6 +31,7 @@ export default function SettingsPage() {
   const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("idle");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingFile, setEditingFile] = useState<File | null>(null);
 
   // Sync local state when real profile data loads from Supabase
   useEffect(() => {
@@ -117,13 +119,24 @@ export default function SettingsPage() {
       return;
     }
 
-    setAvatarFile(file);
+    // Open the crop/zoom editor
+    setEditingFile(file);
+    // Reset file input so re-selecting same file works
+    e.target.value = "";
+  };
+
+  const handleCropSave = (croppedBlob: Blob) => {
+    const croppedFile = new File([croppedBlob], "avatar.png", {
+      type: "image/png",
+    });
+    setAvatarFile(croppedFile);
 
     const reader = new FileReader();
     reader.onloadend = () => {
       setAvatarPreview(reader.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(croppedFile);
+    setEditingFile(null);
   };
 
   const handleSave = async () => {
@@ -199,6 +212,12 @@ export default function SettingsPage() {
             <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Camera className="h-5 w-5 text-white" />
             </div>
+            {/* Persistent upload indicator */}
+            {!avatarPreview && (
+              <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-card shadow-sm">
+                <Plus className="h-3 w-3 text-primary-foreground" />
+              </div>
+            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -228,6 +247,15 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Avatar crop/zoom editor modal */}
+      {editingFile && (
+        <AvatarEditor
+          file={editingFile}
+          onSave={handleCropSave}
+          onCancel={() => setEditingFile(null)}
+        />
+      )}
+
       {/* Error message */}
       {saveError && (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
@@ -251,11 +279,11 @@ export default function SettingsPage() {
                 className={cn(
                   "pr-9",
                   usernameStatus === "available" &&
-                    "border-emerald-500 focus-visible:ring-emerald-500",
+                  "border-emerald-500 focus-visible:ring-emerald-500",
                   usernameStatus === "taken" &&
-                    "border-destructive focus-visible:ring-destructive",
+                  "border-destructive focus-visible:ring-destructive",
                   (usernameStatus === "invalid" || usernameStatus === "plan_required") &&
-                    "border-destructive focus-visible:ring-destructive"
+                  "border-destructive focus-visible:ring-destructive"
                 )}
                 placeholder="yourname"
               />
@@ -270,8 +298,8 @@ export default function SettingsPage() {
                 {(usernameStatus === "taken" ||
                   usernameStatus === "invalid" ||
                   usernameStatus === "plan_required") && (
-                  <X className="h-4 w-4 text-destructive" />
-                )}
+                    <X className="h-4 w-4 text-destructive" />
+                  )}
               </div>
             </div>
           </div>
