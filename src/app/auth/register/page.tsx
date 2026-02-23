@@ -42,7 +42,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -55,6 +55,18 @@ export default function RegisterPage() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // Create profile row immediately so the dashboard has data on first load
+    if (signUpData.user) {
+      await supabase.from("profiles").insert({
+        id: signUpData.user.id,
+        username,
+        display_name: username,
+        bio: null,
+        avatar_url: null,
+        theme: "light",
+      });
     }
 
     router.push("/dashboard");
