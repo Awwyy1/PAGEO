@@ -452,9 +452,17 @@ export default function PricingPage() {
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-sm font-bold tracking-tight">allme</span>
-          <p className="text-sm text-muted-foreground">
-            &copy; 2026 Allme. All rights reserved.
-          </p>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              &copy; 2026 Allme. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
 
