@@ -122,6 +122,24 @@ export default function RegisterPage() {
               "Create account"
             )}
           </Button>
+
+          <p className="text-center text-xs text-muted-foreground mt-1">
+            By continuing, you agree to Allme&apos;s{" "}
+            <Link
+              href="/privacy"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/terms"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Terms of Service
+            </Link>
+            .
+          </p>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">

@@ -154,9 +154,9 @@ export default function PricingPage() {
       </nav>
 
       {/* Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute top-[600px] -right-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.03] blur-[100px]" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ backfaceVisibility: 'hidden' }}>
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.04] blur-[120px]" style={{ transform: 'translate3d(0,0,0)' }} />
+        <div className="absolute top-[600px] -right-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.03] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
       </div>
 
       {/* Header */}
@@ -441,7 +441,7 @@ export default function PricingPage() {
               href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Create your page
+              Create for FREE
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>

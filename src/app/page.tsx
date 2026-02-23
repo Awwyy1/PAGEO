@@ -104,10 +104,10 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative pt-36 pb-24 px-6">
         {/* Background glow */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary/[0.07] blur-[100px]" />
-          <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-purple-500/[0.05] blur-[100px]" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-pink-500/[0.04] blur-[100px]" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ backfaceVisibility: 'hidden' }}>
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary/[0.07] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
+          <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-purple-500/[0.05] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-pink-500/[0.04] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
         </div>
 
         <div className="max-w-6xl mx-auto relative">
@@ -166,7 +166,7 @@ export default function HomePage() {
                   href="/auth/register"
                   className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
                 >
-                  Create your page
+                  Create for FREE
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </motion.div>
@@ -200,7 +200,7 @@ export default function HomePage() {
             >
               <div className="relative">
                 {/* Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-violet-500/20 to-pink-500/20 blur-[60px] scale-125 rounded-full" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-violet-500/20 to-pink-500/20 blur-[60px] scale-125 rounded-full" style={{ transform: 'translate3d(0,0,0) scale(1.25)', backfaceVisibility: 'hidden' }} />
 
                 {/* Phone */}
                 <div className="relative w-[280px] sm:w-[300px] h-[560px] sm:h-[600px] rounded-[3rem] border-[6px] border-foreground/[0.08] bg-gradient-to-b from-background to-muted/30 overflow-hidden shadow-2xl shadow-black/[0.08]">
@@ -509,7 +509,7 @@ export default function HomePage() {
               href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Create your page
+              Create for FREE
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
