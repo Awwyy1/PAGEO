@@ -524,6 +524,12 @@ export default function HomePage() {
             <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms
+            </Link>
             <p className="text-sm text-muted-foreground">
               &copy; 2026 Allme. All rights reserved.
             </p>
