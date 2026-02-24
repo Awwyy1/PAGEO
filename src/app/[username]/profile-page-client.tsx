@@ -12,6 +12,10 @@ const themeBg: Record<string, string> = {
   ocean: "bg-blue-600 text-white",
   sunset: "bg-rose-500 text-white",
   forest: "bg-emerald-600 text-white",
+  midnight: "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white",
+  rose: "bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 text-gray-900",
+  cyber: "bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700 text-white",
+  minimal: "bg-stone-50 text-stone-900",
 };
 
 interface Props {
@@ -24,6 +28,13 @@ export function ProfilePageClient({ profile, links }: Props) {
   const isCustom = theme === "custom";
   const cc = profile.custom_colors;
   const isGradient = !isCustom && theme !== "light" && theme !== "dark";
+  const showBranding = profile.plan !== "business";
+
+  // Filter out scheduled links that haven't arrived yet
+  const visibleLinks = links.filter((link) => {
+    if (!link.scheduled_at) return true;
+    return new Date(link.scheduled_at) <= new Date();
+  });
 
   const initial = (
     profile.display_name ||
@@ -37,7 +48,7 @@ export function ProfilePageClient({ profile, links }: Props) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: profile.username }),
-    }).catch(() => {});
+    }).catch(() => { });
   }, [profile.username]);
 
   const handleLinkClick = (linkId: string) => {
@@ -50,7 +61,7 @@ export function ProfilePageClient({ profile, links }: Props) {
         headers: { "Content-Type": "application/json" },
         body: data,
         keepalive: true,
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 
@@ -144,7 +155,7 @@ export function ProfilePageClient({ profile, links }: Props) {
 
         {/* Links with social icons */}
         <div className="w-full space-y-3 mt-4">
-          {links.map((link, i) => {
+          {visibleLinks.map((link, i) => {
             const social = getSocialIcon(link.url);
             return (
               <motion.a
@@ -189,7 +200,7 @@ export function ProfilePageClient({ profile, links }: Props) {
           })}
         </div>
 
-        {links.length === 0 && (
+        {visibleLinks.length === 0 && (
           <p
             className={cn(
               "text-sm mt-8",
@@ -205,26 +216,28 @@ export function ProfilePageClient({ profile, links }: Props) {
           </p>
         )}
 
-        {/* Footer */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className={cn(
-            "mt-12 text-xs",
-            isCustom
-              ? ""
-              : isGradient || theme === "dark"
-                ? "text-white/40"
-                : "text-muted-foreground"
-          )}
-          style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
-        >
-          Made with{" "}
-          <a href="/" className="font-semibold hover:underline">
-            allme
-          </a>
-        </motion.p>
+        {/* Footer — Allme branding (hidden for Business) */}
+        {showBranding && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className={cn(
+              "mt-12 text-xs",
+              isCustom
+                ? ""
+                : isGradient || theme === "dark"
+                  ? "text-white/40"
+                  : "text-muted-foreground"
+            )}
+            style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
+          >
+            Made with{" "}
+            <a href="/" className="font-semibold hover:underline">
+              allme
+            </a>
+          </motion.p>
+        )}
       </div>
     </main>
   );

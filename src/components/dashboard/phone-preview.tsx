@@ -17,6 +17,10 @@ const themeBg: Record<string, string> = {
   ocean: "border-blue-500/30 bg-blue-600",
   sunset: "border-rose-400/30 bg-rose-500",
   forest: "border-emerald-500/30 bg-emerald-600",
+  midnight: "border-indigo-800/30 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900",
+  rose: "border-pink-300/30 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200",
+  cyber: "border-cyan-400/30 bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700",
+  minimal: "border-stone-300/30 bg-stone-50",
 };
 
 export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProps) {
@@ -25,6 +29,8 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
   const isCustom = theme === "custom";
   const cc = profile.custom_colors;
   const isGradient = !isCustom && theme !== "light" && theme !== "dark";
+  const isDarkText = theme === "rose" || theme === "minimal";
+  const showBranding = profile.plan !== "business";
 
   const initial = (
     profile.display_name ||
@@ -200,19 +206,23 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           )}
 
           {/* Footer */}
-          <p
-            className={cn(
-              "mt-auto pt-4 text-[10px]",
-              isCustom
-                ? ""
-                : isGradient || theme === "dark"
-                  ? "text-white/30"
-                  : "text-muted-foreground/50"
-            )}
-            style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
-          >
-            Powered by <span className="font-semibold">Allme</span>
-          </p>
+          {showBranding && (
+            <p
+              className={cn(
+                "mt-auto pt-4 text-[10px]",
+                isCustom
+                  ? ""
+                  : isDarkText
+                    ? "text-gray-600/50"
+                    : isGradient || theme === "dark"
+                      ? "text-white/30"
+                      : "text-muted-foreground/50"
+              )}
+              style={isCustom && cc ? { color: `${cc.text}40` } : undefined}
+            >
+              Powered by <span className="font-semibold">Allme</span>
+            </p>
+          )}
         </div>
       </div>
     </div>

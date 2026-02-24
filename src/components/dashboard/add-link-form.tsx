@@ -1,27 +1,41 @@
-// Form to add a new link
+// Form to add a new link — with optional scheduling for Pro/Biz
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface AddLinkFormProps {
-  onAdd: (title: string, url: string) => void;
+  onAdd: (title: string, url: string, scheduledAt?: string) => void;
+  canSchedule?: boolean;
+  onScheduleGate?: () => void;
 }
 
-export function AddLinkForm({ onAdd }: AddLinkFormProps) {
+export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddLinkFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [scheduledAt, setScheduledAt] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !url.trim()) return;
-    onAdd(title.trim(), url.trim());
+    onAdd(title.trim(), url.trim(), showSchedule && scheduledAt ? scheduledAt : undefined);
     setTitle("");
     setUrl("");
+    setScheduledAt("");
+    setShowSchedule(false);
     setIsOpen(false);
+  };
+
+  const handleScheduleClick = () => {
+    if (!canSchedule) {
+      onScheduleGate?.();
+      return;
+    }
+    setShowSchedule(!showSchedule);
   };
 
   if (!isOpen) {
@@ -54,10 +68,40 @@ export function AddLinkForm({ onAdd }: AddLinkFormProps) {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      <div className="flex gap-2">
+
+      {/* Schedule toggle */}
+      {showSchedule && (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+          <input
+            type="datetime-local"
+            value={scheduledAt}
+            onChange={(e) => setScheduledAt(e.target.value)}
+            min={new Date().toISOString().slice(0, 16)}
+            className="flex-1 h-9 rounded-lg border border-border bg-transparent px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          <button
+            type="button"
+            onClick={() => { setShowSchedule(false); setScheduledAt(""); }}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2">
         <Button type="submit" size="sm">
           <Plus className="h-3 w-3 mr-1" /> Add
         </Button>
+        <button
+          type="button"
+          onClick={handleScheduleClick}
+          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
+          <Calendar className="h-3.5 w-3.5" />
+          Schedule
+        </button>
         <Button
           type="button"
           size="sm"
@@ -66,6 +110,8 @@ export function AddLinkForm({ onAdd }: AddLinkFormProps) {
             setIsOpen(false);
             setTitle("");
             setUrl("");
+            setScheduledAt("");
+            setShowSchedule(false);
           }}
         >
           Cancel

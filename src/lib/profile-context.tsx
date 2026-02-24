@@ -33,7 +33,7 @@ interface ProfileContextType {
   updateProfileLocal: (data: Partial<Profile>) => void;
   links: Link[];
   setLinks: Dispatch<SetStateAction<Link[]>>;
-  addLink: (title: string, url: string) => Promise<void>;
+  addLink: (title: string, url: string, scheduledAt?: string) => Promise<void>;
   removeLink: (id: string) => Promise<void>;
   updateLink: (id: string, data: Partial<Link>) => Promise<void>;
   reorderLinks: (newLinks: Link[]) => Promise<void>;
@@ -191,7 +191,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 
   const addLink = useCallback(
-    async (title: string, url: string) => {
+    async (title: string, url: string, scheduledAt?: string) => {
       const position = links.length;
       const tempId = `temp_${Date.now()}`;
 
@@ -205,25 +205,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         position,
         is_active: true,
         click_count: 0,
+        scheduled_at: scheduledAt || null,
         created_at: new Date().toISOString(),
       };
       setLinks((prev) => [...prev, newLink]);
 
       if (userId) {
+        const insertData: Record<string, unknown> = {
+          profile_id: userId,
+          title,
+          url,
+          position,
+          is_active: true,
+        };
+        if (scheduledAt) {
+          insertData.scheduled_at = scheduledAt;
+        }
         const { data, error } = await supabase
           .from("links")
-          .insert({
-            profile_id: userId,
-            title,
-            url,
-            position,
-            is_active: true,
-          })
+          .insert(insertData)
           .select()
           .single();
 
         if (data) {
-          // Replace temp link with real one
           setLinks((prev) =>
             prev.map((l) => (l.id === tempId ? (data as Link) : l))
           );
