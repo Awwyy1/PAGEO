@@ -5,20 +5,32 @@ import { useState } from "react";
 import { QrCode, Download, X, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
+import type { Plan } from "@/types/database";
 
 interface QrCodeModalProps {
   username: string;
   variant?: "desktop" | "mobile";
+  plan?: Plan;
 }
 
-export function QrCodeButton({ username, variant = "desktop" }: QrCodeModalProps) {
+export function QrCodeButton({ username, variant = "desktop", plan = "free" }: QrCodeModalProps) {
   const [open, setOpen] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
+  const handleClick = () => {
+    if (plan === "free") {
+      setShowUpgrade(true);
+    } else {
+      setOpen(true);
+    }
+  };
 
   return (
     <>
       {variant === "mobile" ? (
         <button
-          onClick={() => setOpen(true)}
+          onClick={handleClick}
           className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           title="QR Code"
         >
@@ -26,7 +38,7 @@ export function QrCodeButton({ username, variant = "desktop" }: QrCodeModalProps
         </button>
       ) : (
         <button
-          onClick={() => setOpen(true)}
+          onClick={handleClick}
           className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
         >
           <QrCode className="h-4 w-4" />
@@ -35,6 +47,14 @@ export function QrCodeButton({ username, variant = "desktop" }: QrCodeModalProps
       )}
 
       {open && <QrCodeModal username={username} onClose={() => setOpen(false)} />}
+      {showUpgrade && (
+        <UpgradeModal
+          feature="QR Code"
+          requiredPlan="pro"
+          currentPlan={plan}
+          onClose={() => setShowUpgrade(false)}
+        />
+      )}
     </>
   );
 }

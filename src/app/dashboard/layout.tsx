@@ -89,7 +89,7 @@ export default function DashboardLayout({
             <ExternalLink className="h-4 w-4" />
             View my page
           </Link>
-          <QrCodeButton username={profile.username} />
+          <QrCodeButton username={profile.username} plan={profile.plan || "free"} />
           <button
             onClick={async () => {
               await signOut();
@@ -131,7 +131,7 @@ export default function DashboardLayout({
             >
               <ExternalLink className="h-4 w-4" />
             </Link>
-            <QrCodeButton username={profile.username} variant="mobile" />
+            <QrCodeButton username={profile.username} variant="mobile" plan={profile.plan || "free"} />
             <button
               onClick={async () => {
                 await signOut();

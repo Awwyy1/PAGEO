@@ -15,7 +15,7 @@ export type Profile = {
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
-  theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "custom";
+  theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "midnight" | "rose" | "cyber" | "minimal" | "custom";
   custom_colors: CustomColors | null;
   plan: Plan;
   page_views: number;
@@ -31,6 +31,7 @@ export type Link = {
   position: number;
   is_active: boolean;
   click_count: number;
+  scheduled_at: string | null;
   created_at: string;
 };
 
