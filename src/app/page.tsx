@@ -33,7 +33,8 @@ export default function HomePage() {
       {/* ── Navbar ── */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-lg" />
             allme
           </Link>
           <div className="hidden sm:flex items-center gap-4">
@@ -104,10 +105,10 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative pt-36 pb-24 px-6">
         {/* Background glow */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary/[0.07] blur-[100px]" />
-          <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-purple-500/[0.05] blur-[100px]" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-pink-500/[0.04] blur-[100px]" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ backfaceVisibility: 'hidden' }}>
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary/[0.07] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
+          <div className="absolute top-60 -left-40 w-[500px] h-[500px] rounded-full bg-purple-500/[0.05] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-pink-500/[0.04] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
         </div>
 
         <div className="max-w-6xl mx-auto relative">
@@ -166,7 +167,7 @@ export default function HomePage() {
                   href="/auth/register"
                   className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
                 >
-                  Create your page
+                  Create for FREE
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </motion.div>
@@ -200,7 +201,7 @@ export default function HomePage() {
             >
               <div className="relative">
                 {/* Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-violet-500/20 to-pink-500/20 blur-[60px] scale-125 rounded-full" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-violet-500/20 to-pink-500/20 blur-[60px] scale-125 rounded-full" style={{ transform: 'translate3d(0,0,0) scale(1.25)', backfaceVisibility: 'hidden' }} />
 
                 {/* Phone */}
                 <div className="relative w-[280px] sm:w-[300px] h-[560px] sm:h-[600px] rounded-[3rem] border-[6px] border-foreground/[0.08] bg-gradient-to-b from-background to-muted/30 overflow-hidden shadow-2xl shadow-black/[0.08]">
@@ -246,6 +247,7 @@ export default function HomePage() {
                       "My Portfolio",
                       "GitHub",
                       "Twitter / X",
+                      "YouTube",
                       "Read my Blog",
                     ].map((title, i) => (
                       <motion.div
@@ -454,17 +456,14 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
-                emoji: "\uD83C\uDFA8",
                 title: "Creators & Influencers",
                 desc: "One link in your bio for all platforms. YouTube, TikTok, Instagram &mdash; everything in one place.",
               },
               {
-                emoji: "\uD83D\uDCBB",
                 title: "Developers & Freelancers",
                 desc: "Showcase your portfolio, GitHub, resume, and contact info with a clean, professional page.",
               },
               {
-                emoji: "\uD83C\uDFEA",
                 title: "Small Businesses",
                 desc: "Menu, booking, social media, reviews &mdash; give your customers everything they need instantly.",
               },
@@ -477,7 +476,6 @@ export default function HomePage() {
                 transition={{ delay: i * 0.1 }}
                 className="rounded-2xl border border-border/60 bg-card p-6"
               >
-                <div className="text-3xl mb-4">{item.emoji}</div>
                 <h3 className="font-semibold mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.desc}
@@ -509,7 +507,7 @@ export default function HomePage() {
               href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Create your page
+              Create for FREE
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -519,14 +517,23 @@ export default function HomePage() {
       {/* ── Footer ── */}
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold tracking-tight">allme</span>
-          <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+            allme
+          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
             <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
-            <p className="text-sm text-muted-foreground">
-              &copy; 2026 Allme. All rights reserved.
-            </p>
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              &copy; 2026 Allme
+            </span>
           </div>
         </div>
       </footer>

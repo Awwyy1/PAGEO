@@ -1,4 +1,4 @@
-// API route to delete user account — removes profile, links, avatar, and auth user
+// API route to delete user account — removes profile, links, avatar, and signs out
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
@@ -13,31 +13,37 @@ export async function DELETE() {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  // 1. Delete avatar files from storage
-  const { data: avatarFiles } = await supabase.storage
+  const errors: string[] = [];
+
+  // 1. Delete avatar from storage (stored as "userId.avatar")
+  const { error: avatarErr } = await supabase.storage
     .from("avatars")
-    .list(user.id);
+    .remove([`${user.id}.avatar`]);
+  if (avatarErr) errors.push(`Avatar: ${avatarErr.message}`);
 
-  if (avatarFiles && avatarFiles.length > 0) {
-    await supabase.storage
-      .from("avatars")
-      .remove(avatarFiles.map((f) => `${user.id}/${f.name}`));
-  }
-
-  // 2. Delete links (cascade from profile should handle this, but be explicit)
-  await supabase.from("links").delete().eq("profile_id", user.id);
+  // 2. Delete links
+  const { error: linksErr } = await supabase
+    .from("links")
+    .delete()
+    .eq("profile_id", user.id);
+  if (linksErr) errors.push(`Links: ${linksErr.message}`);
 
   // 3. Delete profile
-  await supabase.from("profiles").delete().eq("id", user.id);
+  const { error: profileErr } = await supabase
+    .from("profiles")
+    .delete()
+    .eq("id", user.id);
+  if (profileErr) errors.push(`Profile: ${profileErr.message}`);
 
-  // 4. Delete auth user via admin — need service role for this
-  // Since we don't have service_role key on client, we use the user's own session
-  // to sign out. The profile + links are already deleted by cascade.
-  // The auth.users entry will remain but with no profile data.
-  // For full deletion, use Supabase dashboard or add service_role key.
-
-  // Sign out the user
+  // 4. Sign out the user
   await supabase.auth.signOut();
+
+  if (errors.length > 0) {
+    return NextResponse.json(
+      { error: `Partial deletion: ${errors.join("; ")}. Contact support to fully remove your data.` },
+      { status: 207 }
+    );
+  }
 
   return NextResponse.json({ success: true });
 }

@@ -20,9 +20,11 @@ import {
 import { useProfile } from "@/lib/profile-context";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { AddLinkForm } from "@/components/dashboard/add-link-form";
-import { Palette } from "lucide-react";
+import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
+import { getPlanLimits } from "@/lib/plan-config";
+import { Palette, Lock, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Link, CustomColors } from "@/types/database";
+import type { Link, CustomColors, Plan } from "@/types/database";
 import type { Profile } from "@/types/database";
 
 const DEFAULT_CUSTOM: CustomColors = {
@@ -32,44 +34,82 @@ const DEFAULT_CUSTOM: CustomColors = {
   buttonText: "#ffffff",
 };
 
-const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: string }[] = [
+const themes: { id: Profile["theme"]; label: string; bg: string; activeBorder: string; minPlanIndex: number }[] = [
+  // Free themes (0-2)
   {
     id: "light",
     label: "Light",
     bg: "bg-white border-gray-200",
     activeBorder: "ring-gray-400",
+    minPlanIndex: 0,
   },
   {
     id: "dark",
     label: "Dark",
     bg: "bg-gray-900 border-gray-700",
     activeBorder: "ring-gray-500",
+    minPlanIndex: 0,
   },
   {
     id: "gradient",
     label: "Gradient",
     bg: "bg-gradient-to-br from-violet-500 via-indigo-500 to-purple-600 border-violet-400",
     activeBorder: "ring-violet-400",
+    minPlanIndex: 0,
   },
+  // Pro themes (3-9)
   {
     id: "ocean",
     label: "Ocean",
     bg: "bg-blue-600 border-blue-500",
     activeBorder: "ring-blue-400",
+    minPlanIndex: 1,
   },
   {
     id: "sunset",
     label: "Sunset",
     bg: "bg-rose-500 border-rose-400",
     activeBorder: "ring-rose-400",
+    minPlanIndex: 1,
   },
   {
     id: "forest",
     label: "Forest",
     bg: "bg-emerald-600 border-emerald-500",
     activeBorder: "ring-emerald-400",
+    minPlanIndex: 1,
+  },
+  {
+    id: "midnight",
+    label: "Midnight",
+    bg: "bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-indigo-800",
+    activeBorder: "ring-indigo-600",
+    minPlanIndex: 1,
+  },
+  {
+    id: "rose",
+    label: "Rosé",
+    bg: "bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 border-pink-300",
+    activeBorder: "ring-pink-400",
+    minPlanIndex: 1,
+  },
+  {
+    id: "cyber",
+    label: "Cyber",
+    bg: "bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-700 border-cyan-400",
+    activeBorder: "ring-cyan-400",
+    minPlanIndex: 1,
+  },
+  {
+    id: "minimal",
+    label: "Minimal",
+    bg: "bg-stone-50 border-stone-300",
+    activeBorder: "ring-stone-400",
+    minPlanIndex: 1,
   },
 ];
+
+const planIndex: Record<Plan, number> = { free: 0, pro: 1, business: 2 };
 
 function ColorInput({
   label,
@@ -139,6 +179,12 @@ function ColorInput({
 export default function DashboardPage() {
   const { profile, updateProfile, links, addLink, removeLink, updateLink, reorderLinks } = useProfile();
   const [showCustom, setShowCustom] = useState(profile.theme === "custom");
+  const [upgradeModal, setUpgradeModal] = useState<{ feature: string; plan: Plan } | null>(null);
+
+  const currentPlan = profile.plan || "free";
+  const limits = getPlanLimits(currentPlan);
+  const currentPlanIdx = planIndex[currentPlan];
+  const atLinkLimit = links.length >= limits.maxLinks;
 
   const colors = profile.custom_colors || DEFAULT_CUSTOM;
 
@@ -180,8 +226,8 @@ export default function DashboardPage() {
   );
 
   const handleAdd = useCallback(
-    (title: string, url: string) => {
-      addLink(title, url);
+    (title: string, url: string, scheduledAt?: string) => {
+      addLink(title, url, scheduledAt);
     },
     [addLink]
   );
@@ -192,8 +238,21 @@ export default function DashboardPage() {
   };
 
   const handleSelectCustom = () => {
+    if (currentPlan !== "business") {
+      setUpgradeModal({ feature: "Custom colors", plan: "business" });
+      return;
+    }
     setShowCustom(true);
     updateProfile({ theme: "custom", custom_colors: colors });
+  };
+
+  const handleThemeClick = (theme: typeof themes[0]) => {
+    if (theme.minPlanIndex > currentPlanIdx) {
+      setUpgradeModal({ feature: `${theme.label} theme`, plan: theme.minPlanIndex === 1 ? "pro" : "business" });
+      return;
+    }
+    updateProfile({ theme: theme.id });
+    setShowCustom(false);
   };
 
   return (
@@ -208,24 +267,31 @@ export default function DashboardPage() {
       {/* Theme picker */}
       <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            {themes.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => {
-                  updateProfile({ theme: theme.id });
-                  setShowCustom(false);
-                }}
-                title={theme.label}
-                className={cn(
-                  "w-8 h-8 rounded-lg border transition-all shrink-0",
-                  theme.bg,
-                  profile.theme === theme.id
-                    ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
-                    : "opacity-70 hover:opacity-100 hover:scale-105"
-                )}
-              />
-            ))}
+          <div className="flex items-center gap-2 flex-wrap">
+            {themes.map((theme) => {
+              const locked = theme.minPlanIndex > currentPlanIdx;
+              return (
+                <button
+                  key={theme.id}
+                  onClick={() => handleThemeClick(theme)}
+                  title={locked ? `${theme.label} (${theme.minPlanIndex === 1 ? "Pro" : "Business"})` : theme.label}
+                  className={cn(
+                    "w-8 h-8 rounded-lg border transition-all shrink-0 relative",
+                    theme.bg,
+                    locked && "opacity-40",
+                    profile.theme === theme.id && !locked
+                      ? "ring-2 ring-offset-1 ring-offset-background " + theme.activeBorder + " scale-110"
+                      : !locked && "opacity-70 hover:opacity-100 hover:scale-105"
+                  )}
+                >
+                  {locked && (
+                    <div className="absolute inset-0 rounded-lg flex items-center justify-center bg-black/30">
+                      <Lock className="h-3 w-3 text-white" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
             {/* Custom theme button */}
             <button
               onClick={handleSelectCustom}
@@ -284,7 +350,27 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <AddLinkForm onAdd={handleAdd} />
+      {/* Add link — with limit check */}
+      {atLinkLimit ? (
+        <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            You&apos;ve reached the {limits.maxLinks}-link limit on the {currentPlan === "free" ? "Free" : "Pro"} plan.
+          </p>
+          <button
+            onClick={() => setUpgradeModal({ feature: "More links", plan: currentPlan === "free" ? "pro" : "business" })}
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+          >
+            <Crown className="h-3.5 w-3.5" />
+            Upgrade for more
+          </button>
+        </div>
+      ) : (
+        <AddLinkForm
+          onAdd={handleAdd}
+          canSchedule={limits.hasScheduledLinks}
+          onScheduleGate={() => setUpgradeModal({ feature: "Scheduled links", plan: "pro" })}
+        />
+      )}
 
       <DndContext
         sensors={sensors}
@@ -312,6 +398,16 @@ export default function DashboardPage() {
         <div className="text-center py-12 text-muted-foreground">
           <p>No links yet. Add your first one above!</p>
         </div>
+      )}
+
+      {/* Upgrade modal */}
+      {upgradeModal && (
+        <UpgradeModal
+          feature={upgradeModal.feature}
+          requiredPlan={upgradeModal.plan}
+          currentPlan={currentPlan}
+          onClose={() => setUpgradeModal(null)}
+        />
       )}
     </div>
   );

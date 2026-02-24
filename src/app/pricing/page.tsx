@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X as XIcon, Sparkles, Crown, Building2, ArrowRight, Menu } from "lucide-react";
+import { ArrowLeft, Check, X as XIcon, ArrowRight, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { PromoCodeModal } from "@/components/promo-code-modal";
@@ -23,68 +23,62 @@ const plans = [
   {
     id: "free",
     name: "Free",
-    icon: Sparkles,
     desc: "Everything you need to get started.",
     price: { monthly: 0, yearly: 0 },
     cta: "Create free",
     ctaHref: "/auth/register",
     highlighted: false,
     features: [
-      { text: "Up to 10 links", included: true },
+      { text: "Up to 5 links", included: true },
       { text: "3 themes (Light, Dark, Gradient)", included: true },
       { text: "Basic analytics (total clicks)", included: true },
       { text: "Profile avatar & bio", included: true },
       { text: "allme.site/username URL", included: true },
       { text: "Custom OG preview", included: false },
-      { text: "Remove Allme branding", included: false },
       { text: "Scheduled links", included: false },
       { text: "QR code", included: false },
-      { text: "Custom domain", included: false },
+      { text: "Remove Allme branding", included: false },
     ],
   },
   {
     id: "pro",
     name: "Pro",
-    icon: Crown,
     desc: "For creators who want to stand out.",
-    price: { monthly: 5, yearly: 48 },
+    price: { monthly: 3.99, yearly: 39.99 },
     cta: "Upgrade to Pro",
     ctaHref: "/auth/register",
     highlighted: true,
     badge: "Most popular",
     features: [
-      { text: "Unlimited links", included: true },
-      { text: "All 6 themes + custom colors", included: true },
+      { text: "Up to 15 links", included: true },
+      { text: "10 premium themes", included: true },
       { text: "Full analytics (CTR, charts, daily)", included: true },
       { text: "Profile avatar & bio", included: true },
       { text: "allme.site/username URL", included: true },
       { text: "Custom OG preview", included: true },
-      { text: "Remove Allme branding", included: true },
       { text: "Scheduled links", included: true },
       { text: "QR code", included: true },
-      { text: "Custom domain", included: false },
+      { text: "Remove Allme branding", included: false },
     ],
   },
   {
     id: "business",
     name: "Business",
-    icon: Building2,
     desc: "Full control for brands and teams.",
-    price: { monthly: 15, yearly: 144 },
+    price: { monthly: 9.99, yearly: 99.99 },
     cta: "Go Business",
     ctaHref: "/auth/register",
     highlighted: false,
     features: [
       { text: "Unlimited links", included: true },
-      { text: "All themes + custom CSS", included: true },
+      { text: "All themes + custom colors", included: true },
       { text: "Full analytics + CSV export", included: true },
       { text: "Profile avatar & bio", included: true },
       { text: "allme.site/username URL", included: true },
       { text: "Custom OG preview", included: true },
-      { text: "Remove Allme branding", included: true },
       { text: "Scheduled links", included: true },
       { text: "QR code", included: true },
-      { text: "Custom domain", included: true },
+      { text: "Remove Allme branding", included: true },
     ],
   },
 ];
@@ -99,7 +93,8 @@ export default function PricingPage() {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-lg" />
             allme
           </Link>
           <div className="hidden sm:flex items-center gap-4">
@@ -154,9 +149,9 @@ export default function PricingPage() {
       </nav>
 
       {/* Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute top-[600px] -right-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.03] blur-[100px]" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ backfaceVisibility: 'hidden' }}>
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-primary/[0.04] blur-[120px]" style={{ transform: 'translate3d(0,0,0)' }} />
+        <div className="absolute top-[600px] -right-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.03] blur-[100px]" style={{ transform: 'translate3d(0,0,0)' }} />
       </div>
 
       {/* Header */}
@@ -239,7 +234,9 @@ export default function PricingPage() {
           >
             {plans.map((plan) => {
               const price = plan.price[billing];
-              const perMonth = billing === "yearly" && price > 0 ? (price / 12).toFixed(0) : price;
+              const perMonth = billing === "yearly" && price > 0
+                ? (price / 12).toFixed(2).replace(/\.00$/, "")
+                : price;
 
               return (
                 <motion.div
@@ -255,8 +252,7 @@ export default function PricingPage() {
                   {/* Badge */}
                   {plan.badge && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-primary via-violet-500 to-pink-500 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-primary/25">
-                        <Sparkles className="h-3 w-3" />
+                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-primary via-violet-500 to-pink-500 px-4 py-1 text-xs font-semibold text-white shadow-lg shadow-primary/25">
                         {plan.badge}
                       </span>
                     </div>
@@ -264,17 +260,6 @@ export default function PricingPage() {
 
                   {/* Header */}
                   <div className="mb-6">
-                    <div className={cn(
-                      "w-11 h-11 rounded-2xl flex items-center justify-center mb-4",
-                      plan.highlighted
-                        ? "bg-primary/15"
-                        : "bg-muted"
-                    )}>
-                      <plan.icon className={cn(
-                        "h-5 w-5",
-                        plan.highlighted ? "text-primary" : "text-muted-foreground"
-                      )} />
-                    </div>
                     <h3 className="text-xl font-bold">{plan.name}</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       {plan.desc}
@@ -395,7 +380,7 @@ export default function PricingPage() {
               },
               {
                 q: "What happens to my links if I downgrade?",
-                a: "Your links will remain, but you'll be limited to 10 active links on the Free plan. You can choose which ones to keep active.",
+                a: "Your links will remain, but you'll be limited to 5 active links on the Free plan. You can choose which ones to keep active.",
               },
               {
                 q: "Do you offer refunds?",
@@ -403,7 +388,11 @@ export default function PricingPage() {
               },
               {
                 q: "What payment methods do you accept?",
-                a: "We accept all major credit cards via Stripe. All payments are secure and encrypted.",
+                a: "We accept all major credit cards via Creem. All payments are secure and encrypted.",
+              },
+              {
+                q: "What happens to my data if I delete my account?",
+                a: "All your data — profile, links, avatar, and analytics — is deleted instantly and permanently. We don't keep any backups of deleted accounts.",
               },
             ].map((faq) => (
               <motion.div
@@ -441,7 +430,7 @@ export default function PricingPage() {
               href="/auth/register"
               className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
             >
-              Create your page
+              Create for FREE
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -451,10 +440,21 @@ export default function PricingPage() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold tracking-tight">allme</span>
-          <p className="text-sm text-muted-foreground">
-            &copy; 2026 Allme. All rights reserved.
-          </p>
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
+            <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+            allme
+          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              &copy; 2026 Allme
+            </span>
+          </div>
         </div>
       </footer>
 

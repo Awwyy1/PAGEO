@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Trash2, Check, X } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Check, X, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -53,15 +53,14 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-start gap-3 rounded-2xl border bg-card p-4 transition-shadow ${
-        isDragging ? "shadow-lg opacity-50" : "shadow-sm"
-      }`}
+      className={`group flex items-center gap-3 rounded-2xl border bg-card p-4 transition-shadow ${isDragging ? "shadow-lg opacity-50" : "shadow-sm"
+        }`}
     >
       {/* Drag handle */}
       <button
         {...attributes}
         {...listeners}
-        className="mt-1 cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
+        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
         <GripVertical className="h-5 w-5" />
       </button>
@@ -104,11 +103,20 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
             <div className="min-w-0">
               <p className="font-medium truncate">{link.title}</p>
               <p className="text-sm text-muted-foreground truncate">{link.url}</p>
-              {link.click_count > 0 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {link.click_count} clicks
-                </p>
-              )}
+              <div className="flex items-center gap-3 mt-1">
+                {link.scheduled_at && (
+                  <span className="inline-flex items-center gap-1 text-xs text-amber-600">
+                    <Calendar className="h-3 w-3" />
+                    {new Date(link.scheduled_at) > new Date() ? "Scheduled: " : "Published: "}
+                    {new Date(link.scheduled_at).toLocaleDateString()} {new Date(link.scheduled_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
+                {link.click_count > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    {link.click_count} clicks
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}

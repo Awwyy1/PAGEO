@@ -24,6 +24,7 @@ export const mockLinks: Link[] = [
     position: 0,
     is_active: true,
     click_count: 142,
+    scheduled_at: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -35,6 +36,7 @@ export const mockLinks: Link[] = [
     position: 1,
     is_active: true,
     click_count: 89,
+    scheduled_at: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -46,6 +48,7 @@ export const mockLinks: Link[] = [
     position: 2,
     is_active: true,
     click_count: 234,
+    scheduled_at: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -57,6 +60,7 @@ export const mockLinks: Link[] = [
     position: 3,
     is_active: true,
     click_count: 56,
+    scheduled_at: null,
     created_at: new Date().toISOString(),
   },
   {
@@ -68,6 +72,7 @@ export const mockLinks: Link[] = [
     position: 4,
     is_active: false,
     click_count: 12,
+    scheduled_at: null,
     created_at: new Date().toISOString(),
   },
 ];

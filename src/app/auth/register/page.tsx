@@ -1,13 +1,22 @@
 // Register page — create account with email + password + pick username
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const RESERVED_USERNAMES = [
+  "admin", "demo", "allme", "test", "user", "help",
+  "support", "about", "blog", "api", "app", "www", "mail",
+  "dashboard", "auth", "pricing", "privacy", "terms",
+];
+
+type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "too_short";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,32 +26,69 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("idle");
+
+  // Debounced real-time username availability check
+  useEffect(() => {
+    if (!username) {
+      setUsernameStatus("idle");
+      return;
+    }
+
+    if (username.length < 3) {
+      setUsernameStatus("too_short");
+      return;
+    }
+
+    if (username.length > 30) {
+      setUsernameStatus("invalid");
+      return;
+    }
+
+    if (!/^[a-z0-9_-]+$/.test(username)) {
+      setUsernameStatus("invalid");
+      return;
+    }
+
+    if (RESERVED_USERNAMES.includes(username)) {
+      setUsernameStatus("taken");
+      return;
+    }
+
+    setUsernameStatus("checking");
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/username-check?username=${encodeURIComponent(username)}`);
+        const json = await res.json();
+        setUsernameStatus(json.available ? "available" : "taken");
+      } catch {
+        // Network error — let user proceed, server will validate on submit
+        setUsernameStatus("available");
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [username]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const canSubmit =
+    usernameStatus === "available" &&
+    email.length > 0 &&
+    password.length >= 6 &&
+    !loading;
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!/^[a-z0-9_-]{2,30}$/.test(username)) {
-      setError("Username must be 2-30 chars: lowercase letters, numbers, hyphens, underscores.");
+    if (usernameStatus !== "available") {
+      setError("Please choose an available username.");
       return;
     }
 
     setLoading(true);
 
-    // Check username availability
-    const { data: existing } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("username", username)
-      .maybeSingle();
-
-    if (existing) {
-      setError("This username is already taken.");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -55,6 +101,19 @@ export default function RegisterPage() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // Create profile row immediately so the dashboard has data on first load
+    if (signUpData.user) {
+      await supabase.from("profiles").insert({
+        id: signUpData.user.id,
+        username,
+        display_name: username,
+        email,
+        bio: null,
+        avatar_url: null,
+        theme: "light",
+      });
     }
 
     router.push("/dashboard");
@@ -86,12 +145,56 @@ export default function RegisterPage() {
               <span className="text-sm text-muted-foreground whitespace-nowrap">
                 allme.site/
               </span>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                placeholder="yourname"
-                required
-              />
+              <div className="relative flex-1">
+                <Input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+                  placeholder="yourname"
+                  required
+                  className={cn(
+                    "pr-9",
+                    usernameStatus === "available" &&
+                    "border-emerald-500 focus-visible:ring-emerald-500",
+                    (usernameStatus === "taken" || usernameStatus === "invalid") &&
+                    "border-destructive focus-visible:ring-destructive"
+                  )}
+                />
+                {/* Status icon */}
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                  {usernameStatus === "checking" && (
+                    <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                  )}
+                  {usernameStatus === "available" && (
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  )}
+                  {(usernameStatus === "taken" || usernameStatus === "invalid") && (
+                    <X className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Status message */}
+            <div className="min-h-[18px] ml-[calc(4.5rem+0.5rem)]">
+              {usernameStatus === "available" && (
+                <p className="text-xs text-emerald-600">
+                  allme.site/{username} is yours!
+                </p>
+              )}
+              {usernameStatus === "taken" && (
+                <p className="text-xs text-destructive">
+                  This username is already taken.
+                </p>
+              )}
+              {usernameStatus === "too_short" && username.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  At least 3 characters required.
+                </p>
+              )}
+              {usernameStatus === "invalid" && (
+                <p className="text-xs text-destructive">
+                  Only lowercase letters, numbers, hyphens, and underscores.
+                </p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
@@ -115,13 +218,31 @@ export default function RegisterPage() {
               minLength={6}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={!canSubmit}>
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               "Create account"
             )}
           </Button>
+
+          <p className="text-center text-xs text-muted-foreground mt-1">
+            By continuing, you agree to Allme&apos;s{" "}
+            <Link
+              href="/privacy"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/terms"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Terms of Service
+            </Link>
+            .
+          </p>
         </form>
 
         <p className="text-center text-sm text-muted-foreground">

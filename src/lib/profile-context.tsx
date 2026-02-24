@@ -12,8 +12,20 @@ import {
   type SetStateAction,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { mockProfile, mockLinks } from "@/lib/mock-data";
 import type { Profile, Link } from "@/types/database";
+
+const emptyProfile: Profile = {
+  id: "",
+  username: "",
+  display_name: null,
+  bio: null,
+  avatar_url: null,
+  theme: "light",
+  custom_colors: null,
+  plan: "free",
+  page_views: 0,
+  created_at: new Date().toISOString(),
+};
 
 interface ProfileContextType {
   profile: Profile;
@@ -21,7 +33,7 @@ interface ProfileContextType {
   updateProfileLocal: (data: Partial<Profile>) => void;
   links: Link[];
   setLinks: Dispatch<SetStateAction<Link[]>>;
-  addLink: (title: string, url: string) => Promise<void>;
+  addLink: (title: string, url: string, scheduledAt?: string) => Promise<void>;
   removeLink: (id: string) => Promise<void>;
   updateLink: (id: string, data: Partial<Link>) => Promise<void>;
   reorderLinks: (newLinks: Link[]) => Promise<void>;
@@ -37,17 +49,92 @@ const ProfileContext = createContext<ProfileContextType | null>(null);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const supabase = createClient();
-  const [profile, setProfile] = useState<Profile>(mockProfile);
-  const [links, setLinks] = useState<Link[]>(mockLinks);
+  const [profile, setProfile] = useState<Profile>(emptyProfile);
+  const [links, setLinks] = useState<Link[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Load user data from Supabase on mount
+  // Core data loader — fetches or creates profile + links for a given user
+  const loadUserData = useCallback(
+    async (uid: string, userMeta?: Record<string, unknown>) => {
+      setUserId(uid);
+
+      try {
+        // Load profile
+        let { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", uid)
+          .maybeSingle();
+
+
+        if (!profileData) {
+          // Profile doesn't exist yet — create it from auth metadata
+          const username =
+            (userMeta?.username as string) ||
+            (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
+            `user_${uid.slice(0, 8)}`;
+
+          const { error: upsertErr } = await supabase.from("profiles").upsert(
+            {
+              id: uid,
+              username,
+              display_name: (userMeta?.full_name as string) || username,
+              bio: null,
+              avatar_url: (userMeta?.avatar_url as string) || null,
+              theme: "light",
+            },
+            { onConflict: "id" }
+          );
+          if (upsertErr) console.error("Profile upsert failed:", upsertErr.message);
+
+          // Fetch the created profile
+          const { data: retryData } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", uid)
+            .maybeSingle();
+          profileData = retryData;
+        }
+
+        if (profileData) {
+          setProfile(profileData as Profile);
+          if (profileData.avatar_url) {
+            setAvatarPreview(profileData.avatar_url);
+          }
+        } else {
+          console.error("Could not load or create profile for user:", uid);
+        }
+
+        // Load links
+        const { data: linksData, error: linksErr } = await supabase
+          .from("links")
+          .select("*")
+          .eq("profile_id", uid)
+          .order("position", { ascending: true });
+
+        if (linksErr) {
+          console.error("Links query failed:", linksErr.message);
+        }
+        if (linksData) {
+          // Ensure scheduled_at has a default even if column doesn't exist in DB
+          setLinks(linksData.map((l: Record<string, unknown>) => ({ scheduled_at: null, ...l })) as Link[]);
+        }
+      } catch (err) {
+        console.error("loadUserData unexpected error:", err);
+      }
+
+      setIsLoading(false);
+    },
+    [supabase] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  // Load on mount + react to auth state changes
   useEffect(() => {
     let mounted = true;
 
-    async function load() {
+    async function init() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -57,46 +144,25 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setUserId(user.id);
-
-      // Load profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileData && mounted) {
-        setProfile(profileData as Profile);
-        if (profileData.avatar_url) {
-          setAvatarPreview(profileData.avatar_url);
-        }
-      }
-
-      // Load links
-      const { data: linksData } = await supabase
-        .from("links")
-        .select("*")
-        .eq("profile_id", user.id)
-        .order("position", { ascending: true });
-
-      if (linksData && mounted) {
-        setLinks(linksData as Link[]);
-      }
-
-      if (mounted) setIsLoading(false);
+      await loadUserData(user.id, user.user_metadata);
     }
 
-    load();
+    init();
 
-    // Listen for auth changes
+    // Listen for auth changes (login, logout, token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        if (session?.user) {
+          await loadUserData(session.user.id, session.user.user_metadata);
+        }
+      } else if (event === "SIGNED_OUT") {
         setUserId(null);
-        setProfile(mockProfile);
-        setLinks(mockLinks);
+        setProfile(emptyProfile);
+        setLinks([]);
         setAvatarPreview(null);
       }
     });
@@ -105,7 +171,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadUserData, supabase]);
 
   // Update profile locally only (for live preview without DB calls)
   const updateProfileLocal = useCallback(
@@ -136,7 +202,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 
   const addLink = useCallback(
-    async (title: string, url: string) => {
+    async (title: string, url: string, scheduledAt?: string) => {
       const position = links.length;
       const tempId = `temp_${Date.now()}`;
 
@@ -150,25 +216,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         position,
         is_active: true,
         click_count: 0,
+        scheduled_at: scheduledAt || null,
         created_at: new Date().toISOString(),
       };
       setLinks((prev) => [...prev, newLink]);
 
       if (userId) {
+        const insertData: Record<string, unknown> = {
+          profile_id: userId,
+          title,
+          url,
+          position,
+          is_active: true,
+        };
+        if (scheduledAt) {
+          insertData.scheduled_at = scheduledAt;
+        }
         const { data, error } = await supabase
           .from("links")
-          .insert({
-            profile_id: userId,
-            title,
-            url,
-            position,
-            is_active: true,
-          })
+          .insert(insertData)
           .select()
           .single();
 
         if (data) {
-          // Replace temp link with real one
           setLinks((prev) =>
             prev.map((l) => (l.id === tempId ? (data as Link) : l))
           );
@@ -253,8 +323,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUserId(null);
-    setProfile(mockProfile);
-    setLinks(mockLinks);
+    setProfile(emptyProfile);
+    setLinks([]);
     setAvatarPreview(null);
   }, [supabase]);
 
