@@ -55,30 +55,38 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Load user data from Supabase on mount
-  useEffect(() => {
-    let mounted = true;
+  // Core data loader — fetches or creates profile + links for a given user
+  const loadUserData = useCallback(
+    async (uid: string, userMeta?: Record<string, unknown>) => {
+      setUserId(uid);
 
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Load profile (retry once after short delay to handle trigger race)
+      let profileData = await fetchProfile(uid);
 
-      if (!user || !mounted) {
-        setIsLoading(false);
-        return;
+      if (!profileData) {
+        // Profile doesn't exist yet — create it from auth metadata
+        const username =
+          (userMeta?.username as string) ||
+          (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
+          `user_${uid.slice(0, 8)}`;
+
+        await supabase.from("profiles").upsert(
+          {
+            id: uid,
+            username,
+            display_name: (userMeta?.full_name as string) || username,
+            bio: null,
+            avatar_url: (userMeta?.avatar_url as string) || null,
+            theme: "light",
+          },
+          { onConflict: "id" }
+        );
+
+        // Fetch the created profile
+        profileData = await fetchProfile(uid);
       }
 
-      setUserId(user.id);
-
-      // Load profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileData && mounted) {
+      if (profileData) {
         setProfile(profileData as Profile);
         if (profileData.avatar_url) {
           setAvatarPreview(profileData.avatar_url);
@@ -89,23 +97,57 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       const { data: linksData } = await supabase
         .from("links")
         .select("*")
-        .eq("profile_id", user.id)
+        .eq("profile_id", uid)
         .order("position", { ascending: true });
 
-      if (linksData && mounted) {
+      if (linksData) {
         setLinks(linksData as Link[]);
       }
 
-      if (mounted) setIsLoading(false);
+      setIsLoading(false);
+    },
+    [supabase] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  async function fetchProfile(uid: string) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", uid)
+      .maybeSingle();
+    return data;
+  }
+
+  // Load on mount + react to auth state changes
+  useEffect(() => {
+    let mounted = true;
+
+    async function init() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || !mounted) {
+        setIsLoading(false);
+        return;
+      }
+
+      await loadUserData(user.id, user.user_metadata);
     }
 
-    load();
+    init();
 
-    // Listen for auth changes
+    // Listen for auth changes (login, logout, token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        if (session?.user) {
+          await loadUserData(session.user.id, session.user.user_metadata);
+        }
+      } else if (event === "SIGNED_OUT") {
         setUserId(null);
         setProfile(emptyProfile);
         setLinks([]);
@@ -117,7 +159,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadUserData, supabase]);
 
   // Update profile locally only (for live preview without DB calls)
   const updateProfileLocal = useCallback(
