@@ -8,7 +8,6 @@ import { BarChart3, MousePointerClick, Eye, TrendingUp, ExternalLink, RefreshCw,
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
-import Link from "next/link";
 
 export default function AnalyticsPage() {
   const { profile, links, refreshData } = useProfile();
