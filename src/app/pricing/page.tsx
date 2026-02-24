@@ -391,6 +391,10 @@ export default function PricingPage() {
                 q: "What payment methods do you accept?",
                 a: "We accept all major credit cards via Creem. All payments are secure and encrypted.",
               },
+              {
+                q: "What happens to my data if I delete my account?",
+                a: "All your data — profile, links, avatar, and analytics — is deleted instantly and permanently. We don't keep any backups of deleted accounts.",
+              },
             ].map((faq) => (
               <motion.div
                 key={faq.q}
