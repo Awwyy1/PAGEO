@@ -234,7 +234,9 @@ export default function PricingPage() {
           >
             {plans.map((plan) => {
               const price = plan.price[billing];
-              const perMonth = billing === "yearly" && price > 0 ? (price / 12).toFixed(0) : price;
+              const perMonth = billing === "yearly" && price > 0
+                ? (price / 12).toFixed(2).replace(/\.00$/, "")
+                : price;
 
               return (
                 <motion.div

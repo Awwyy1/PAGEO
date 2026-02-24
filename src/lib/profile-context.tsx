@@ -60,49 +60,67 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     async (uid: string, userMeta?: Record<string, unknown>) => {
       setUserId(uid);
 
-      // Load profile (retry once after short delay to handle trigger race)
-      let profileData = await fetchProfile(uid);
+      try {
+        // Load profile (retry once after short delay to handle trigger race)
+        let profileData = await fetchProfile(uid);
 
-      if (!profileData) {
-        // Profile doesn't exist yet — create it from auth metadata
-        const username =
-          (userMeta?.username as string) ||
-          (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
-          `user_${uid.slice(0, 8)}`;
+        if (!profileData) {
+          // Profile doesn't exist yet — create it from auth metadata
+          const username =
+            (userMeta?.username as string) ||
+            (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
+            `user_${uid.slice(0, 8)}`;
 
-        await supabase.from("profiles").upsert(
-          {
-            id: uid,
-            username,
-            display_name: (userMeta?.full_name as string) || username,
-            email: (userMeta?.email as string) || null,
-            bio: null,
-            avatar_url: (userMeta?.avatar_url as string) || null,
-            theme: "light",
-          },
-          { onConflict: "id" }
-        );
+          const { error: upsertErr } = await supabase.from("profiles").upsert(
+            {
+              id: uid,
+              username,
+              display_name: (userMeta?.full_name as string) || username,
+              bio: null,
+              avatar_url: (userMeta?.avatar_url as string) || null,
+              theme: "light",
+            },
+            { onConflict: "id" }
+          );
+          if (upsertErr) console.error("Profile upsert failed:", upsertErr.message);
 
-        // Fetch the created profile
-        profileData = await fetchProfile(uid);
-      }
-
-      if (profileData) {
-        setProfile(profileData as Profile);
-        if (profileData.avatar_url) {
-          setAvatarPreview(profileData.avatar_url);
+          // Fetch the created profile
+          profileData = await fetchProfile(uid);
         }
-      }
 
-      // Load links
-      const { data: linksData } = await supabase
-        .from("links")
-        .select("*")
-        .eq("profile_id", uid)
-        .order("position", { ascending: true });
+        if (profileData) {
+          setProfile(profileData as Profile);
+          if (profileData.avatar_url) {
+            setAvatarPreview(profileData.avatar_url);
+          }
+        } else {
+          console.error("Could not load or create profile for user:", uid);
+        }
 
-      if (linksData) {
-        setLinks(linksData as Link[]);
+        // Load links — use specific columns to avoid failures if scheduled_at doesn't exist
+        const { data: linksData, error: linksErr } = await supabase
+          .from("links")
+          .select("*")
+          .eq("profile_id", uid)
+          .order("position", { ascending: true });
+
+        if (linksErr) {
+          console.error("Links query failed:", linksErr.message);
+          // Fallback: try without scheduled_at in case column doesn't exist
+          const { data: fallbackLinks } = await supabase
+            .from("links")
+            .select("id, profile_id, title, url, icon, position, is_active, click_count, created_at")
+            .eq("profile_id", uid)
+            .order("position", { ascending: true });
+          if (fallbackLinks) {
+            setLinks(fallbackLinks.map(l => ({ ...l, scheduled_at: null })) as Link[]);
+          }
+        } else if (linksData) {
+          // Ensure scheduled_at exists on each link even if DB doesn't have the column
+          setLinks(linksData.map(l => ({ scheduled_at: null, ...l })) as Link[]);
+        }
+      } catch (err) {
+        console.error("loadUserData unexpected error:", err);
       }
 
       setIsLoading(false);
@@ -111,11 +129,23 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 
   async function fetchProfile(uid: string) {
-    const { data } = await supabase
+    // Try select all first
+    const { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", uid)
       .maybeSingle();
+
+    if (error) {
+      console.error("Profile fetch error:", error.message);
+      // Fallback: select only core columns (in case email column doesn't exist)
+      const { data: fallback } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, bio, avatar_url, theme, custom_colors, plan, page_views, created_at")
+        .eq("id", uid)
+        .maybeSingle();
+      return fallback;
+    }
     return data;
   }
 
