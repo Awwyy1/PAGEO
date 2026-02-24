@@ -58,13 +58,14 @@ export default function RegisterPage() {
     setUsernameStatus("checking");
 
     const timer = setTimeout(async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("username", username)
-        .maybeSingle();
-
-      setUsernameStatus(data ? "taken" : "available");
+      try {
+        const res = await fetch(`/api/username-check?username=${encodeURIComponent(username)}`);
+        const json = await res.json();
+        setUsernameStatus(json.available ? "available" : "taken");
+      } catch {
+        // Network error — let user proceed, server will validate on submit
+        setUsernameStatus("available");
+      }
     }, 400);
 
     return () => clearTimeout(timer);
@@ -108,6 +109,7 @@ export default function RegisterPage() {
         id: signUpData.user.id,
         username,
         display_name: username,
+        email,
         bio: null,
         avatar_url: null,
         theme: "light",

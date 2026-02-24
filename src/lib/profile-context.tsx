@@ -75,6 +75,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
             id: uid,
             username,
             display_name: (userMeta?.full_name as string) || username,
+            email: (userMeta?.email as string) || null,
             bio: null,
             avatar_url: (userMeta?.avatar_url as string) || null,
             theme: "light",
