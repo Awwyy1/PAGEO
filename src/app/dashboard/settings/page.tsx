@@ -104,7 +104,8 @@ export default function SettingsPage() {
         .eq("username", username)
         .maybeSingle();
 
-      setUsernameStatus(data ? "taken" : "available");
+      // If found but it's the current user's own profile → available
+      setUsernameStatus(data && data.id !== userId ? "taken" : "available");
     }, 600);
 
     return () => clearTimeout(timer);
