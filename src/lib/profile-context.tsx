@@ -61,8 +61,13 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       setUserId(uid);
 
       try {
-        // Load profile (retry once after short delay to handle trigger race)
-        let profileData = await fetchProfile(uid);
+        // Load profile
+        let { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", uid)
+          .maybeSingle();
+
 
         if (!profileData) {
           // Profile doesn't exist yet — create it from auth metadata
@@ -85,7 +90,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           if (upsertErr) console.error("Profile upsert failed:", upsertErr.message);
 
           // Fetch the created profile
-          profileData = await fetchProfile(uid);
+          const { data: retryData } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", uid)
+            .maybeSingle();
+          profileData = retryData;
         }
 
         if (profileData) {
@@ -97,7 +107,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           console.error("Could not load or create profile for user:", uid);
         }
 
-        // Load links — use specific columns to avoid failures if scheduled_at doesn't exist
+        // Load links
         const { data: linksData, error: linksErr } = await supabase
           .from("links")
           .select("*")
@@ -106,18 +116,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
         if (linksErr) {
           console.error("Links query failed:", linksErr.message);
-          // Fallback: try without scheduled_at in case column doesn't exist
-          const { data: fallbackLinks } = await supabase
-            .from("links")
-            .select("id, profile_id, title, url, icon, position, is_active, click_count, created_at")
-            .eq("profile_id", uid)
-            .order("position", { ascending: true });
-          if (fallbackLinks) {
-            setLinks(fallbackLinks.map(l => ({ ...l, scheduled_at: null })) as Link[]);
-          }
-        } else if (linksData) {
-          // Ensure scheduled_at exists on each link even if DB doesn't have the column
-          setLinks(linksData.map(l => ({ scheduled_at: null, ...l })) as Link[]);
+        }
+        if (linksData) {
+          // Ensure scheduled_at has a default even if column doesn't exist in DB
+          setLinks(linksData.map((l: Record<string, unknown>) => ({ scheduled_at: null, ...l })) as Link[]);
         }
       } catch (err) {
         console.error("loadUserData unexpected error:", err);
@@ -127,27 +129,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     },
     [supabase] // eslint-disable-line react-hooks/exhaustive-deps
   );
-
-  async function fetchProfile(uid: string) {
-    // Try select all first
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", uid)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Profile fetch error:", error.message);
-      // Fallback: select only core columns (in case email column doesn't exist)
-      const { data: fallback } = await supabase
-        .from("profiles")
-        .select("id, username, display_name, bio, avatar_url, theme, custom_colors, plan, page_views, created_at")
-        .eq("id", uid)
-        .maybeSingle();
-      return fallback;
-    }
-    return data;
-  }
 
   // Load on mount + react to auth state changes
   useEffect(() => {
