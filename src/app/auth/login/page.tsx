@@ -23,9 +23,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Clear any stale session first (fixes Chrome cookie issues)
-      await supabase.auth.signOut();
-
       // Sign in with timeout to prevent infinite loading
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Login timed out. Please try again.")), 15000)
