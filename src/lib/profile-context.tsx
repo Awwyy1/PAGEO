@@ -61,22 +61,35 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       setUserId(uid);
 
       try {
-        // Load profile
-        let { data: profileData } = await supabase
+        // Load profile — IMPORTANT: check error separately from null data
+        const { data: profileData, error: profileErr } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", uid)
           .maybeSingle();
 
+        if (profileErr) {
+          // Query failed — do NOT create/overwrite, just log and bail
+          console.error("Profile fetch error:", profileErr.message);
+          setIsLoading(false);
+          return;
+        }
 
-        if (!profileData) {
-          // Profile doesn't exist yet — create it from auth metadata
+        if (profileData) {
+          // Profile exists — use it
+          setProfile(profileData as Profile);
+          if (profileData.avatar_url) {
+            setAvatarPreview(profileData.avatar_url);
+          }
+        } else {
+          // Profile genuinely doesn't exist (no error, just null) — create
           const username =
             (userMeta?.username as string) ||
             (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
             `user_${uid.slice(0, 8)}`;
 
-          const { error: upsertErr } = await supabase.from("profiles").upsert(
+          // Use INSERT with ignoreDuplicates to NEVER overwrite existing data
+          await supabase.from("profiles").insert(
             {
               id: uid,
               username,
@@ -85,26 +98,18 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
               avatar_url: (userMeta?.avatar_url as string) || null,
               theme: "light",
             },
-            { onConflict: "id" }
-          );
-          if (upsertErr) console.error("Profile upsert failed:", upsertErr.message);
+          ).select().maybeSingle();
 
-          // Fetch the created profile
-          const { data: retryData } = await supabase
+          // Fetch the newly created profile
+          const { data: newProfile } = await supabase
             .from("profiles")
             .select("*")
             .eq("id", uid)
             .maybeSingle();
-          profileData = retryData;
-        }
 
-        if (profileData) {
-          setProfile(profileData as Profile);
-          if (profileData.avatar_url) {
-            setAvatarPreview(profileData.avatar_url);
+          if (newProfile) {
+            setProfile(newProfile as Profile);
           }
-        } else {
-          console.error("Could not load or create profile for user:", uid);
         }
 
         // Load links
@@ -118,7 +123,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           console.error("Links query failed:", linksErr.message);
         }
         if (linksData) {
-          // Ensure scheduled_at has a default even if column doesn't exist in DB
           setLinks(linksData.map((l: Record<string, unknown>) => ({ scheduled_at: null, ...l })) as Link[]);
         }
       } catch (err) {

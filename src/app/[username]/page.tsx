@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Allme",
       images: [
         {
-          url: `/api/og?username=${username}`,
+          url: `https://allme.site/api/og?username=${username}`,
           width: 1200,
           height: 630,
           alt: `${displayName}'s allme page`,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: `${displayName} — @${username}`,
       description,
-      images: [`/api/og?username=${username}`],
+      images: [`https://allme.site/api/og?username=${username}`],
     },
   };
 }

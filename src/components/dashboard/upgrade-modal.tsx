@@ -4,7 +4,6 @@
 import { X, Sparkles, Crown, Building2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Plan } from "@/types/database";
-import Link from "next/link";
 
 interface UpgradeModalProps {
     feature: string;          // e.g. "QR Code", "Scheduled links"
@@ -59,13 +58,13 @@ export function UpgradeModal({ feature, requiredPlan, onClose }: UpgradeModalPro
                         </p>
                     </div>
 
-                    {/* CTA */}
-                    <Link href="/pricing" onClick={onClose}>
+                    {/* CTA — opens in new tab so user stays in dashboard */}
+                    <a href="/pricing" target="_blank" rel="noopener noreferrer" onClick={onClose}>
                         <Button className="w-full gap-2 mt-2">
                             View plans
                             <ArrowRight className="h-4 w-4" />
                         </Button>
-                    </Link>
+                    </a>
 
                     <button
                         onClick={onClose}

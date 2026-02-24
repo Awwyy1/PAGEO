@@ -44,8 +44,10 @@ export default function DashboardLayout({
             <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-md" />
             allme
           </Link>
-          <Link
+          <a
             href="/pricing"
+            target="_blank"
+            rel="noopener noreferrer"
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
               currentPlan.bg,
@@ -54,7 +56,7 @@ export default function DashboardLayout({
           >
             <PlanIcon className="h-3 w-3" />
             {currentPlan.label}
-          </Link>
+          </a>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">

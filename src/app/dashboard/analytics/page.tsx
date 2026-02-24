@@ -135,13 +135,15 @@ export default function AnalyticsPage() {
                 <span className="text-xs font-medium">Page Views</span>
               </div>
               <div className="absolute inset-0 flex items-center justify-center bg-card/80 backdrop-blur-sm">
-                <Link
+                <a
                   href="/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
                 >
                   <Crown className="h-3.5 w-3.5" />
                   Upgrade
-                </Link>
+                </a>
               </div>
             </div>
             <div className="rounded-2xl border bg-card p-5 relative overflow-hidden">
@@ -150,13 +152,15 @@ export default function AnalyticsPage() {
                 <span className="text-xs font-medium">CTR</span>
               </div>
               <div className="absolute inset-0 flex items-center justify-center bg-card/80 backdrop-blur-sm">
-                <Link
+                <a
                   href="/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
                 >
                   <Crown className="h-3.5 w-3.5" />
                   Upgrade
-                </Link>
+                </a>
               </div>
             </div>
             <div className="rounded-2xl border bg-card p-5 relative overflow-hidden">
@@ -165,13 +169,15 @@ export default function AnalyticsPage() {
                 <span className="text-xs font-medium">Active Links</span>
               </div>
               <div className="absolute inset-0 flex items-center justify-center bg-card/80 backdrop-blur-sm">
-                <Link
+                <a
                   href="/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
                 >
                   <Crown className="h-3.5 w-3.5" />
                   Upgrade
-                </Link>
+                </a>
               </div>
             </div>
           </>
@@ -259,12 +265,14 @@ export default function AnalyticsPage() {
           <p className="text-sm text-muted-foreground mb-3">
             See per-link clicks, top performers, and CTR with Pro.
           </p>
-          <Link
+          <a
             href="/pricing"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
           >
             View plans
-          </Link>
+          </a>
         </div>
       )}
 
