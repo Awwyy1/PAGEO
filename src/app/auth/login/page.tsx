@@ -21,6 +21,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Clear any stale session first (Chrome caches recovery/old tokens)
+      await supabase.auth.signOut().catch(() => { });
+
       // Sign in with timeout to prevent infinite loading
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Login timed out. Please try again.")), 15000)
