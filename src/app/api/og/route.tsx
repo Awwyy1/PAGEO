@@ -2,7 +2,8 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "edge";
+// Use Node.js runtime (edge causes 0-byte responses with Supabase fetch)
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
