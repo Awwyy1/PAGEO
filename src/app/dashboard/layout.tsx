@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Link2, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
-import { useRouter } from "next/navigation";
+
 import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { QrCodeButton } from "@/components/dashboard/qr-code-modal";
 import type { Plan } from "@/types/database";
@@ -29,7 +29,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
+
   const { signOut, profile, links, avatarPreview } = useProfile();
   const publicUrl = `/${profile.username}`;
   const currentPlan = planConfig[profile.plan || "free"];
