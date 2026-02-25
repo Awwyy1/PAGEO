@@ -62,14 +62,33 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
       try {
         // Load profile — IMPORTANT: check error separately from null data
-        const { data: profileData, error: profileErr } = await supabase
+        let profileData: Record<string, unknown> | null = null;
+        let profileErr: { message: string; name?: string } | null = null;
+
+        const result = await supabase
           .from("profiles")
           .select("*")
           .eq("id", uid)
           .maybeSingle();
 
+        profileData = result.data;
+        profileErr = result.error;
+
+        // If fetch was aborted (Chrome does this during navigation), retry once
+        if (profileErr && (profileErr.message?.toLowerCase().includes("abort") || profileErr.name === "AbortError")) {
+          console.warn("Profile fetch aborted, retrying in 500ms...");
+          await new Promise(r => setTimeout(r, 500));
+          const retry = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", uid)
+            .maybeSingle();
+          profileData = retry.data;
+          profileErr = retry.error;
+        }
+
         if (profileErr) {
-          // Query failed — do NOT create/overwrite, just log and bail
+          // Real query error — do NOT create/overwrite, just log and bail
           console.error("Profile fetch error:", profileErr.message);
           setIsLoading(false);
           return;
@@ -79,7 +98,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           // Profile exists — use it
           setProfile(profileData as Profile);
           if (profileData.avatar_url) {
-            setAvatarPreview(profileData.avatar_url);
+            setAvatarPreview(profileData.avatar_url as string);
           }
         } else {
           // Profile genuinely doesn't exist (no error, just null) — create
