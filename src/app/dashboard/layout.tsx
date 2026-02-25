@@ -94,9 +94,12 @@ export default function DashboardLayout({
           <QrCodeButton username={profile.username} plan={profile.plan || "free"} />
           <button
             onClick={async () => {
-              await signOut();
-              router.push("/");
-              router.refresh();
+              try {
+                await signOut();
+              } catch (err) {
+                console.error("Sign out error:", err);
+              }
+              window.location.href = "/";
             }}
             className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
@@ -136,9 +139,12 @@ export default function DashboardLayout({
             <QrCodeButton username={profile.username} variant="mobile" plan={profile.plan || "free"} />
             <button
               onClick={async () => {
-                await signOut();
-                router.push("/");
-                router.refresh();
+                try {
+                  await signOut();
+                } catch (err) {
+                  console.error("Sign out error:", err);
+                }
+                window.location.href = "/";
               }}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               title="Sign out"
@@ -186,8 +192,8 @@ export default function DashboardLayout({
               />
             </div>
           </div>
-          {/* Phone preview — mobile only (below content) */}
-          <div className="lg:hidden mt-8 flex justify-center pb-8">
+          {/* Phone preview — mobile only (below content, hidden on settings page to allow custom placement) */}
+          <div className={cn("lg:hidden mt-8 flex justify-center pb-8", pathname === "/dashboard/settings" && "hidden")}>
             <PhonePreview
               profile={profile}
               links={links}

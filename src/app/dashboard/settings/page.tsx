@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Camera, Check, X, Loader2, AlertTriangle, Plus } from "lucide-react";
 import { AvatarEditor } from "@/components/dashboard/avatar-editor";
+import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { cn } from "@/lib/utils";
 
 const RESERVED_USERNAMES = [
@@ -19,7 +20,7 @@ const RESERVED_USERNAMES = [
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "plan_required";
 
 export default function SettingsPage() {
-  const { profile, updateProfile, updateProfileLocal, avatarPreview, setAvatarPreview, userId } =
+  const { profile, links, updateProfile, updateProfileLocal, avatarPreview, setAvatarPreview, userId } =
     useProfile();
   const plan = profile.plan || "free";
 
@@ -367,6 +368,11 @@ export default function SettingsPage() {
             <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Saving...</>
           ) : saved ? "Saved!" : "Save changes"}
         </Button>
+      </div>
+
+      {/* Mobile Phone Preview */}
+      <div className="lg:hidden flex justify-center py-4">
+        <PhonePreview profile={profile} links={links} avatarPreview={avatarPreview} />
       </div>
 
       {/* Danger zone */}
