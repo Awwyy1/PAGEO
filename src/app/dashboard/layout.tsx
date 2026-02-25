@@ -138,6 +138,7 @@ export default function DashboardLayout({
             </Link>
             <QrCodeButton username={profile.username} variant="mobile" plan={profile.plan || "free"} />
             <button
+              type="button"
               onClick={async () => {
                 try {
                   await signOut();
@@ -146,10 +147,10 @@ export default function DashboardLayout({
                 }
                 window.location.href = "/";
               }}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="relative z-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent active:bg-accent transition-colors"
               title="Sign out"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-5 w-5" />
             </button>
           </div>
         </header>
