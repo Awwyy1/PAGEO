@@ -54,7 +54,12 @@ export default function AnalyticsPage() {
   };
 
   const totalClicks = links.reduce((sum, l) => sum + l.click_count, 0);
-  const activeLinks = links.filter((l) => l.is_active).length;
+  const now = new Date();
+  const activeLinks = links.filter((l) => {
+    if (!l.is_active) return false;
+    if (l.scheduled_at && new Date(l.scheduled_at) > now) return false;
+    return true;
+  }).length;
   const pageViews = profile.page_views || 0;
   const ctr = pageViews > 0 ? ((totalClicks / pageViews) * 100).toFixed(1) : "0.0";
 

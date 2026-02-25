@@ -24,7 +24,12 @@ const themeBg: Record<string, string> = {
 };
 
 export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProps) {
-  const activeLinks = links.filter((l) => l.is_active);
+  const now = new Date();
+  const activeLinks = links.filter((l) => {
+    if (!l.is_active) return false;
+    if (l.scheduled_at && new Date(l.scheduled_at) > now) return false;
+    return true;
+  });
   const theme = profile.theme;
   const isCustom = theme === "custom";
   const cc = profile.custom_colors;
