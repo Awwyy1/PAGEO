@@ -9,6 +9,7 @@ import { useProfile } from "@/lib/profile-context";
 
 import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { QrCodeButton } from "@/components/dashboard/qr-code-modal";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import type { Plan } from "@/types/database";
 
 const planConfig: Record<Plan, { label: string; icon: typeof Sparkles; color: string; bg: string }> = {
@@ -39,17 +40,20 @@ export default function DashboardLayout({
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card p-6 gap-6">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-md" />
-            allme
-          </Link>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+              <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-md" />
+              allme
+            </Link>
+            <NotificationBell links={links} profileId={profile.id} />
+          </div>
           <a
             href="/pricing"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold w-fit",
               currentPlan.bg,
               currentPlan.color
             )}
@@ -136,6 +140,7 @@ export default function DashboardLayout({
             >
               <ExternalLink className="h-4 w-4" />
             </Link>
+            <NotificationBell links={links} profileId={profile.id} />
             <QrCodeButton username={profile.username} variant="mobile" plan={profile.plan || "free"} />
             <button
               type="button"
