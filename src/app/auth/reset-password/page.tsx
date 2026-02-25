@@ -75,12 +75,12 @@ export default function ResetPasswordPage() {
                         <p className="text-sm text-muted-foreground">
                             Your password has been changed successfully.
                         </p>
-                        <Link
-                            href="/dashboard"
+                        <button
+                            onClick={() => { window.location.href = "/dashboard"; }}
                             className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 transition-colors"
                         >
                             Go to Dashboard
-                        </Link>
+                        </button>
                     </div>
                 ) : (
                     <>
