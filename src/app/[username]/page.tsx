@@ -5,6 +5,9 @@ import type { Profile, Link } from "@/types/database";
 import type { Metadata } from "next";
 import { ProfilePageClient } from "./profile-page-client";
 
+// Disable caching so scheduled links appear on time
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ username: string }>;
 }
@@ -86,10 +89,17 @@ export default async function UserProfilePage({ params }: Props) {
     .eq("is_active", true)
     .order("position", { ascending: true });
 
+  // Filter out scheduled links that haven't arrived yet (server-side)
+  const now = new Date();
+  const visibleLinks = (links || []).filter((link: Link) => {
+    if (!link.scheduled_at) return true;
+    return new Date(link.scheduled_at) <= now;
+  });
+
   return (
     <ProfilePageClient
       profile={profile as Profile}
-      links={(links || []) as Link[]}
+      links={visibleLinks as Link[]}
     />
   );
 }
