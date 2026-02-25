@@ -3,13 +3,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check } from "lucide-react";
 
 export default function ResetPasswordPage() {
-    const supabase = createClient();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,45 +31,24 @@ export default function ResetPasswordPage() {
         setLoading(true);
 
         try {
-            // Ensure recovery session is loaded
-            await supabase.auth.getSession();
+            // Use server-side API to update password (bypasses Chrome AbortError)
+            const res = await fetch("/api/reset-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password }),
+            });
 
-            let result = await supabase.auth.updateUser({ password });
+            const data = await res.json();
 
-            // Retry once on AbortError (Chrome aborts requests during navigation)
-            if (result.error && result.error.message?.toLowerCase().includes("abort")) {
-                await new Promise(r => setTimeout(r, 1000));
-                await supabase.auth.getSession();
-                result = await supabase.auth.updateUser({ password });
-            }
-
-            if (result.error) {
-                setError(result.error.message);
+            if (!res.ok) {
+                setError(data.error || "Failed to update password.");
                 setLoading(false);
                 return;
             }
 
             setSuccess(true);
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : "Something went wrong.";
-            if (msg.toLowerCase().includes("abort")) {
-                // Retry on catch-level AbortError
-                try {
-                    await new Promise(r => setTimeout(r, 1000));
-                    await supabase.auth.getSession();
-                    const retry = await supabase.auth.updateUser({ password });
-                    if (retry.error) {
-                        setError(retry.error.message);
-                    } else {
-                        setSuccess(true);
-                        return;
-                    }
-                } catch {
-                    setError("Connection error. Please try again.");
-                }
-            } else {
-                setError(msg);
-            }
+        } catch {
+            setError("Connection error. Please try again.");
         } finally {
             setLoading(false);
         }
