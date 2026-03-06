@@ -205,23 +205,27 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 
   const updateProfile = useCallback(
-    (data: Partial<Profile>) => {
-      setProfile((prev) => ({ ...prev, ...data }));
+    async (data: Partial<Profile>) => {
+      const prev = profile; // snapshot for rollback
+      setProfile((p) => ({ ...p, ...data }));
 
       // Persist to Supabase if authenticated
       if (userId) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _pid, created_at: _ca, ...rest } = data as Record<string, unknown>;
-        supabase
+        const { error } = await supabase
           .from("profiles")
           .update(rest)
-          .eq("id", userId)
-          .then(({ error }) => {
-            if (error) console.error("Failed to update profile:", error.message);
-          });
+          .eq("id", userId);
+
+        if (error) {
+          console.error("Failed to update profile:", error.message);
+          // Rollback to previous state so the UI doesn't lie
+          setProfile(prev);
+        }
       }
     },
-    [userId, supabase]
+    [userId, supabase, profile]
   );
 
   const addLink = useCallback(
