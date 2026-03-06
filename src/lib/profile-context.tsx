@@ -55,94 +55,91 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Core data loader — fetches or creates profile + links for a given user
+  // Core data loader — fetches profile + links for a given user
+  // NEVER creates a profile here — profile creation only happens during registration
   const loadUserData = useCallback(
-    async (uid: string, userMeta?: Record<string, unknown>) => {
+    async (uid: string) => {
       setUserId(uid);
 
       try {
-        // Load profile — IMPORTANT: check error separately from null data
+        // Retry up to 3 times — Chrome/Firefox abort fetches during navigation
         let profileData: Record<string, unknown> | null = null;
-        let profileErr: { message: string; name?: string } | null = null;
+        let lastError: { message: string } | null = null;
 
-        const result = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", uid)
-          .maybeSingle();
-
-        profileData = result.data;
-        profileErr = result.error;
-
-        // If fetch was aborted (Chrome does this during navigation), retry once
-        if (profileErr && (profileErr.message?.toLowerCase().includes("abort") || profileErr.name === "AbortError")) {
-          console.warn("Profile fetch aborted, retrying in 500ms...");
-          await new Promise(r => setTimeout(r, 500));
-          const retry = await supabase
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const result = await supabase
             .from("profiles")
             .select("*")
             .eq("id", uid)
             .maybeSingle();
-          profileData = retry.data;
-          profileErr = retry.error;
+
+          if (result.data) {
+            profileData = result.data;
+            lastError = null;
+            break; // success
+          }
+
+          if (result.error) {
+            lastError = result.error;
+            const msg = result.error.message?.toLowerCase() || "";
+            const isAbort = msg.includes("abort") || msg.includes("signal");
+            if (isAbort && attempt < 2) {
+              // Wait before retry: 300ms, 800ms
+              await new Promise((r) => setTimeout(r, attempt === 0 ? 300 : 800));
+              continue;
+            }
+            // Non-abort error or final attempt — stop retrying
+            break;
+          }
+
+          // result.data is null and result.error is null  → profile genuinely doesn't exist
+          // Do NOT create one here — just leave the empty state
+          break;
         }
 
-        if (profileErr) {
-          // Real query error — do NOT create/overwrite, just log and bail
-          console.error("Profile fetch error:", profileErr.message);
+        if (lastError) {
+          console.error("Profile fetch failed after retries:", lastError.message);
           setIsLoading(false);
           return;
         }
 
         if (profileData) {
-          // Profile exists — use it
           setProfile(profileData as Profile);
           if (profileData.avatar_url) {
             setAvatarPreview(profileData.avatar_url as string);
           }
-        } else {
-          // Profile genuinely doesn't exist (no error, just null) — create
-          const username =
-            (userMeta?.username as string) ||
-            (userMeta?.email as string)?.split("@")[0]?.replace(/[^a-z0-9_-]/g, "") ||
-            `user_${uid.slice(0, 8)}`;
+        }
+        // If profileData is null (no profile exists), we leave emptyProfile state.
+        // The profile will be created by the register page, not here.
 
-          // Use INSERT with ignoreDuplicates to NEVER overwrite existing data
-          await supabase.from("profiles").insert(
-            {
-              id: uid,
-              username,
-              display_name: (userMeta?.full_name as string) || username,
-              bio: null,
-              avatar_url: (userMeta?.avatar_url as string) || null,
-              theme: "light",
-            },
-          ).select().maybeSingle();
-
-          // Fetch the newly created profile
-          const { data: newProfile } = await supabase
-            .from("profiles")
+        // Load links (also with retry for AbortError)
+        let linksData: Record<string, unknown>[] | null = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const result = await supabase
+            .from("links")
             .select("*")
-            .eq("id", uid)
-            .maybeSingle();
+            .eq("profile_id", uid)
+            .order("position", { ascending: true });
 
-          if (newProfile) {
-            setProfile(newProfile as Profile);
+          if (result.data) {
+            linksData = result.data;
+            break;
           }
+          if (result.error) {
+            const msg = result.error.message?.toLowerCase() || "";
+            const isAbort = msg.includes("abort") || msg.includes("signal");
+            if (isAbort && attempt < 2) {
+              await new Promise((r) => setTimeout(r, attempt === 0 ? 300 : 800));
+              continue;
+            }
+            console.error("Links fetch failed:", result.error.message);
+            break;
+          }
+          break;
         }
 
-        // Load links
-        const { data: linksData, error: linksErr } = await supabase
-          .from("links")
-          .select("*")
-          .eq("profile_id", uid)
-          .order("position", { ascending: true });
-
-        if (linksErr) {
-          console.error("Links query failed:", linksErr.message);
-        }
         if (linksData) {
-          setLinks(linksData.map((l: Record<string, unknown>) => ({ scheduled_at: null, ...l })) as Link[]);
+          setLinks(linksData.map((l) => ({ scheduled_at: null, ...l })) as Link[]);
         }
       } catch (err) {
         console.error("loadUserData unexpected error:", err);
@@ -167,7 +164,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      await loadUserData(user.id, user.user_metadata);
+      await loadUserData(user.id);
     }
 
     init();
@@ -180,7 +177,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         if (session?.user) {
-          await loadUserData(session.user.id, session.user.user_metadata);
+          await loadUserData(session.user.id);
         }
       } else if (event === "SIGNED_OUT") {
         setUserId(null);
