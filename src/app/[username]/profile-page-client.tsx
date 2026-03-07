@@ -180,8 +180,8 @@ export function ProfilePageClient({ profile, links }: Props) {
           </motion.p>
         )}
 
-        {/* Share button */}
-        <motion.button
+        {/* Share button — hidden for now, code preserved */}
+        {false && <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
@@ -227,7 +227,7 @@ export function ProfilePageClient({ profile, links }: Props) {
               </motion.span>
             )}
           </AnimatePresence>
-        </motion.button>
+        </motion.button>}
 
         {/* Links with social icons */}
         <div className="w-full space-y-3 mt-4">
