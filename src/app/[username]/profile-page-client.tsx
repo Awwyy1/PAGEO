@@ -197,9 +197,9 @@ export function ProfilePageClient({ profile, links }: Props) {
                   : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 border border-border"
           )}
           style={isCustom && cc ? {
-            backgroundColor: `${cc.buttonBg}20`,
-            color: `${cc.text}cc`,
-            borderColor: `${cc.buttonBg}40`,
+            backgroundColor: `${cc?.buttonBg}20`,
+            color: `${cc?.text}cc`,
+            borderColor: `${cc?.buttonBg}40`,
           } : undefined}
         >
           <AnimatePresence mode="wait">
