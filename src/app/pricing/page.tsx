@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X as XIcon, ArrowRight, Menu } from "lucide-react";
+import { ArrowLeft, Check, X as XIcon, ArrowRight, Menu, CreditCard, Ticket, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { PromoCodeModal } from "@/components/promo-code-modal";
@@ -87,6 +87,29 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>("monthly");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
+  const [paymentModalPlan, setPaymentModalPlan] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const handlePayWithCard = async (plan: string) => {
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, billing }),
+      });
+      const data = await res.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        alert(data.error || "Failed to create checkout. Please sign in first.");
+        setCheckoutLoading(false);
+      }
+    } catch {
+      alert("Network error. Please try again.");
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-background overflow-hidden">
@@ -306,7 +329,7 @@ export default function PricingPage() {
                     </Link>
                   ) : (
                     <button
-                      onClick={() => setPromoOpen(true)}
+                      onClick={() => setPaymentModalPlan(plan.id)}
                       className={cn(
                         "group inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium transition-all gap-2 mb-8",
                         plan.highlighted
@@ -457,6 +480,84 @@ export default function PricingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Payment method modal */}
+      <AnimatePresence>
+        {paymentModalPlan && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { setPaymentModalPlan(null); setCheckoutLoading(false); }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-sm rounded-2xl border bg-card p-6 shadow-xl"
+            >
+              <button
+                onClick={() => { setPaymentModalPlan(null); setCheckoutLoading(false); }}
+                className="absolute top-4 right-4 p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <XIcon className="h-5 w-5" />
+              </button>
+
+              <h2 className="text-lg font-semibold mb-1">
+                Upgrade to {paymentModalPlan === "business" ? "Business" : "Pro"}
+              </h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                Choose how you&apos;d like to pay
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => handlePayWithCard(paymentModalPlan)}
+                  disabled={checkoutLoading}
+                  className="w-full flex items-center gap-3 rounded-xl border border-border/60 p-4 text-left transition-all hover:bg-accent hover:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    {checkoutLoading ? (
+                      <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                    ) : (
+                      <CreditCard className="h-5 w-5 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {checkoutLoading ? "Redirecting..." : "Pay with card"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Secure checkout via Creem
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setPaymentModalPlan(null);
+                    setPromoOpen(true);
+                  }}
+                  disabled={checkoutLoading}
+                  className="w-full flex items-center gap-3 rounded-xl border border-border/60 p-4 text-left transition-all hover:bg-accent hover:border-primary/30 disabled:opacity-50"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                    <Ticket className="h-5 w-5 text-violet-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">I have a promo code</p>
+                    <p className="text-xs text-muted-foreground">
+                      Redeem a code to upgrade
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <PromoCodeModal open={promoOpen} onClose={() => setPromoOpen(false)} />
     </main>
