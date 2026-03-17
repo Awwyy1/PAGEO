@@ -188,15 +188,19 @@ export default function DesignPage() {
             setAvatarFile(null);
         }
 
-        updateProfile({
+        const ok = await updateProfile({
             display_name: displayName || null,
             bio: bio || null,
             ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
         });
 
         setUploading(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        if (ok) {
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+        } else {
+            setSaveError("Failed to save. Please try again.");
+        }
     };
 
     /* — Theme handlers — */
