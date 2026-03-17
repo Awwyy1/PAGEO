@@ -9,6 +9,7 @@ const SUPABASE_KEY =
 
 export function createClient() {
   const cookieStore = cookies();
+  const isSecure = SUPABASE_URL.startsWith("https://");
 
   return createServerClient(SUPABASE_URL, SUPABASE_KEY, {
     cookies: {
@@ -18,7 +19,13 @@ export function createClient() {
       setAll(cookiesToSet) {
         try {
           cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
+            cookieStore.set(name, value, {
+              ...options,
+              sameSite: (options?.sameSite ?? "lax") as "lax" | "strict" | "none",
+              secure: options?.secure ?? isSecure,
+              path: options?.path ?? "/",
+              maxAge: options?.maxAge ?? 60 * 60 * 24 * 365,
+            })
           );
         } catch {
           // Ignored in Server Components where cookies can't be set

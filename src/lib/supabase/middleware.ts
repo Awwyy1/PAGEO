@@ -13,6 +13,10 @@ export async function updateSession(request: NextRequest) {
 
   let supabaseResponse = NextResponse.next({ request });
 
+  // Explicit cookie options to ensure consistent behavior across browsers (especially Chrome).
+  // Chrome enforces SameSite=Lax by default and requires Secure for SameSite=None.
+  const isSecure = supabaseUrl.startsWith("https://") || request.nextUrl.protocol === "https:";
+
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
@@ -23,9 +27,16 @@ export async function updateSession(request: NextRequest) {
           request.cookies.set(name, value)
         );
         supabaseResponse = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        );
+        cookiesToSet.forEach(({ name, value, options }) => {
+          const cookieOptions = {
+            ...options,
+            sameSite: (options?.sameSite ?? "lax") as "lax" | "strict" | "none",
+            secure: options?.secure ?? isSecure,
+            path: options?.path ?? "/",
+            maxAge: options?.maxAge ?? 60 * 60 * 24 * 365, // 1 year default
+          };
+          supabaseResponse.cookies.set(name, value, cookieOptions);
+        });
       },
     },
   });

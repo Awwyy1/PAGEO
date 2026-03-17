@@ -29,10 +29,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Give the browser 100ms to persist auth cookies before navigating.
-      // Chrome/Firefox abort cookie writes during immediate navigation,
-      // causing the middleware to see no session and redirect back to login.
-      await new Promise((r) => setTimeout(r, 100));
+      // Give the browser 300ms to persist auth cookies before navigating.
+      // Chrome is slower than Firefox/Safari at syncing cookies;
+      // 100ms was not always enough, causing empty profile on dashboard.
+      await new Promise((r) => setTimeout(r, 300));
 
       // Hard navigation to force ProfileProvider to re-initialize with new session
       window.location.href = "/dashboard";
