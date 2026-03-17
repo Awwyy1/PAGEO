@@ -18,15 +18,22 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
   const [url, setUrl] = useState("");
   const [showSchedule, setShowSchedule] = useState(false);
   const [scheduledAt, setScheduledAt] = useState("");
+  const [errors, setErrors] = useState<{ title?: boolean; url?: boolean }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !url.trim()) return;
+    const newErrors = {
+      title: !title.trim(),
+      url: !url.trim(),
+    };
+    setErrors(newErrors);
+    if (newErrors.title || newErrors.url) return;
     onAdd(title.trim(), url.trim(), showSchedule && scheduledAt ? scheduledAt : undefined);
     setTitle("");
     setUrl("");
     setScheduledAt("");
     setShowSchedule(false);
+    setErrors({});
     setIsOpen(false);
   };
 
@@ -57,17 +64,25 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
       onSubmit={handleSubmit}
       className="w-full rounded-2xl border bg-card p-4 space-y-3"
     >
-      <Input
-        placeholder="Title (e.g. My Website)"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        autoFocus
-      />
-      <Input
-        placeholder="URL (e.g. https://example.com)"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-      />
+      <div>
+        <Input
+          placeholder="Title (e.g. My Website)"
+          value={title}
+          onChange={(e) => { setTitle(e.target.value); if (errors.title) setErrors((p) => ({ ...p, title: false })); }}
+          autoFocus
+          className={errors.title ? "border-destructive focus-visible:ring-destructive" : ""}
+        />
+        {errors.title && <p className="text-xs text-destructive mt-1">Title is required</p>}
+      </div>
+      <div>
+        <Input
+          placeholder="URL (e.g. https://example.com)"
+          value={url}
+          onChange={(e) => { setUrl(e.target.value); if (errors.url) setErrors((p) => ({ ...p, url: false })); }}
+          className={errors.url ? "border-destructive focus-visible:ring-destructive" : ""}
+        />
+        {errors.url && <p className="text-xs text-destructive mt-1">URL is required</p>}
+      </div>
 
       {/* Schedule toggle */}
       {showSchedule && (
@@ -92,7 +107,7 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
 
       <div className="flex items-center gap-2">
         <Button type="submit" size="sm">
-          <Plus className="h-3 w-3 mr-1" /> Add
+          Save
         </Button>
         <button
           type="button"
@@ -112,6 +127,7 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
             setUrl("");
             setScheduledAt("");
             setShowSchedule(false);
+            setErrors({});
           }}
         >
           Cancel

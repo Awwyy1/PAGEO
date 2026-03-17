@@ -31,7 +31,7 @@ const emptyProfile: Profile = {
 
 interface ProfileContextType {
   profile: Profile;
-  updateProfile: (data: Partial<Profile>) => void;
+  updateProfile: (data: Partial<Profile>) => Promise<boolean>;
   updateProfileLocal: (data: Partial<Profile>) => void;
   links: Link[];
   setLinks: Dispatch<SetStateAction<Link[]>>;
@@ -43,6 +43,7 @@ interface ProfileContextType {
   setAvatarPreview: (url: string | null) => void;
   isLoading: boolean;
   userId: string | null;
+  lastSaveError: string | null;
   signOut: () => Promise<void>;
   refreshData: () => Promise<void>;
 }
@@ -56,6 +57,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [lastSaveError, setLastSaveError] = useState<string | null>(null);
 
   // Core data loader — fetches profile + links for a given user
   // NEVER creates a profile here — profile creation only happens during registration
@@ -204,25 +206,39 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 
   const updateProfile = useCallback(
-    async (data: Partial<Profile>) => {
+    async (data: Partial<Profile>): Promise<boolean> => {
       const prev = profile; // snapshot for rollback
       setProfile((p) => ({ ...p, ...data }));
+      setLastSaveError(null);
 
       // Persist to Supabase if authenticated
       if (userId) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id: _pid, created_at: _ca, ...rest } = data as Record<string, unknown>;
-        const { error } = await supabase
+        const { data: rows, error } = await supabase
           .from("profiles")
           .update(rest)
-          .eq("id", userId);
+          .eq("id", userId)
+          .select();
 
         if (error) {
           console.error("Failed to update profile:", error.message);
-          // Rollback to previous state so the UI doesn't lie
+          const msg = `Save failed: ${error.message}`;
+          setLastSaveError(msg);
           setProfile(prev);
+          return false;
+        }
+
+        // RLS can silently block updates (0 rows affected, no error)
+        if (!rows || rows.length === 0) {
+          console.error("Profile update affected 0 rows — likely RLS policy issue");
+          const msg = "Save failed: update was blocked. Check database permissions.";
+          setLastSaveError(msg);
+          setProfile(prev);
+          return false;
         }
       }
+      return true;
     },
     [userId, supabase, profile]
   );
@@ -306,20 +322,31 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const reorderLinks = useCallback(
     async (newLinks: Link[]) => {
+      const prev = [...links]; // snapshot for rollback
       setLinks(newLinks);
+      setLastSaveError(null);
 
       if (userId) {
         // Batch update positions
-        const updates = newLinks.map((link, i) =>
-          supabase
-            .from("links")
-            .update({ position: i })
-            .eq("id", link.id)
+        const results = await Promise.all(
+          newLinks.map((link, i) =>
+            supabase
+              .from("links")
+              .update({ position: i })
+              .eq("id", link.id)
+              .select()
+          )
         );
-        await Promise.all(updates);
+
+        const failed = results.some((r) => r.error || !r.data || r.data.length === 0);
+        if (failed) {
+          console.error("Failed to reorder links — some updates blocked");
+          setLastSaveError("Link reorder failed. Check database permissions.");
+          setLinks(prev);
+        }
       }
     },
-    [userId, supabase]
+    [userId, links, supabase]
   );
 
   const refreshData = useCallback(async () => {
@@ -370,6 +397,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setAvatarPreview,
         isLoading,
         userId,
+        lastSaveError,
         signOut,
         refreshData,
       }}
