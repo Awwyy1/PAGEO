@@ -32,7 +32,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
 
-  const { signOut, profile, links, avatarPreview } = useProfile();
+  const { signOut, profile, links, avatarPreview, lastSaveError } = useProfile();
   const publicUrl = `/${profile.username}`;
   const currentPlan = planConfig[profile.plan || "free"];
   const PlanIcon = currentPlan.icon;
@@ -180,6 +180,12 @@ export default function DashboardLayout({
             );
           })}
         </nav>
+
+        {lastSaveError && (
+          <div className="mx-4 mt-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+            {lastSaveError}
+          </div>
+        )}
 
         <main className="flex-1 p-6">
           <div className="flex gap-10 max-w-5xl mx-auto">

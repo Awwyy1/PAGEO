@@ -99,6 +99,7 @@ export default function DesignPage() {
         avatarPreview,
         setAvatarPreview,
         userId,
+        lastSaveError,
     } = useProfile();
 
     const currentPlan = profile.plan || "free";
@@ -199,22 +200,28 @@ export default function DesignPage() {
     };
 
     /* — Theme handlers — */
-    const handleThemeClick = (theme: typeof themes[0]) => {
+    const [themeSaved, setThemeSaved] = useState(false);
+
+    const handleThemeClick = async (theme: typeof themes[0]) => {
         if (theme.minPlanIndex > currentPlanIdx) {
             setUpgradeModal({ feature: `${theme.label} theme`, plan: theme.minPlanIndex === 1 ? "pro" : "business" });
             return;
         }
-        updateProfile({ theme: theme.id });
+        const ok = await updateProfile({ theme: theme.id });
         setShowCustom(false);
+        if (ok) {
+            setThemeSaved(true);
+            setTimeout(() => setThemeSaved(false), 2000);
+        }
     };
 
-    const handleSelectCustom = () => {
+    const handleSelectCustom = async () => {
         if (currentPlan !== "business") {
             setUpgradeModal({ feature: "Custom colors", plan: "business" });
             return;
         }
         setShowCustom(true);
-        updateProfile({ theme: "custom", custom_colors: colors });
+        await updateProfile({ theme: "custom", custom_colors: colors });
     };
 
     const handleCustomColorChange = (key: keyof CustomColors, value: string) => {
@@ -359,8 +366,16 @@ export default function DesignPage() {
             {/* ═══ THEME TAB ═══ */}
             {activeTab === "theme" && (
                 <div className="space-y-4">
+                    {lastSaveError && (
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                            {lastSaveError}
+                        </div>
+                    )}
                     <div className="rounded-2xl border bg-card p-6 space-y-4">
-                        <h2 className="text-sm font-medium">Choose a theme</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-sm font-medium">Choose a theme</h2>
+                            {themeSaved && <span className="text-xs text-emerald-600 font-medium">Saved!</span>}
+                        </div>
                         <div className="flex items-center gap-2 flex-wrap">
                             {themes.map((theme) => {
                                 const locked = theme.minPlanIndex > currentPlanIdx;
