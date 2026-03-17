@@ -21,15 +21,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Sign in with timeout to prevent infinite loading
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Login timed out. Please try again.")), 15000)
-      );
-
-      const { error } = await Promise.race([
-        supabase.auth.signInWithPassword({ email, password }),
-        timeoutPromise,
-      ]) as { error: { message: string } | null };
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
         setError(error.message);
@@ -37,8 +29,12 @@ export default function LoginPage() {
         return;
       }
 
+      // Give the browser 100ms to persist auth cookies before navigating.
+      // Chrome/Firefox abort cookie writes during immediate navigation,
+      // causing the middleware to see no session and redirect back to login.
+      await new Promise((r) => setTimeout(r, 100));
+
       // Hard navigation to force ProfileProvider to re-initialize with new session
-      // (client-side router.push causes Chrome to abort in-flight fetches)
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -85,6 +81,14 @@ export default function LoginPage() {
               required
               minLength={6}
             />
+          </div>
+          <div className="flex justify-end">
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs text-muted-foreground hover:text-primary hover:underline transition-colors"
+            >
+              Forgot password?
+            </Link>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (

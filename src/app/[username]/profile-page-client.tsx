@@ -1,10 +1,11 @@
 // Client component for public profile — handles animations, click tracking, social icons, and custom themes
 "use client";
 
-import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getSocialIcon } from "@/lib/social-icons";
+import { Share2, Check } from "lucide-react";
 import type { Profile, Link } from "@/types/database";
 
 const themeBg: Record<string, string> = {
@@ -29,6 +30,7 @@ export function ProfilePageClient({ profile, links }: Props) {
   const cc = profile.custom_colors;
   const isGradient = !isCustom && theme !== "light" && theme !== "dark";
   const showBranding = profile.plan !== "business";
+  const [copied, setCopied] = useState(false);
 
   // Filter out scheduled links that haven't arrived yet
   const visibleLinks = links.filter((link) => {
@@ -64,6 +66,31 @@ export function ProfilePageClient({ profile, links }: Props) {
       }).catch(() => { });
     }
   };
+
+  const handleShare = useCallback(async () => {
+    const url = window.location.href;
+    const title = `${profile.display_name || profile.username} — allme`;
+
+    // Try native Web Share API first (mobile + some desktop browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch {
+        // User cancelled or API failed — fall through to clipboard
+      }
+    }
+
+    // Fallback: copy URL to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Last resort: prompt
+      window.prompt("Copy this link:", url);
+    }
+  }, [profile.display_name, profile.username]);
 
   return (
     <main
@@ -138,7 +165,7 @@ export function ProfilePageClient({ profile, links }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className={cn(
-              "text-sm text-center mt-2 mb-8",
+              "text-sm text-center mt-2 mb-4",
               isCustom
                 ? ""
                 : isGradient
@@ -152,6 +179,55 @@ export function ProfilePageClient({ profile, links }: Props) {
             {profile.bio}
           </motion.p>
         )}
+
+        {/* Share button — hidden for now, code preserved */}
+        {false && <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          onClick={handleShare}
+          className={cn(
+            "flex items-center gap-2 rounded-full px-5 py-2 text-xs font-medium transition-all mt-2 mb-6",
+            isCustom
+              ? ""
+              : isGradient
+                ? "bg-white/15 text-white/80 hover:bg-white/25 backdrop-blur"
+                : theme === "dark"
+                  ? "bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700"
+                  : "bg-foreground/5 text-muted-foreground hover:bg-foreground/10 border border-border"
+          )}
+          style={isCustom && cc ? {
+            backgroundColor: `${cc?.buttonBg}20`,
+            color: `${cc?.text}cc`,
+            borderColor: `${cc?.buttonBg}40`,
+          } : undefined}
+        >
+          <AnimatePresence mode="wait">
+            {copied ? (
+              <motion.span
+                key="copied"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="flex items-center gap-1.5"
+              >
+                <Check className="h-3.5 w-3.5" />
+                Copied!
+              </motion.span>
+            ) : (
+              <motion.span
+                key="share"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="flex items-center gap-1.5"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                Share
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>}
 
         {/* Links with social icons */}
         <div className="w-full space-y-3 mt-4">

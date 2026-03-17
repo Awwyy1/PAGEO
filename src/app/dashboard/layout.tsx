@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link2, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2, CreditCard } from "lucide-react";
+import { Link2, Paintbrush, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
 
@@ -19,6 +19,7 @@ const planConfig: Record<Plan, { label: string; icon: typeof Sparkles; color: st
 
 const navItems = [
   { href: "/dashboard", label: "Links", icon: Link2 },
+  { href: "/dashboard/design", label: "Design", icon: Paintbrush },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },

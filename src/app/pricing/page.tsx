@@ -447,7 +447,7 @@ export default function PricingPage() {
               Ready to build your page?
             </h2>
             <p className="text-muted-foreground mb-6">
-              Join thousands of creators sharing their links with Allme.
+              Start sharing your links with the world using Allme.
             </p>
             <Link
               href="/auth/register"
