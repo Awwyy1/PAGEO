@@ -9,12 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const RESERVED_USERNAMES = [
-  "admin", "demo", "allme", "test", "user", "help",
-  "support", "about", "blog", "api", "app", "www", "mail",
-  "dashboard", "auth", "pricing", "privacy", "terms",
-];
+import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "too_short";
 

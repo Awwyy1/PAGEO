@@ -1,12 +1,7 @@
 // API route to check username availability — works without auth (for registration)
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-
-const RESERVED_USERNAMES = [
-    "admin", "demo", "allme", "test", "user", "help",
-    "support", "about", "blog", "api", "app", "www", "mail",
-    "dashboard", "auth", "pricing", "privacy", "terms",
-];
+import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile, Link } from "@/types/database";
 import type { Metadata } from "next";
 import { ProfilePageClient } from "./profile-page-client";
+import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
 // Disable caching so scheduled links appear on time
 export const dynamic = "force-dynamic";
@@ -65,8 +66,7 @@ export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
 
   // Skip static routes that aren't usernames
-  const reserved = ["dashboard", "auth", "demo", "api", "pricing", "_next"];
-  if (reserved.includes(username)) {
+  if (RESERVED_USERNAMES.includes(username)) {
     notFound();
   }
 
