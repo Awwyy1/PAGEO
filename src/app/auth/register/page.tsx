@@ -11,7 +11,7 @@ import { Loader2, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
-type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "too_short";
+type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "too_short" | "plan_required";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,6 +32,12 @@ export default function RegisterPage() {
 
     if (username.length < 3) {
       setUsernameStatus("too_short");
+      return;
+    }
+
+    // 3-char usernames are premium — new signups are Free tier
+    if (username.length === 3) {
+      setUsernameStatus("plan_required");
       return;
     }
 
@@ -78,6 +84,12 @@ export default function RegisterPage() {
 
     if (usernameStatus !== "available") {
       setError("Please choose an available username.");
+      return;
+    }
+
+    // Server-side guard: new signups are Free, so block 3-char usernames
+    if (username.length < 4) {
+      setError("Short usernames (3 characters) require a Pro or Business plan.");
       return;
     }
 
@@ -150,7 +162,7 @@ export default function RegisterPage() {
                     "pr-9",
                     usernameStatus === "available" &&
                     "border-emerald-500 focus-visible:ring-emerald-500",
-                    (usernameStatus === "taken" || usernameStatus === "invalid") &&
+                    (usernameStatus === "taken" || usernameStatus === "invalid" || usernameStatus === "plan_required") &&
                     "border-destructive focus-visible:ring-destructive"
                   )}
                 />
@@ -162,7 +174,7 @@ export default function RegisterPage() {
                   {usernameStatus === "available" && (
                     <Check className="h-4 w-4 text-emerald-500" />
                   )}
-                  {(usernameStatus === "taken" || usernameStatus === "invalid") && (
+                  {(usernameStatus === "taken" || usernameStatus === "invalid" || usernameStatus === "plan_required") && (
                     <X className="h-4 w-4 text-destructive" />
                   )}
                 </div>
@@ -182,7 +194,16 @@ export default function RegisterPage() {
               )}
               {usernameStatus === "too_short" && username.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  At least 3 characters required.
+                  At least 4 characters required.
+                </p>
+              )}
+              {usernameStatus === "plan_required" && (
+                <p className="text-xs text-destructive">
+                  3-character usernames require{" "}
+                  <Link href="/pricing" className="underline hover:text-destructive/80">
+                    Pro or Business
+                  </Link>{" "}
+                  plan.
                 </p>
               )}
               {usernameStatus === "invalid" && (
