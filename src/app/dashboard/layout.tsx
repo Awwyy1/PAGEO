@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link2, Paintbrush, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2 } from "lucide-react";
+import { Link2, Paintbrush, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
 
@@ -21,6 +21,7 @@ const navItems = [
   { href: "/dashboard", label: "Links", icon: Link2 },
   { href: "/dashboard/design", label: "Design", icon: Paintbrush },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
@@ -45,19 +46,17 @@ export default function DashboardLayout({
             <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-md" />
             allme
           </Link>
-          <a
-            href="/pricing"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/dashboard/billing"
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-opacity hover:opacity-80",
               currentPlan.bg,
               currentPlan.color
             )}
           >
             <PlanIcon className="h-3 w-3" />
             {currentPlan.label}
-          </a>
+          </Link>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -118,16 +117,17 @@ export default function DashboardLayout({
               <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
               allme
             </Link>
-            <span
+            <Link
+              href="/dashboard/billing"
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-opacity hover:opacity-80",
                 currentPlan.bg,
                 currentPlan.color
               )}
             >
               <PlanIcon className="h-2.5 w-2.5" />
               {currentPlan.label}
-            </span>
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <Link

@@ -23,6 +23,8 @@ const emptyProfile: Profile = {
   theme: "light",
   custom_colors: null,
   plan: "free",
+  plan_source: null,
+  subscription_id: null,
   page_views: 0,
   created_at: new Date().toISOString(),
 };
