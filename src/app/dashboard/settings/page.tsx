@@ -11,11 +11,7 @@ import { Camera, Check, X, Loader2, AlertTriangle, Plus } from "lucide-react";
 import { AvatarEditor } from "@/components/dashboard/avatar-editor";
 import { PhonePreview } from "@/components/dashboard/phone-preview";
 import { cn } from "@/lib/utils";
-
-const RESERVED_USERNAMES = [
-  "admin", "demo", "allme", "test", "user", "help",
-  "support", "about", "blog", "api", "app", "www", "mail",
-];
+import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid" | "plan_required";
 
@@ -170,7 +166,7 @@ export default function SettingsPage() {
       setAvatarFile(null);
     }
 
-    updateProfile({
+    const ok = await updateProfile({
       username,
       display_name: displayName || null,
       bio: bio || null,
@@ -178,8 +174,12 @@ export default function SettingsPage() {
     });
 
     setUploading(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (ok) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } else {
+      setSaveError("Failed to save profile. Please try again.");
+    }
   };
 
   return (
