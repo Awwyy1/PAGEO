@@ -44,8 +44,10 @@ interface ProfileContextType {
   isLoading: boolean;
   userId: string | null;
   lastSaveError: string | null;
+  loadError: string | null;
   signOut: () => Promise<void>;
   refreshData: () => Promise<void>;
+  retryLoad: () => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | null>(null);
@@ -58,19 +60,24 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [lastSaveError, setLastSaveError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Core data loader — fetches profile + links for a given user
   // NEVER creates a profile here — profile creation only happens during registration
+  // Retries with exponential backoff (Variant 2) and sets error state on failure (Variant 4)
   const loadUserData = useCallback(
     async (uid: string) => {
       setUserId(uid);
+      setLoadError(null);
+
+      // Retry delays: 300ms, 600ms, 1200ms, 2000ms (5 attempts total)
+      const retryDelays = [300, 600, 1200, 2000];
 
       try {
-        // Retry up to 3 times — Chrome/Firefox abort fetches during navigation
         let profileData: Record<string, unknown> | null = null;
         let lastError: { message: string } | null = null;
 
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 5; attempt++) {
           const result = await supabase
             .from("profiles")
             .select("*")
@@ -85,40 +92,43 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
           if (result.error) {
             lastError = result.error;
-            const msg = result.error.message?.toLowerCase() || "";
-            const isAbort = msg.includes("abort") || msg.includes("signal");
-            if (isAbort && attempt < 2) {
-              // Wait before retry: 300ms, 800ms
-              await new Promise((r) => setTimeout(r, attempt === 0 ? 300 : 800));
+            if (attempt < 4) {
+              await new Promise((r) => setTimeout(r, retryDelays[attempt]));
               continue;
             }
-            // Non-abort error or final attempt — stop retrying
             break;
           }
 
-          // result.data is null and result.error is null  → profile genuinely doesn't exist
-          // Do NOT create one here — just leave the empty state
+          // result.data is null and result.error is null → profile might not exist yet
+          // In Chrome, cookies may not have synced — retry before giving up
+          if (attempt < 4) {
+            await new Promise((r) => setTimeout(r, retryDelays[attempt]));
+            continue;
+          }
           break;
         }
 
         if (lastError) {
           console.error("Profile fetch failed after retries:", lastError.message);
+          setLoadError("Failed to load profile. Please check your connection and try again.");
           setIsLoading(false);
           return;
         }
 
         if (profileData) {
           setProfile(profileData as Profile);
+          setLoadError(null);
           if (profileData.avatar_url) {
             setAvatarPreview(profileData.avatar_url as string);
           }
+        } else {
+          // Profile genuinely doesn't exist after all retries
+          // The profile will be created by the register page, not here.
         }
-        // If profileData is null (no profile exists), we leave emptyProfile state.
-        // The profile will be created by the register page, not here.
 
-        // Load links (also with retry for AbortError)
+        // Load links (also with retry)
         let linksData: Record<string, unknown>[] | null = null;
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 5; attempt++) {
           const result = await supabase
             .from("links")
             .select("*")
@@ -130,10 +140,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
             break;
           }
           if (result.error) {
-            const msg = result.error.message?.toLowerCase() || "";
-            const isAbort = msg.includes("abort") || msg.includes("signal");
-            if (isAbort && attempt < 2) {
-              await new Promise((r) => setTimeout(r, attempt === 0 ? 300 : 800));
+            if (attempt < 4) {
+              await new Promise((r) => setTimeout(r, retryDelays[attempt]));
               continue;
             }
             console.error("Links fetch failed:", result.error.message);
@@ -147,6 +155,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         console.error("loadUserData unexpected error:", err);
+        setLoadError("An unexpected error occurred. Please try again.");
       }
 
       setIsLoading(false);
@@ -154,14 +163,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     [supabase] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
+  // Retry load — exposed via context for the retry button (Variant 4)
+  const retryLoad = useCallback(() => {
+    if (!userId) return;
+    setIsLoading(true);
+    setLoadError(null);
+    loadUserData(userId);
+  }, [userId, loadUserData]);
+
   // Load on mount + react to auth state changes
   useEffect(() => {
     let mounted = true;
 
     async function init() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Retry getUser up to 3 times — Chrome may not have synced cookies yet
+      let user = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const { data } = await supabase.auth.getUser();
+        user = data.user;
+        if (user || !mounted) break;
+        if (attempt < 2) {
+          await new Promise((r) => setTimeout(r, attempt === 0 ? 200 : 500));
+        }
+      }
 
       if (!user || !mounted) {
         setIsLoading(false);
@@ -398,8 +422,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         isLoading,
         userId,
         lastSaveError,
+        loadError,
         signOut,
         refreshData,
+        retryLoad,
       }}
     >
       {children}

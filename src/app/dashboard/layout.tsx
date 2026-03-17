@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link2, Paintbrush, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2, CreditCard } from "lucide-react";
+import { Link2, Paintbrush, BarChart3, Settings, ExternalLink, LogOut, Crown, Sparkles, Building2, CreditCard, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile-context";
 
@@ -32,7 +32,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
 
-  const { signOut, profile, links, avatarPreview, lastSaveError } = useProfile();
+  const { signOut, profile, links, avatarPreview, lastSaveError, loadError, retryLoad, isLoading } = useProfile();
   const publicUrl = `/${profile.username}`;
   const currentPlan = planConfig[profile.plan || "free"];
   const PlanIcon = currentPlan.icon;
@@ -180,6 +180,20 @@ export default function DashboardLayout({
             );
           })}
         </nav>
+
+        {loadError && (
+          <div className="mx-4 mt-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-3">
+            <span>{loadError}</span>
+            <button
+              onClick={retryLoad}
+              disabled={isLoading}
+              className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
+              Retry
+            </button>
+          </div>
+        )}
 
         {lastSaveError && (
           <div className="mx-4 mt-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
