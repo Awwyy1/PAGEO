@@ -9,6 +9,8 @@ export type CustomColors = {
 
 export type Plan = "free" | "pro" | "business";
 
+export type PlanSource = "creem" | "promo" | null;
+
 export type Profile = {
   id: string;
   username: string;
@@ -18,6 +20,8 @@ export type Profile = {
   theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "midnight" | "rose" | "cyber" | "minimal" | "custom";
   custom_colors: CustomColors | null;
   plan: Plan;
+  plan_source: PlanSource;
+  subscription_id: string | null;
   page_views: number;
   created_at: string;
 };
