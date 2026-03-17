@@ -221,9 +221,21 @@ export default function HomePage() {
                         stiffness: 260,
                         damping: 20,
                       }}
-                      className="w-[68px] h-[68px] rounded-full bg-gradient-to-br from-primary via-violet-500 to-pink-500 flex items-center justify-center mb-3 shadow-lg shadow-primary/20"
+                      className="relative mb-3"
                     >
-                      <span className="text-xl font-bold text-white">A</span>
+                      <div className="w-[72px] h-[72px] rounded-full bg-white p-[3px] shadow-lg shadow-primary/20">
+                        <img
+                          src="/avatars/landing-avatar.jpg"
+                          alt="Alex Johnson"
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      </div>
+                      {/* Verified badge */}
+                      <div className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#4A9EEB] border-2 border-white flex items-center justify-center shadow-sm">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="white"/>
+                        </svg>
+                      </div>
                     </motion.div>
 
                     <motion.p
