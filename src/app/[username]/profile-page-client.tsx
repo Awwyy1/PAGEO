@@ -111,7 +111,7 @@ export function ProfilePageClient({ profile, links }: Props) {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="mb-4"
+          className="mb-4 relative"
         >
           {profile.avatar_url ? (
             <img
@@ -144,6 +144,12 @@ export function ProfilePageClient({ profile, links }: Props) {
               >
                 {initial}
               </span>
+            </div>
+          )}
+          {/* Verified badge — Business plan only */}
+          {profile.plan === "business" && (
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-blue-500 border-2 border-white shadow flex items-center justify-center">
+              <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
             </div>
           )}
         </motion.div>
