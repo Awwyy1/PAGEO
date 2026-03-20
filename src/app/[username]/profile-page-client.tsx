@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { getSocialIcon } from "@/lib/social-icons";
 import { Share2, Check } from "lucide-react";
 import type { Profile, Link } from "@/types/database";
+import { clarityEvent, claritySet } from "@/lib/clarity";
 
 const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
@@ -51,9 +52,16 @@ export function ProfilePageClient({ profile, links }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: profile.username }),
     }).catch(() => { });
-  }, [profile.username]);
 
-  const handleLinkClick = (linkId: string) => {
+    // Tag this Clarity session so it can be filtered as a public profile visit
+    claritySet("page_type", "public_profile");
+    claritySet("profile_owner", profile.username);
+    claritySet("profile_theme", profile.theme);
+    claritySet("links_count", String(visibleLinks.length));
+    clarityEvent("profile_view");
+  }, [profile.username]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLinkClick = (linkId: string, linkTitle: string) => {
     const data = JSON.stringify({ linkId });
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/api/click", new Blob([data], { type: "application/json" }));
@@ -65,11 +73,16 @@ export function ProfilePageClient({ profile, links }: Props) {
         keepalive: true,
       }).catch(() => { });
     }
+
+    // Clarity custom event — visible in session recordings timeline
+    clarityEvent("link_click");
+    claritySet("clicked_link", linkTitle);
   };
 
   const handleShare = useCallback(async () => {
     const url = window.location.href;
     const title = `${profile.display_name || profile.username} — allme`;
+    clarityEvent("share_click");
 
     // Try native Web Share API first (mobile + some desktop browsers)
     if (navigator.share) {
@@ -239,7 +252,7 @@ export function ProfilePageClient({ profile, links }: Props) {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => handleLinkClick(link.id)}
+                onClick={() => handleLinkClick(link.id, link.title)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + i * 0.08 }}
