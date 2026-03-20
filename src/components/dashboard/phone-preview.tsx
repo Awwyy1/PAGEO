@@ -4,6 +4,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getSocialIcon } from "@/lib/social-icons";
+import { Check } from "lucide-react";
 import type { Profile, Link } from "@/types/database";
 
 interface PhonePreviewProps {
@@ -79,7 +80,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
         {/* Content */}
         <div className="px-6 pb-6 flex flex-col items-center overflow-y-auto h-[calc(100%-3rem)]">
           {/* Avatar */}
-          <div className="mb-3">
+          <div className="mb-3 relative">
             {avatarPreview ? (
               <img
                 src={avatarPreview}
@@ -113,6 +114,11 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
                 >
                   {initial}
                 </span>
+              </div>
+            )}
+            {profile.plan === "business" && (
+              <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-blue-500 border-2 border-white shadow flex items-center justify-center">
+                <Check className="h-3 w-3 text-white" strokeWidth={3} />
               </div>
             )}
           </div>

@@ -38,6 +38,7 @@ const plans = [
       { text: "Scheduled links", included: false },
       { text: "QR code", included: false },
       { text: "Remove Allme branding", included: false },
+      { text: "Verified badge", included: false },
     ],
   },
   {
@@ -59,6 +60,7 @@ const plans = [
       { text: "Scheduled links", included: true },
       { text: "QR code", included: true },
       { text: "Remove Allme branding", included: false },
+      { text: "Verified badge", included: false },
     ],
   },
   {
@@ -79,6 +81,7 @@ const plans = [
       { text: "Scheduled links", included: true },
       { text: "QR code", included: true },
       { text: "Remove Allme branding", included: true },
+      { text: "Verified badge", included: true },
     ],
   },
 ];
