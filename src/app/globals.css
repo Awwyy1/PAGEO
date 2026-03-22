@@ -68,4 +68,4 @@
 .font-modern { font-family: var(--font-modern), system-ui, sans-serif; }
 .font-classic { font-family: var(--font-classic), Georgia, serif; }
 .font-code { font-family: var(--font-code), monospace; }
-.font-bold { font-family: var(--font-bold), system-ui, sans-serif; }
+.font-heading { font-family: var(--font-bold), system-ui, sans-serif; }

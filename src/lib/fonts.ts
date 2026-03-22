@@ -4,7 +4,7 @@ export const fontConfig: Record<FontChoice, { label: string; description: string
   modern: { label: "Modern", description: "Inter", className: "font-modern" },
   classic: { label: "Classic", description: "Playfair Display", className: "font-classic" },
   code: { label: "Code", description: "JetBrains Mono", className: "font-code" },
-  bold: { label: "Bold", description: "Syne", className: "font-bold" },
+  bold: { label: "Bold", description: "Syne", className: "font-heading" },
 };
 
 export const alignmentConfig: Record<ContentAlignment, { label: string; icon: "left" | "center" | "right" }> = {
