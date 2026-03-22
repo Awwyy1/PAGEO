@@ -43,7 +43,7 @@ export default function DashboardLayout({
       <aside className="hidden md:flex w-64 flex-col border-r bg-card p-6 gap-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-md" />
+            <img src="/icon.png" alt="Allme" className="h-6 w-6 rounded-full" />
             allme
           </Link>
           <Link
@@ -114,7 +114,7 @@ export default function DashboardLayout({
         <header className="flex md:hidden items-center justify-between border-b p-4">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-1.5 text-lg font-bold">
-              <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+              <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
               allme
             </Link>
             <Link

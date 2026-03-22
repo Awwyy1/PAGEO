@@ -15,7 +15,7 @@ export default function TermsPage() {
             <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
-                        <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-lg" />
+                        <img src="/icon.png" alt="Allme" className="h-7 w-7 rounded-full" />
                         allme
                     </Link>
                     <div className="flex items-center gap-4">
@@ -311,7 +311,7 @@ export default function TermsPage() {
             <footer className="border-t border-border/40 py-8 px-6">
                 <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                     <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
-                        <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-md" />
+                        <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
                         allme
                     </Link>
                     <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
