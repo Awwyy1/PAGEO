@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { getSocialIcon } from "@/lib/social-icons";
 import { Share2, Check } from "lucide-react";
 import type { Profile, Link } from "@/types/database";
+import { getFontClass, getAlignmentClass } from "@/lib/fonts";
 
 const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
@@ -91,10 +92,14 @@ export function ProfilePageClient({ profile, links }: Props) {
     }
   }, [profile.display_name, profile.username]);
 
+  const fontClass = getFontClass(profile.font);
+  const alignClass = getAlignmentClass(profile.content_alignment);
+
   return (
     <main
       className={cn(
         "min-h-screen flex flex-col items-center px-4 py-12 transition-colors duration-300",
+        fontClass,
         isCustom
           ? ""
           : theme === "dark"
@@ -105,7 +110,7 @@ export function ProfilePageClient({ profile, links }: Props) {
       )}
       style={isCustom && cc ? { backgroundColor: cc.bg, color: cc.text } : undefined}
     >
-      <div className="w-full max-w-md flex flex-col items-center">
+      <div className={cn("w-full max-w-md flex flex-col", alignClass)}>
         {/* Avatar */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -175,7 +180,7 @@ export function ProfilePageClient({ profile, links }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className={cn(
-              "text-sm text-center mt-2 mb-4",
+              "text-sm mt-2 mb-4 whitespace-pre-line",
               isCustom
                 ? ""
                 : isGradient

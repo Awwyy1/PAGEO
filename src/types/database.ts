@@ -7,6 +7,10 @@ export type CustomColors = {
   buttonText: string;
 };
 
+export type FontChoice = "modern" | "classic" | "code" | "bold";
+
+export type ContentAlignment = "left" | "center" | "right";
+
 export type Plan = "free" | "pro" | "business";
 
 export type PlanSource = "creem" | "promo" | null;
@@ -19,6 +23,8 @@ export type Profile = {
   avatar_url: string | null;
   theme: "light" | "dark" | "gradient" | "ocean" | "sunset" | "forest" | "midnight" | "rose" | "cyber" | "minimal" | "custom";
   custom_colors: CustomColors | null;
+  font: FontChoice;
+  content_alignment: ContentAlignment;
   plan: Plan;
   plan_source: PlanSource;
   subscription_id: string | null;

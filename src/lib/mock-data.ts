@@ -9,6 +9,8 @@ export const mockProfile: Profile = {
   avatar_url: null,
   theme: "light",
   custom_colors: null,
+  font: "modern",
+  content_alignment: "center",
   plan: "free",
   plan_source: null,
   subscription_id: null,

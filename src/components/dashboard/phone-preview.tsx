@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getSocialIcon } from "@/lib/social-icons";
 import type { Profile, Link } from "@/types/database";
+import { getFontClass, getAlignmentClass } from "@/lib/fonts";
 
 interface PhonePreviewProps {
   profile: Profile;
@@ -43,12 +44,16 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
     "?"
   )[0].toUpperCase();
 
+  const fontClass = getFontClass(profile.font);
+  const alignClass = getAlignmentClass(profile.content_alignment);
+
   return (
     <div className="flex items-start justify-center pt-8 sticky top-8">
       {/* Phone frame */}
       <div
         className={cn(
           "w-[320px] h-[580px] rounded-[3rem] border-[8px] overflow-hidden shadow-xl transition-colors duration-300",
+          fontClass,
           isCustom
             ? ""
             : theme === "dark"
@@ -77,7 +82,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-6 flex flex-col items-center overflow-y-auto h-[calc(100%-3rem)]">
+        <div className={cn("px-6 pb-6 flex flex-col overflow-y-auto h-[calc(100%-3rem)]", alignClass)}>
           {/* Avatar */}
           <div className="mb-3 relative">
             {avatarPreview ? (
@@ -144,7 +149,7 @@ export function PhonePreview({ profile, links, avatarPreview }: PhonePreviewProp
           {profile.bio && (
             <p
               className={cn(
-                "text-xs text-center mt-1 mb-4",
+                "text-xs mt-1 mb-4 whitespace-pre-line",
                 isCustom
                   ? ""
                   : isGradient
