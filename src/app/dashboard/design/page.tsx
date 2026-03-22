@@ -6,11 +6,12 @@ import { useProfile } from "@/lib/profile-context";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, Plus, Palette, Lock } from "lucide-react";
+import { Camera, Loader2, Plus, Palette, Lock, AlignLeft, AlignCenter, AlignRight, Type } from "lucide-react";
 import { AvatarEditor } from "@/components/dashboard/avatar-editor";
 import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
 import { cn } from "@/lib/utils";
-import type { CustomColors, Plan, Profile } from "@/types/database";
+import { fontConfig, getFontClass } from "@/lib/fonts";
+import type { CustomColors, Plan, Profile, FontChoice, ContentAlignment } from "@/types/database";
 
 /* ───── Theme definitions ───── */
 const DEFAULT_CUSTOM: CustomColors = {
@@ -121,7 +122,7 @@ export default function DesignPage() {
     const colors = profile.custom_colors || DEFAULT_CUSTOM;
 
     /* — Active tab — */
-    const [activeTab, setActiveTab] = useState<"page" | "theme">("page");
+    const [activeTab, setActiveTab] = useState<"page" | "theme" | "typography">("page");
 
     const supabase = createClient();
 
@@ -263,6 +264,17 @@ export default function DesignPage() {
                     )}
                 >
                     Theme
+                </button>
+                <button
+                    onClick={() => setActiveTab("typography")}
+                    className={cn(
+                        "flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+                        activeTab === "typography"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    Typography
                 </button>
             </div>
 
@@ -443,6 +455,67 @@ export default function DesignPage() {
                             </div>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* ═══ TYPOGRAPHY TAB ═══ */}
+            {activeTab === "typography" && (
+                <div className="space-y-4">
+                    {/* Font selection */}
+                    <div className="rounded-2xl border bg-card p-6 space-y-4">
+                        <div className="flex items-center gap-2">
+                            <Type className="h-4 w-4" />
+                            <h2 className="text-sm font-medium">Font</h2>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            {(Object.entries(fontConfig) as [FontChoice, typeof fontConfig[FontChoice]][]).map(([id, config]) => (
+                                <button
+                                    key={id}
+                                    onClick={() => updateProfile({ font: id })}
+                                    className={cn(
+                                        "rounded-xl border p-4 text-left transition-all",
+                                        (profile.font || "modern") === id
+                                            ? "border-primary ring-2 ring-primary/20 bg-primary/5"
+                                            : "hover:border-foreground/20 hover:bg-accent/50"
+                                    )}
+                                >
+                                    <span className={cn("block text-base font-semibold", getFontClass(id))}>
+                                        {config.label}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground mt-0.5 block">
+                                        {config.description}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Content alignment */}
+                    <div className="rounded-2xl border bg-card p-6 space-y-4">
+                        <h2 className="text-sm font-medium">Content alignment</h2>
+                        <div className="flex gap-2">
+                            {([
+                                { id: "left" as ContentAlignment, icon: AlignLeft, label: "Left" },
+                                { id: "center" as ContentAlignment, icon: AlignCenter, label: "Center" },
+                                { id: "right" as ContentAlignment, icon: AlignRight, label: "Right" },
+                            ]).map(({ id, icon: Icon, label }) => (
+                                <button
+                                    key={id}
+                                    onClick={() => updateProfile({ content_alignment: id })}
+                                    title={label}
+                                    className={cn(
+                                        "flex-1 flex items-center justify-center gap-2 rounded-xl border p-3 transition-all",
+                                        (profile.content_alignment || "center") === id
+                                            ? "border-primary ring-2 ring-primary/20 bg-primary/5"
+                                            : "hover:border-foreground/20 hover:bg-accent/50"
+                                    )}
+                                >
+                                    <Icon className="h-4 w-4" />
+                                    <span className="text-sm font-medium">{label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
 

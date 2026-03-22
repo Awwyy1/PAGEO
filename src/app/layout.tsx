@@ -1,6 +1,6 @@
 // Root layout — applies global styles, font, and providers to all pages
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, Playfair_Display, JetBrains_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Analytics } from "@vercel/analytics/next";
@@ -9,6 +9,30 @@ import Script from "next/script";
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-modern",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-classic",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-code",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-bold",
   weight: ["400", "500", "600", "700", "800"],
 });
 
@@ -52,7 +76,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} font-sans antialiased`}>
+      <body className={`${plusJakartaSans.variable} ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable} ${syne.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
         {/* Microsoft Clarity */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
