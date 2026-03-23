@@ -50,12 +50,12 @@ export function ProfilePageClient({ profile, links }: Props) {
     fetch("/api/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: profile.username }),
+      body: JSON.stringify({ username: profile.username, referrer: document.referrer }),
     }).catch(() => { });
   }, [profile.username]);
 
   const handleLinkClick = (linkId: string) => {
-    const data = JSON.stringify({ linkId });
+    const data = JSON.stringify({ linkId, referrer: document.referrer });
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/api/click", new Blob([data], { type: "application/json" }));
     } else {
