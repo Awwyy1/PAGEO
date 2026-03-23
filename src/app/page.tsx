@@ -140,10 +140,10 @@ export default function HomePage() {
                 variants={fadeUp}
                 className="text-5xl sm:text-6xl lg:text-[4.25rem] font-bold tracking-tight leading-[1.08]"
               >
-                Your links.
+                One Link.
                 <br />
                 <span className="bg-gradient-to-r from-primary via-violet-500 to-pink-500 bg-clip-text text-transparent">
-                  One beautiful page.
+                  Infinite Possibilities.
                 </span>
               </motion.h1>
 
@@ -179,11 +179,11 @@ export default function HomePage() {
               >
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Zap className="h-3.5 w-3.5 text-primary shrink-0" />
-                  Setup in 30 sec
+                  Zero code
                 </span>
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
-                  No setup needed
+                  Setup in 30 sec
                 </span>
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
