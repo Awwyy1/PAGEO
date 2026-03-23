@@ -45,6 +45,17 @@ export type Link = {
   created_at: string;
 };
 
+export type AnalyticsEvent = {
+  id: string;
+  profile_id: string;
+  link_id: string | null;
+  event_type: "page_view" | "link_click";
+  referrer: string | null;
+  country: string | null;
+  device: string | null;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
