@@ -299,7 +299,7 @@ export default function HomePage() {
       <section className="py-16 px-6 border-y border-border/40 bg-muted/30">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {[
-            { value: "6", label: "Beautiful themes" },
+            { value: "10", label: "Beautiful themes" },
             { value: "\u221E", label: "Links per page" },
             { value: "99.9%", label: "Uptime" },
             { value: "< 30s", label: "Setup time" },
