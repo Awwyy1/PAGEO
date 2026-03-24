@@ -361,12 +361,12 @@ export default function PricingPage() {
                         )}
                       >
                         {feature.included ? (
-                          <div className="mt-0.5 w-4 h-4 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
-                            <Check className="h-2.5 w-2.5 text-emerald-600" />
+                          <div className="mt-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                            <Check className="h-2 w-2 text-emerald-600" />
                           </div>
                         ) : (
-                          <div className="mt-0.5 w-4 h-4 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <XIcon className="h-2.5 w-2.5 text-muted-foreground/40" />
+                          <div className="mt-0.5 w-3.5 h-3.5 rounded-full bg-muted flex items-center justify-center shrink-0">
+                            <XIcon className="h-2 w-2 text-muted-foreground/40" />
                           </div>
                         )}
                         {feature.text}
