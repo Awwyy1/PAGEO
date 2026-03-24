@@ -122,7 +122,7 @@ export default function BillingPage() {
         <div className="grid grid-cols-2 gap-3">
           {planFeatures[plan].map((feature) => (
             <div key={feature} className="flex items-center gap-2 text-sm">
-              <Check className="h-3 w-3 text-emerald-500 shrink-0" />
+              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
               <span>{feature}</span>
             </div>
           ))}
@@ -202,7 +202,7 @@ export default function BillingPage() {
                   <ul className="space-y-2">
                     {planFeatures[targetPlan].map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-3 w-3 text-emerald-500 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                         {f}
                       </li>
                     ))}
