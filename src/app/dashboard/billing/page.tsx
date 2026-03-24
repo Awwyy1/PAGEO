@@ -26,7 +26,7 @@ const planFeatures: Record<Plan, string[]> = {
   pro: [
     "Up to 15 links",
     "10 premium themes",
-    "Full analytics (CTR, charts, daily)",
+    "Detailed analytics with daily breakdown",
     "Custom OG preview",
     "Scheduled links",
     "QR code",
@@ -34,7 +34,7 @@ const planFeatures: Record<Plan, string[]> = {
   business: [
     "Unlimited links",
     "All themes + custom colors",
-    "Full analytics + CSV export",
+    "Advanced analytics: geo, devices, UTM + CSV export",
     "QR code + remove branding",
     "Everything in Pro",
   ],
@@ -122,7 +122,7 @@ export default function BillingPage() {
         <div className="grid grid-cols-2 gap-3">
           {planFeatures[plan].map((feature) => (
             <div key={feature} className="flex items-center gap-2 text-sm">
-              <Check className="h-3 w-3 text-emerald-500 shrink-0" />
+              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
               <span>{feature}</span>
             </div>
           ))}
@@ -202,7 +202,7 @@ export default function BillingPage() {
                   <ul className="space-y-2">
                     {planFeatures[targetPlan].map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-3 w-3 text-emerald-500 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                         {f}
                       </li>
                     ))}
