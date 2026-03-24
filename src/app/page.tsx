@@ -231,7 +231,7 @@ export default function HomePage() {
                         />
                       </div>
                       {/* Verified badge */}
-                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5">
+                      <div className="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px]">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
                           <g transform="translate(1.407 1.407) scale(2.81)">
                             <polygon points="45,6.18 57.06,0 64.41,11.38 77.94,12.06 78.62,25.59 90,32.94 83.82,45 90,57.06 78.62,64.41 77.94,77.94 64.41,78.62 57.06,90 45,83.82 32.94,90 25.59,78.62 12.06,77.94 11.38,64.41 0,57.06 6.18,45 0,32.94 11.38,25.59 12.06,12.06 25.59,11.38 32.94,0" fill="rgb(0,150,241)" />
