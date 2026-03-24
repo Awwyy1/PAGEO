@@ -53,7 +53,7 @@ const plans = [
     features: [
       { text: "Up to 15 links", included: true },
       { text: "10 premium themes", included: true },
-      { text: "Full analytics (CTR, charts, daily)", included: true },
+      { text: "Detailed analytics with daily breakdown", included: true },
       { text: "Profile avatar & bio", included: true },
       { text: "allme.site/username URL", included: true },
       { text: "Custom OG preview", included: true },
@@ -74,7 +74,7 @@ const plans = [
     features: [
       { text: "Unlimited links", included: true },
       { text: "All themes + custom colors", included: true },
-      { text: "Full analytics + CSV export", included: true },
+      { text: "Advanced analytics: geo, devices, UTM + CSV export", included: true },
       { text: "Profile avatar & bio", included: true },
       { text: "allme.site/username URL", included: true },
       { text: "Custom OG preview", included: true },

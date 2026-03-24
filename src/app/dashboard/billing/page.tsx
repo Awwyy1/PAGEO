@@ -26,7 +26,7 @@ const planFeatures: Record<Plan, string[]> = {
   pro: [
     "Up to 15 links",
     "10 premium themes",
-    "Full analytics (CTR, charts, daily)",
+    "Detailed analytics with daily breakdown",
     "Custom OG preview",
     "Scheduled links",
     "QR code",
@@ -34,7 +34,7 @@ const planFeatures: Record<Plan, string[]> = {
   business: [
     "Unlimited links",
     "All themes + custom colors",
-    "Full analytics + CSV export",
+    "Advanced analytics: geo, devices, UTM + CSV export",
     "QR code + remove branding",
     "Everything in Pro",
   ],
