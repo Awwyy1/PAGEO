@@ -12,6 +12,24 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "link-in-bio-instagram",
+    title: "Link in Bio for Instagram: Complete Guide 2026",
+    description:
+      "Instagram only lets you add one link. Here\u2019s how to use a link in bio page to share all your links \u2014 setup guide, tips, and free tool.",
+    date: "March 2026",
+    readTime: "7 min read",
+    tags: ["Guide", "Instagram"],
+  },
+  {
+    slug: "how-to-create-link-in-bio",
+    title: "How to Create a Link in Bio Page (Step-by-Step Guide)",
+    description:
+      "A practical guide to creating your link in bio page — choosing a platform, adding links, picking a theme, and copying the URL to your bio.",
+    date: "March 2026",
+    readTime: "7 min read",
+    tags: ["Guide", "Getting started"],
+  },
+  {
     slug: "linktree-alternatives",
     title: "7 Best Free Linktree Alternatives in 2026",
     description:
