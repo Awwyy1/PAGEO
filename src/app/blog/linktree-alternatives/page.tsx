@@ -236,13 +236,13 @@ export default function LinktreeAlternativesPost() {
           <div className="prose-section mb-12 space-y-4 text-muted-foreground leading-relaxed">
             <h2 className="text-2xl font-bold text-foreground">Why people look for Linktree alternatives</h2>
             <p>
-              Linktree's free plan gives you unlimited links, but locks you to a single theme — the classic Linktree look that by now most audiences will recognise as generic. Analytics are limited, and the Linktree logo appears on every free page. It works, but it's deliberately constrained to push you toward a paid plan.
+              Linktree&apos;s free plan gives you unlimited links, but locks you to a single theme — the classic Linktree look that by now most audiences will recognise as generic. Analytics are limited, and the Linktree logo appears on every free page. It works, but it&apos;s deliberately constrained to push you toward a paid plan.
             </p>
             <p>
-              That's a reasonable business model, but it means free users are stuck with one look and minimal data. If you want a page that feels like yours, or you want to know which links are actually getting clicks, you'll either pay up or look elsewhere.
+              That&apos;s a reasonable business model, but it means free users are stuck with one look and minimal data. If you want a page that feels like yours, or you want to know which links are actually getting clicks, you&apos;ll either pay up or look elsewhere.
             </p>
             <p>
-              The tools below cover a range of approaches — some are direct replacements, some take a different angle entirely. We've included our own product (Allme) at the top because that's the honest thing to do when you're writing about your own category. Where competitors do something better, we'll say so.
+              The tools below cover a range of approaches — some are direct replacements, some take a different angle entirely. We&apos;ve included our own product (Allme) at the top because that&apos;s the honest thing to do when you&apos;re writing about your own category. Where competitors do something better, we&apos;ll say so.
             </p>
           </div>
 
@@ -385,7 +385,7 @@ export default function LinktreeAlternativesPost() {
               <div className="border-t border-border/40 pt-8">
                 <h3 className="font-semibold mb-2">Why do people look for Linktree alternatives?</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Linktree's free plan limits you to one theme and minimal analytics. Some users want more customisation, lower-cost paid plans, or a page without the Linktree logo. Paid alternatives often offer similar feature sets for less.
+                  Linktree&apos;s free plan limits you to one theme and minimal analytics. Some users want more customisation, lower-cost paid plans, or a page without the Linktree logo. Paid alternatives often offer similar feature sets for less.
                 </p>
               </div>
               <div className="border-t border-border/40 pt-8">
