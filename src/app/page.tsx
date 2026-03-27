@@ -551,14 +551,17 @@ export default function HomePage() {
               {
                 title: "Creators & Influencers",
                 desc: "One link in your bio for all platforms. YouTube, TikTok, Instagram &mdash; everything in one place.",
+                href: "/for/creators",
               },
               {
                 title: "Developers & Freelancers",
                 desc: "Showcase your portfolio, GitHub, resume, and contact info with a clean, professional page.",
+                href: "/for/developers",
               },
               {
                 title: "Small Businesses",
                 desc: "Menu, booking, social media, reviews &mdash; give your customers everything they need instantly.",
+                href: "/for/business",
               },
             ].map((item, i) => (
               <motion.div
@@ -567,12 +570,19 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ delay: i * 0.1 }}
-                className="rounded-2xl border border-border/60 bg-card p-6"
               >
-                <h3 className="font-semibold mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {item.desc}
-                </p>
+                <Link
+                  href={item.href}
+                  className="block rounded-2xl border border-border/60 bg-card p-6 hover:border-border transition-colors"
+                >
+                  <h3 className="font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <span className="inline-block mt-3 text-xs font-medium text-primary">
+                    Learn more →
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -637,7 +647,10 @@ export default function HomePage() {
               <div className="border-t border-border/40 pt-8">
                 <h3 className="text-lg font-semibold mb-2">How is Allme different from Linktree?</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Allme is a free Linktree alternative with more themes on the free plan (3 vs 1) and lower paid plan pricing — Pro starts at $3.99/mo. Both tools show their branding on free pages; Allme removes branding on the Business plan ($9.99/mo). Allme is built on Next.js for faster page loads.
+                  Allme is a free Linktree alternative with more themes on the free plan (3 vs 1) and lower paid plan pricing — Pro starts at $3.99/mo. Both tools show their branding on free pages; Allme removes branding on the Business plan ($9.99/mo). Allme is built on Next.js for faster page loads.{" "}
+                  <Link href="/vs/linktree" className="underline underline-offset-4 hover:text-foreground transition-colors">
+                    Full Allme vs Linktree comparison →
+                  </Link>
                 </p>
               </div>
               <div className="border-t border-border/40 pt-8">
@@ -653,25 +666,43 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border/40 py-8 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight">
-            <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
-            allme
-          </Link>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
-            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Pricing
-            </Link>
-            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Privacy
-            </Link>
-            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Terms
-            </Link>
-            <span className="text-sm text-muted-foreground">
-              &copy; 2026 Allme
-            </span>
+      <footer className="border-t border-border/40 py-10 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-8">
+            <div>
+              <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight mb-3">
+                <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
+                allme
+              </Link>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Free link in bio tool for creators, developers, and businesses.
+              </p>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Product</div>
+              <div className="flex flex-col gap-2">
+                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+                <Link href="/vs/linktree" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Allme vs Linktree</Link>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Use Cases</div>
+              <div className="flex flex-col gap-2">
+                <Link href="/for/creators" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Creators</Link>
+                <Link href="/for/developers" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Developers</Link>
+                <Link href="/for/business" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Business</Link>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Legal</div>
+              <div className="flex flex-col gap-2">
+                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+                <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-border/40 pt-6 text-center">
+            <span className="text-sm text-muted-foreground">&copy; 2026 Allme</span>
           </div>
         </div>
       </footer>
