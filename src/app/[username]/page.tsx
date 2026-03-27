@@ -6,6 +6,33 @@ import type { Metadata } from "next";
 import { ProfilePageClient } from "./profile-page-client";
 import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
 
+function ProfileJsonLd({ profile, links }: { profile: Profile; links: Link[] }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    dateCreated: profile.created_at,
+    dateModified: profile.created_at,
+    mainEntity: {
+      "@type": "Person",
+      name: profile.display_name || profile.username,
+      alternateName: profile.username,
+      ...(profile.bio && { description: profile.bio }),
+      ...(profile.avatar_url && { image: profile.avatar_url }),
+      url: `https://allme.site/${profile.username}`,
+      sameAs: links
+        .filter((l) => l.is_active && l.url)
+        .map((l) => l.url),
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
 // Disable caching so scheduled links appear on time
 export const dynamic = "force-dynamic";
 
@@ -97,9 +124,12 @@ export default async function UserProfilePage({ params }: Props) {
   });
 
   return (
-    <ProfilePageClient
-      profile={profile as Profile}
-      links={visibleLinks as Link[]}
-    />
+    <>
+      <ProfileJsonLd profile={profile as Profile} links={visibleLinks as Link[]} />
+      <ProfilePageClient
+        profile={profile as Profile}
+        links={visibleLinks as Link[]}
+      />
+    </>
   );
 }
