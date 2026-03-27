@@ -236,7 +236,7 @@ export default function LinktreeAlternativesPost() {
           <div className="prose-section mb-12 space-y-4 text-muted-foreground leading-relaxed">
             <h2 className="text-2xl font-bold text-foreground">Why people look for Linktree alternatives</h2>
             <p>
-              Linktree&apos;s free plan gives you unlimited links, but locks you to a single theme — the classic Linktree look that by now most audiences will recognise as generic. Analytics are limited, and the Linktree logo appears on every free page. It works, but it&apos;s deliberately constrained to push you toward a paid plan.
+              Linktree&apos;s free plan gives you 5 links and 1 theme — the classic Linktree look that by now most audiences will recognise as generic. Analytics are limited, and the Linktree logo appears on every free page. Paid plans start at $9/mo, which is higher than most alternatives on this list. It works, but it&apos;s deliberately constrained to push you toward a paid plan.
             </p>
             <p>
               That&apos;s a reasonable business model, but it means free users are stuck with one look and minimal data. If you want a page that feels like yours, or you want to know which links are actually getting clicks, you&apos;ll either pay up or look elsewhere.
