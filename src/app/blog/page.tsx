@@ -12,6 +12,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "how-to-create-link-in-bio",
+    title: "How to Create a Link in Bio Page (Step-by-Step Guide)",
+    description:
+      "A practical guide to creating your link in bio page — choosing a platform, adding links, picking a theme, and copying the URL to your bio.",
+    date: "March 2026",
+    readTime: "7 min read",
+    tags: ["Guide", "Getting started"],
+  },
+  {
     slug: "linktree-alternatives",
     title: "7 Best Free Linktree Alternatives in 2026",
     description:
