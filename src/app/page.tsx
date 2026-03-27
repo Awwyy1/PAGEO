@@ -679,44 +679,46 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border/40 py-10 px-6">
+      <footer className="border-t border-gray-200 py-12 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-8">
+          {/* Logo row — always full width */}
+          <div className="mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight mb-2">
+              <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
+              allme
+            </Link>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Free link in bio tool for creators, developers, and businesses.
+            </p>
+          </div>
+          {/* Link columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-tight mb-3">
-                <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
-                allme
-              </Link>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Free link in bio tool for creators, developers, and businesses.
-              </p>
-            </div>
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Product</div>
+              <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Product</div>
               <div className="flex flex-col gap-2">
-                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-                <Link href="/vs/linktree" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Allme vs Linktree</Link>
-                <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+                <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</Link>
+                <Link href="/vs/linktree" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Allme vs Linktree</Link>
+                <Link href="/blog" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Blog</Link>
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Use Cases</div>
+              <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Use Cases</div>
               <div className="flex flex-col gap-2">
-                <Link href="/for/creators" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Creators</Link>
-                <Link href="/for/developers" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Developers</Link>
-                <Link href="/for/business" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Business</Link>
+                <Link href="/for/creators" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">For Creators</Link>
+                <Link href="/for/developers" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">For Developers</Link>
+                <Link href="/for/business" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">For Business</Link>
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Legal</div>
+              <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Legal</div>
               <div className="flex flex-col gap-2">
-                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-                <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+                <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Privacy</Link>
+                <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Terms</Link>
               </div>
             </div>
           </div>
-          <div className="border-t border-border/40 pt-6 text-center">
-            <span className="text-sm text-muted-foreground">&copy; 2026 Allme</span>
+          <div className="border-t border-gray-100 mt-8 pt-8 text-center">
+            <span className="text-xs text-gray-400">&copy; 2026 Allme</span>
           </div>
         </div>
       </footer>
