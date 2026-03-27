@@ -103,34 +103,6 @@ function ArticleJsonLd() {
   );
 }
 
-const steps = [
-  {
-    n: "1",
-    heading: "Choose Your Platform",
-    content: null,
-  },
-  {
-    n: "2",
-    heading: "Sign Up and Set Up Your Profile",
-    content: null,
-  },
-  {
-    n: "3",
-    heading: "Add Your Links",
-    content: null,
-  },
-  {
-    n: "4",
-    heading: "Choose a Theme",
-    content: null,
-  },
-  {
-    n: "5",
-    heading: "Copy Your Link and Add It to Your Bio",
-    content: null,
-  },
-];
-
 const platforms = [
   {
     name: "Allme",
