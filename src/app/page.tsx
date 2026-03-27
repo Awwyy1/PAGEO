@@ -66,7 +66,7 @@ function HomeJsonLd() {
           name: "Is Allme free to use?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes — Allme is completely free. Create your link in bio page with unlimited links, custom themes, and built-in analytics at no cost. No credit card required, no hidden fees, no Allme branding on your page.",
+            text: "Yes — Allme has a free plan that lasts forever. It includes up to 5 links, 3 themes (Light, Dark, Gradient), basic click analytics, and your page at allme.site/yourname. No credit card required.",
           },
         },
         {
@@ -74,7 +74,7 @@ function HomeJsonLd() {
           name: "How is Allme different from Linktree?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Allme is a free Linktree alternative that gives you more customization without paywalls. Linktree limits themes, analytics, and removes their branding only on paid plans. With Allme, all core features are free — custom design, click analytics, and a clean page with no forced branding.",
+            text: "Allme is a free Linktree alternative with more themes on the free plan (3 vs 1) and lower paid plan pricing. Both tools show their branding on free pages — Allme removes branding on the Business plan ($9.99/mo). Allme is built on Next.js for faster load times.",
           },
         },
         {
@@ -630,13 +630,14 @@ export default function HomePage() {
               <div className="border-t border-border/40 pt-8">
                 <h3 className="text-lg font-semibold mb-2">Is Allme free to use?</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Yes — Allme is completely free. Create your link in bio page with unlimited links, custom themes, and built-in analytics at no cost. No credit card required, no hidden fees, no Allme branding on your page.
+                  Yes — Allme has a free plan that lasts forever. It includes up to 5 links, 3 themes (Light, Dark, Gradient), basic click analytics, and your page at{" "}
+                  <span className="font-mono text-sm">allme.site/yourname</span>. No credit card required.
                 </p>
               </div>
               <div className="border-t border-border/40 pt-8">
                 <h3 className="text-lg font-semibold mb-2">How is Allme different from Linktree?</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Allme is a free Linktree alternative that gives you more customization without paywalls. Linktree limits themes, analytics, and removes their branding only on paid plans. With Allme, all core features are free — custom design, click analytics, and a clean page with no forced branding.
+                  Allme is a free Linktree alternative with more themes on the free plan (3 vs 1) and lower paid plan pricing — Pro starts at $3.99/mo. Both tools show their branding on free pages; Allme removes branding on the Business plan ($9.99/mo). Allme is built on Next.js for faster page loads.
                 </p>
               </div>
               <div className="border-t border-border/40 pt-8">
