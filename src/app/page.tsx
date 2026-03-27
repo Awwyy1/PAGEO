@@ -55,10 +55,10 @@ function HomeJsonLd() {
       mainEntity: [
         {
           "@type": "Question",
-          name: "What is Allme?",
+          name: "What is a link in bio page?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Allme is a free link-in-bio tool that lets you create a beautiful page with all your links in under 30 seconds. No coding required.",
+            text: "A link in bio page is a single URL you add to your Instagram, TikTok, or Twitter bio that acts as a hub for all your important links — your portfolio, store, social profiles, and more. Instead of being limited to one link, you share one smart page with everything.",
           },
         },
         {
@@ -66,7 +66,7 @@ function HomeJsonLd() {
           name: "Is Allme free to use?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes! Allme offers a free plan with unlimited links, custom themes, and analytics. No credit card required.",
+            text: "Yes — Allme is completely free. Create your link in bio page with unlimited links, custom themes, and built-in analytics at no cost. No credit card required, no hidden fees, no Allme branding on your page.",
           },
         },
         {
@@ -74,7 +74,15 @@ function HomeJsonLd() {
           name: "How is Allme different from Linktree?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Allme is fully free with no branding on your page, offers more customization options, and is built on modern technology for faster load times.",
+            text: "Allme is a free Linktree alternative that gives you more customization without paywalls. Linktree limits themes, analytics, and removes their branding only on paid plans. With Allme, all core features are free — custom design, click analytics, and a clean page with no forced branding.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Can I use my own domain?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Custom domains are available on the Pro plan. On the free plan your page lives at allme.site/yourname — a clean, shareable URL that works perfectly as your link in bio on any platform.",
           },
         },
       ],
@@ -403,7 +411,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Everything you need
+              All-in-One Link in Bio Tool — Everything You Need
             </h2>
             <p className="text-muted-foreground mt-3 max-w-md mx-auto">
               Powerful features to help you grow your audience and track your
@@ -475,7 +483,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Get started in 3 steps
+              Create Your Free Link in Bio Page in 3 Steps
             </h2>
             <p className="text-muted-foreground mt-3">
               It takes less than a minute to launch your page.
@@ -531,7 +539,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Built for everyone
+              Link in Bio for Creators, Freelancers &amp; Businesses
             </h2>
             <p className="text-muted-foreground mt-3">
               Whether you&apos;re a creator, freelancer, or business &mdash; Allme fits your workflow.
@@ -597,6 +605,50 @@ export default function HomePage() {
             </Link>
           </div>
         </motion.div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-20 px-6 border-t border-border/40">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            variants={fadeUp}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">What is a link in bio page?</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  A link in bio page is a single URL you add to your Instagram, TikTok, or Twitter bio that acts as a hub for all your important links — your portfolio, store, social profiles, and more. Instead of being limited to one link, you share one smart page with everything.
+                </p>
+              </div>
+              <div className="border-t border-border/40 pt-8">
+                <h3 className="text-lg font-semibold mb-2">Is Allme free to use?</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Yes — Allme is completely free. Create your link in bio page with unlimited links, custom themes, and built-in analytics at no cost. No credit card required, no hidden fees, no Allme branding on your page.
+                </p>
+              </div>
+              <div className="border-t border-border/40 pt-8">
+                <h3 className="text-lg font-semibold mb-2">How is Allme different from Linktree?</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Allme is a free Linktree alternative that gives you more customization without paywalls. Linktree limits themes, analytics, and removes their branding only on paid plans. With Allme, all core features are free — custom design, click analytics, and a clean page with no forced branding.
+                </p>
+              </div>
+              <div className="border-t border-border/40 pt-8">
+                <h3 className="text-lg font-semibold mb-2">Can I use my own domain?</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Custom domains are available on the Pro plan. On the free plan your page lives at{" "}
+                  <span className="font-mono text-sm">allme.site/yourname</span> — a clean, shareable URL that works perfectly as your link in bio on any platform.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ── Footer ── */}
