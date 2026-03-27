@@ -79,10 +79,10 @@ function HomeJsonLd() {
         },
         {
           "@type": "Question",
-          name: "Can I use my own domain?",
+          name: "What's included in the free plan?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Custom domains are available on the Pro plan. On the free plan your page lives at allme.site/yourname — a clean, shareable URL that works perfectly as your link in bio on any platform.",
+            text: "The free plan includes up to 5 links, 3 themes (Light, Dark, Gradient), basic click analytics, profile avatar and bio, and your page at allme.site/yourname. No credit card required, no time limit — free forever.",
           },
         },
       ],
@@ -640,10 +640,10 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="border-t border-border/40 pt-8">
-                <h3 className="text-lg font-semibold mb-2">Can I use my own domain?</h3>
+                <h3 className="text-lg font-semibold mb-2">What&apos;s included in the free plan?</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Custom domains are available on the Pro plan. On the free plan your page lives at{" "}
-                  <span className="font-mono text-sm">allme.site/yourname</span> — a clean, shareable URL that works perfectly as your link in bio on any platform.
+                  The free plan includes up to 5 links, 3 themes (Light, Dark, Gradient), basic click analytics, profile avatar and bio, and your page at{" "}
+                  <span className="font-mono text-sm">allme.site/yourname</span>. No credit card required, no time limit — free forever.
                 </p>
               </div>
             </div>
