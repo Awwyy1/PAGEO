@@ -12,6 +12,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "link-in-bio-instagram",
+    title: "Link in Bio for Instagram: Complete Guide 2026",
+    description:
+      "Instagram only lets you add one link. Here\u2019s how to use a link in bio page to share all your links \u2014 setup guide, tips, and free tool.",
+    date: "March 2026",
+    readTime: "7 min read",
+    tags: ["Guide", "Instagram"],
+  },
+  {
     slug: "how-to-create-link-in-bio",
     title: "How to Create a Link in Bio Page (Step-by-Step Guide)",
     description:
