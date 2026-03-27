@@ -25,11 +25,81 @@ const stagger = {
   animate: { transition: { staggerChildren: 0.12 } },
 };
 
+function HomeJsonLd() {
+  const schemas = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "Allme",
+      url: "https://allme.site",
+      description:
+        "Create a stunning link-in-bio page in seconds. Share all your important links with a single URL.",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Allme",
+      url: "https://allme.site",
+      logo: "https://allme.site/icon.png",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is Allme?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Allme is a free link-in-bio tool that lets you create a beautiful page with all your links in under 30 seconds. No coding required.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is Allme free to use?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes! Allme offers a free plan with unlimited links, custom themes, and analytics. No credit card required.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How is Allme different from Linktree?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Allme is fully free with no branding on your page, offers more customization options, and is built on modern technology for faster load times.",
+          },
+        },
+      ],
+    },
+  ];
+
+  return (
+    <>
+      {schemas.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+    </>
+  );
+}
+
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-background overflow-hidden">
+      <HomeJsonLd />
       {/* ── Navbar ── */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
