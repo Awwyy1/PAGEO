@@ -117,6 +117,12 @@ export default function HomePage() {
           </Link>
           <div className="hidden sm:flex items-center gap-4">
             <Link
+              href="/blog"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Blog
+            </Link>
+            <Link
               href="/pricing"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -153,6 +159,13 @@ export default function HomePage() {
               className="sm:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
             >
               <div className="flex flex-col p-4 gap-3">
+                <Link
+                  href="/blog"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                >
+                  Blog
+                </Link>
                 <Link
                   href="/pricing"
                   onClick={() => setMobileMenuOpen(false)}
@@ -683,6 +696,7 @@ export default function HomePage() {
               <div className="flex flex-col gap-2">
                 <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
                 <Link href="/vs/linktree" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Allme vs Linktree</Link>
+                <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
               </div>
             </div>
             <div>

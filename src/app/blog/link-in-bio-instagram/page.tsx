@@ -197,7 +197,7 @@ export default function LinkInBioInstagramPost() {
               Link in Bio for Instagram: Complete Guide 2026
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Instagram gives you exactly one place to put a clickable link \u2014 the website field in your bio. One link. For a platform where millions of people scroll through Stories every day, that&apos;s a tight constraint. This guide covers what to do about it.
+              Instagram gives you exactly one place to put a clickable link — the website field in your bio. One link. For a platform where millions of people scroll through Stories every day, that&apos;s a tight constraint. This guide covers what to do about it.
             </p>
           </div>
 
@@ -209,7 +209,7 @@ export default function LinkInBioInstagramPost() {
               <h2 className="text-2xl font-bold mb-4">What Is a Link in Bio Page?</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  A link in bio page is a simple webpage that lists all your important links in one place. Instead of choosing between your latest YouTube video, your online store, and your newsletter \u2014 you link to one page that has all three.
+                  A link in bio page is a simple webpage that lists all your important links in one place. Instead of choosing between your latest YouTube video, your online store, and your newsletter — you link to one page that has all three.
                 </p>
                 <p>
                   Your Instagram bio shows one URL, for example{" "}
@@ -226,10 +226,10 @@ export default function LinkInBioInstagramPost() {
               <h2 className="text-2xl font-bold mb-4">Why Instagram Only Gives You One Link</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Instagram limits bio links by design. The platform wants people to stay on Instagram \u2014 outbound links reduce session time. Links aren&apos;t even clickable in captions or comments. The bio field is the one exception Instagram makes, and they keep it to one link.
+                  Instagram limits bio links by design. The platform wants people to stay on Instagram — outbound links reduce session time. Links aren&apos;t even clickable in captions or comments. The bio field is the one exception Instagram makes, and they keep it to one link.
                 </p>
                 <p>
-                  This isn&apos;t going to change. Instagram has had this policy since the platform launched, and every update since has kept it in place. The workaround \u2014 a link in bio page \u2014 has become the standard response.
+                  This isn&apos;t going to change. Instagram has had this policy since the platform launched, and every update since has kept it in place. The workaround — a link in bio page — has become the standard response.
                 </p>
               </div>
             </section>
@@ -367,19 +367,19 @@ export default function LinkInBioInstagramPost() {
                 <div>
                   <h3 className="font-semibold mb-2">Can I add multiple links to my Instagram bio?</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Not directly \u2014 Instagram only allows one clickable link in the bio field. The standard solution is a link in bio page: one URL that leads to a page with all your links. That page can have as many links as you need.
+                    Not directly — Instagram only allows one clickable link in the bio field. The standard solution is a link in bio page: one URL that leads to a page with all your links. That page can have as many links as you need.
                   </p>
                 </div>
                 <div className="border-t border-border/40 pt-8">
                   <h3 className="font-semibold mb-2">Does Instagram have its own link in bio tool?</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Instagram does not offer a built-in link in bio tool with analytics or custom design. The bio field supports one URL \u2014 nothing more. That&apos;s why most creators use a dedicated tool like Allme: you get a proper page with your own URL, click analytics, and theme options.
+                    Instagram does not offer a built-in link in bio tool with analytics or custom design. The bio field supports one URL — nothing more. That&apos;s why most creators use a dedicated tool like Allme: you get a proper page with your own URL, click analytics, and theme options.
                   </p>
                 </div>
                 <div className="border-t border-border/40 pt-8">
                   <h3 className="font-semibold mb-2">Does changing my link in bio URL affect my traffic?</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Yes \u2014 if you change the URL in your bio, anyone who taps the old link won&apos;t reach your page. The solution is to keep your{" "}
+                    Yes — if you change the URL in your bio, anyone who taps the old link won&apos;t reach your page. The solution is to keep your{" "}
                     <code className="text-xs bg-muted px-1.5 py-0.5 rounded">allme.site/username</code>{" "}
                     URL permanent in the bio and update the links <em>on</em> that page instead. The URL in your bio never needs to change once it&apos;s set.
                   </p>
@@ -393,17 +393,17 @@ export default function LinkInBioInstagramPost() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/for/creators" className="underline underline-offset-4 text-muted-foreground hover:text-foreground transition-colors">
-                    Allme for creators \u2014 how influencers use link in bio pages
+                    Allme for creators — how influencers use link in bio pages
                   </Link>
                 </li>
                 <li>
                   <Link href="/vs/linktree" className="underline underline-offset-4 text-muted-foreground hover:text-foreground transition-colors">
-                    Allme vs Linktree \u2014 free alternative comparison
+                    Allme vs Linktree — free alternative comparison
                   </Link>
                 </li>
                 <li>
                   <Link href="/pricing" className="underline underline-offset-4 text-muted-foreground hover:text-foreground transition-colors">
-                    See all Allme plans \u2014 Free, Pro, and Business
+                    See all Allme plans — Free, Pro, and Business
                   </Link>
                 </li>
               </ul>
@@ -417,7 +417,7 @@ export default function LinkInBioInstagramPost() {
               </p>
               <p className="text-sm text-muted-foreground mb-6">
                 <Link href="/pricing" className="underline underline-offset-4 hover:text-foreground transition-colors">
-                  See all plans \u2192
+                  See all plans →
                 </Link>
               </p>
               <Link
