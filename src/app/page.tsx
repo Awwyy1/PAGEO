@@ -679,20 +679,18 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-gray-200 py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          {/* Logo row — always full width */}
-          <div className="mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight mb-2">
-              <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
-              allme
-            </Link>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Free link in bio tool for creators, developers, and businesses.
-            </p>
-          </div>
-          {/* Link columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <footer className="border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight mb-3">
+                <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
+                allme
+              </Link>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Free link in bio tool for creators, developers, and businesses.
+              </p>
+            </div>
             <div>
               <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Product</div>
               <div className="flex flex-col gap-2">
@@ -717,7 +715,9 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-100 mt-8 pt-8 text-center">
+        </div>
+        <div className="border-t border-gray-100">
+          <div className="max-w-6xl mx-auto px-6 py-6 text-center">
             <span className="text-xs text-gray-400">&copy; 2026 Allme</span>
           </div>
         </div>
