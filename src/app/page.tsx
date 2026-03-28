@@ -680,8 +680,9 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          {/* Mobile: 2 cols (Product + Use Cases). Desktop: 3 cols */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div>
               <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Product</div>
               <div className="flex flex-col gap-2">
@@ -698,7 +699,8 @@ export default function HomePage() {
                 <Link href="/for/business" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">For Business</Link>
               </div>
             </div>
-            <div>
+            {/* Legal — hidden on mobile, shown on desktop */}
+            <div className="hidden sm:block">
               <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Legal</div>
               <div className="flex flex-col gap-2">
                 <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Privacy</Link>
@@ -707,8 +709,15 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+        {/* Bottom bar — both mobile and desktop */}
         <div className="border-t border-gray-100 py-6">
-          <p className="text-center text-xs text-gray-400">&copy; 2026 Allme</p>
+          <p className="text-center text-xs text-gray-400">
+            <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy</Link>
+            {" · "}
+            <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms</Link>
+            {" · "}
+            &copy; 2026 Allme
+          </p>
         </div>
       </footer>
     </main>
