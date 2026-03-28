@@ -12,6 +12,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "link-in-bio-examples",
+    title: "15 Best Link in Bio Examples for Inspiration (2026)",
+    description:
+      "See 15 real-world link in bio examples for creators, businesses, developers, and musicians — with breakdowns of what works and why.",
+    date: "March 2026",
+    readTime: "9 min read",
+    tags: ["Inspiration", "Examples"],
+  },
+  {
     slug: "link-in-bio-instagram",
     title: "Link in Bio for Instagram: Complete Guide 2026",
     description:
