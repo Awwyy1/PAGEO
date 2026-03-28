@@ -290,7 +290,7 @@ export default function TikTokLinkInBioPage() {
             <div className="rounded-xl border border-border p-5">
               <h3 className="font-semibold text-foreground mb-2">Small businesses & brands</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Online store, latest product or sale page, booking link, email newsletter, contact form. If you run promotions regularly, keep a "Current deals" link at the top so people who saw your ad video land exactly where they need to be.
+                Online store, latest product or sale page, booking link, email newsletter, contact form. If you run promotions regularly, keep a &ldquo;Current deals&rdquo; link at the top so people who saw your ad video land exactly where they need to be.
               </p>
             </div>
 
