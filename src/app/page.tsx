@@ -680,8 +680,8 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div>
               <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Product</div>
               <div className="flex flex-col gap-2">
@@ -707,10 +707,8 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-100">
-          <div className="max-w-6xl mx-auto px-6 py-6 text-center">
-            <span className="text-xs text-gray-400">&copy; 2026 Allme</span>
-          </div>
+        <div className="border-t border-gray-100 py-6">
+          <p className="text-center text-xs text-gray-400">&copy; 2026 Allme</p>
         </div>
       </footer>
     </main>
