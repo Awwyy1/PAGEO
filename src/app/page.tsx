@@ -602,34 +602,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Final CTA ── */}
-      <section className="py-24 px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          className="relative max-w-3xl mx-auto text-center rounded-3xl overflow-hidden border border-border/40 p-12 sm:p-16"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-violet-500/[0.06] to-pink-500/[0.08]" />
-          <div className="relative">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-              Ready to stand out?
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Create your page in seconds and share everything that matters
-              with a single link.
-            </p>
-            <Link
-              href="/auth/register"
-              className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
-            >
-              Create for FREE
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-        </motion.div>
-      </section>
-
       {/* ── FAQ ── */}
       <section className="py-20 px-6 border-t border-border/40">
         <div className="max-w-3xl mx-auto">
@@ -678,19 +650,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Final CTA ── */}
+      <section className="py-24 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          className="relative max-w-3xl mx-auto text-center rounded-3xl overflow-hidden border border-border/40 p-12 sm:p-16"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-violet-500/[0.06] to-pink-500/[0.08]" />
+          <div className="relative">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+              Ready to stand out?
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Create your page in seconds and share everything that matters
+              with a single link.
+            </p>
+            <Link
+              href="/auth/register"
+              className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-10 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 hover:-translate-y-0.5 gap-2"
+            >
+              Create for FREE
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200">
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight mb-3">
-                <img src="/icon.png" alt="Allme" className="h-5 w-5 rounded-full" />
-                allme
-              </Link>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Free link in bio tool for creators, developers, and businesses.
-              </p>
-            </div>
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             <div>
               <div className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Product</div>
               <div className="flex flex-col gap-2">
