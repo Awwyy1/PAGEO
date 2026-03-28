@@ -91,7 +91,7 @@ function ArticleJsonLd() {
           name: "What is the best link in bio tool for TikTok?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "The best tool depends on your needs. Allme is a free option with no link limits, custom themes, and click analytics. Linktree is the most recognized name but limits links on the free plan. Beacons targets creators with monetization features. For most TikTok creators just getting started, a free tool with unlimited links is enough.",
+            text: "The best tool depends on your needs. Allme offers a free plan (5 links) and a Pro plan ($3.99/mo, 15 links) with custom themes and click analytics. Linktree is the most recognized name but also caps links at 5 on the free plan. Beacons targets creators with monetization features. For most TikTok creators just getting started, a free plan with a few links is enough.",
           },
         },
       ],
@@ -115,7 +115,7 @@ const steps = [
   {
     number: "1",
     title: "Switch to a Business or Creator account",
-    body: "Go to Settings → Manage account → Switch to Business Account. Business accounts can add a website link in their bio immediately, regardless of follower count. Creator accounts may need 1,000 followers depending on your region.",
+    body: "Go to Settings \u2192 Manage account \u2192 Switch to Business Account. Business accounts can add a website link in their bio immediately, regardless of follower count. Creator accounts may need a minimum follower count depending on your region \u2014 switching to a Business account removes this restriction entirely.",
   },
   {
     number: "2",
@@ -262,7 +262,7 @@ export default function TikTokLinkInBioPage() {
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 mb-12">
           <p className="font-semibold text-foreground mb-1">Need a free link-in-bio page?</p>
           <p className="text-sm text-muted-foreground mb-4">
-            Allme is free with no link limits. Set up your page in under 2 minutes.
+            Allme is free. Up to 5 links on the free plan, 15 on Pro ($3.99/mo).
           </p>
           <Link
             href="/auth/register"
@@ -345,7 +345,7 @@ export default function TikTokLinkInBioPage() {
                 <tr>
                   <td className="py-3 pr-4 font-medium text-foreground">Allme</td>
                   <td className="py-3 pr-4 text-muted-foreground">Yes</td>
-                  <td className="py-3 pr-4 text-muted-foreground">Unlimited</td>
+                  <td className="py-3 pr-4 text-muted-foreground">5 links (free), 15 on Pro</td>
                   <td className="py-3 text-muted-foreground">Creators who want a clean, fast setup</td>
                 </tr>
                 <tr>
@@ -373,6 +373,22 @@ export default function TikTokLinkInBioPage() {
           <p className="text-sm text-muted-foreground mt-4">
             If you&apos;re just starting out, any free tool with unlimited links will do the job. The most important thing is having a page — not which platform it&apos;s on.
           </p>
+        </section>
+
+        {/* Internal links */}
+        <section className="mb-12">
+          <p className="text-sm font-semibold text-foreground mb-3">Also worth reading:</p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li>
+              <Link href="/for/creators" className="text-primary hover:underline">Link in bio for creators</Link>
+            </li>
+            <li>
+              <Link href="/vs/linktree" className="text-primary hover:underline">Allme vs Linktree</Link>
+            </li>
+            <li>
+              <Link href="/blog/how-to-create-link-in-bio" className="text-primary hover:underline">How to create a link in bio page</Link>
+            </li>
+          </ul>
         </section>
 
         {/* FAQ */}
@@ -404,7 +420,7 @@ export default function TikTokLinkInBioPage() {
             <div className="rounded-xl border border-border p-5">
               <h3 className="font-semibold text-foreground mb-2">What is the best link in bio tool for TikTok?</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                The best tool depends on your needs. Allme is free with no link limits, custom themes, and click analytics. Linktree is the most recognized name but caps links at 5 on the free plan. Beacons targets creators with monetization features. For most TikTok creators just getting started, a free tool with unlimited links is enough.
+                The best tool depends on your needs. Allme offers a free plan (5 links) and a Pro plan ($3.99/mo, 15 links) with custom themes and click analytics. Linktree is the most recognized name but also caps links at 5 on the free plan. Beacons targets creators with monetization features. For most TikTok creators just getting started, a free plan with a few links is enough.
               </p>
             </div>
           </div>
@@ -414,7 +430,7 @@ export default function TikTokLinkInBioPage() {
         <div className="rounded-2xl bg-primary/5 border border-primary/20 p-8 text-center">
           <h2 className="text-2xl font-bold mb-3">Ready to set up your TikTok link in bio?</h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Create a free Allme page in under 2 minutes. No follower minimum, no link limit, no credit card.
+            Create a free Allme page in under 2 minutes. No follower minimum, no credit card.
           </p>
           <Link
             href="/auth/register"
