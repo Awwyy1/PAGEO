@@ -115,12 +115,12 @@ const steps = [
   {
     number: "1",
     title: "Switch to a Business or Creator account",
-    body: "Go to Settings \u2192 Manage account \u2192 Switch to Business Account. Business accounts can add a website link in their bio immediately, regardless of follower count. Creator accounts may need a minimum follower count depending on your region \u2014 switching to a Business account removes this restriction entirely.",
+    body: "Go to Settings \u2192 Manage account \u2192 Switch to Business Account. Business accounts can add a website link in their bio immediately, regardless of follower count. Creator accounts may need a minimum follower count depending on your region. Switching to a Business account removes this restriction entirely.",
   },
   {
     number: "2",
     title: "Create your link-in-bio page",
-    body: "Sign up on a link-in-bio platform and add every link you want to share — your YouTube channel, store, newsletter, other social profiles. Give your page a clean title and a photo that matches your TikTok profile.",
+    body: "Sign up on a link-in-bio platform and add every link you want to share (your YouTube channel, store, newsletter, other social profiles). Give your page a clean title and a photo that matches your TikTok profile.",
   },
   {
     number: "3",
@@ -142,7 +142,7 @@ const steps = [
 const tips = [
   {
     heading: "Update the link to match your latest video",
-    body: "If your video mentions a specific product, article, or tool — update your link-in-bio page to put that link first. Viewers who tap the link right after watching will see exactly what they were looking for.",
+    body: "If your video mentions a specific product, article, or tool, update your link-in-bio page to put that link first. Viewers who tap the link right after watching will see exactly what they were looking for.",
   },
   {
     heading: "Keep the page short",
@@ -206,10 +206,10 @@ export default function TikTokLinkInBioPage() {
             Link in Bio for TikTok: How to Set Up & Optimize (2026)
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            TikTok gives you one link. That&apos;s it. One URL in your bio to send people wherever you want them to go. If you&apos;re trying to promote a product, grow a newsletter, link to your YouTube, and share your merch store all at once — one link isn&apos;t going to cut it.
+            TikTok gives you one link. That&apos;s it. One URL in your bio to send people wherever you want them to go. If you&apos;re trying to promote a product, grow a newsletter, link to your YouTube, and share your merch store all at once, one link isn&apos;t going to cut it.
           </p>
           <p className="text-lg text-muted-foreground leading-relaxed mt-3">
-            That&apos;s why most TikTok creators point their bio link to a link-in-bio page — a single page that holds all their important links in one place. This guide explains how to set one up, what to put on it, and how to get more clicks from it.
+            That&apos;s why most TikTok creators point their bio link to a link-in-bio page (a single page that holds all their important links in one place). This guide explains how to set one up, what to put on it, and how to get more clicks from it.
           </p>
         </div>
 
@@ -221,7 +221,7 @@ export default function TikTokLinkInBioPage() {
             <li>Point it to a link-in-bio page to share multiple links at once</li>
             <li>Business accounts can add a link immediately (no follower minimum)</li>
             <li>Update your page whenever a video references something specific</li>
-            <li>Keep it short — 4 to 6 links is enough</li>
+            <li>Keep it short: 4 to 6 links is enough</li>
           </ul>
         </div>
 
@@ -232,7 +232,7 @@ export default function TikTokLinkInBioPage() {
             A typical TikTok creator has at least three or four places they want people to visit: their Instagram, their YouTube, their online store, maybe a Patreon or newsletter. If you swap out one link every time you post a new video, you lose traffic to everything else. If you leave one link up permanently, half your videos are sending people to something irrelevant.
           </p>
           <p className="text-muted-foreground leading-relaxed mb-4">
-            A link-in-bio page solves this. Instead of replacing your link constantly, you update the page itself. Your bio URL stays the same — but what visitors see when they tap it can change any time.
+            A link-in-bio page solves this. Instead of replacing your link constantly, you update the page itself. Your bio URL stays the same, but what visitors see when they tap it can change any time.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             It&apos;s also just cleaner. A page with your photo, your name, and a few clearly labeled buttons looks more professional than a bare URL to a YouTube channel or an Amazon storefront.
@@ -297,7 +297,7 @@ export default function TikTokLinkInBioPage() {
             <div className="rounded-xl border border-border p-5">
               <h3 className="font-semibold text-foreground mb-2">Musicians & artists</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Streaming link (Spotify, Apple Music), latest music video on YouTube, ticket sales, merch, Instagram. Services like Linktree and Allme both handle this well — the key is putting your newest release at the top whenever you drop something.
+                Streaming link (Spotify, Apple Music), latest music video on YouTube, ticket sales, merch, Instagram. Services like Linktree and Allme both handle this well. The key is putting your newest release at the top whenever you drop something.
               </p>
             </div>
 
@@ -371,7 +371,7 @@ export default function TikTokLinkInBioPage() {
           </div>
 
           <p className="text-sm text-muted-foreground mt-4">
-            If you&apos;re just starting out, any free tool with unlimited links will do the job. The most important thing is having a page — not which platform it&apos;s on.
+            If you&apos;re just starting out, any free tool will do the job. The most important thing is actually having a page, not which platform it&apos;s on.
           </p>
         </section>
 
