@@ -12,6 +12,15 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "link-in-bio-tiktok",
+    title: "Link in Bio for TikTok: How to Set Up & Optimize (2026)",
+    description:
+      "TikTok only lets you add one link. Here\u2019s how to use a link in bio page to share all your links, grow your audience, and drive sales \u2014 free setup guide.",
+    date: "March 2026",
+    readTime: "8 min read",
+    tags: ["Guide", "TikTok"],
+  },
+  {
     slug: "link-in-bio-examples",
     title: "15 Best Link in Bio Examples for Inspiration (2026)",
     description:
