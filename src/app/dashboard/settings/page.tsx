@@ -142,30 +142,29 @@ export default function SettingsPage() {
     setSaveError(null);
     let avatarUrl: string | undefined;
 
-    // Upload avatar to Supabase Storage if a new file was selected
+    // Upload avatar separately — never block text field save if upload fails/hangs
     if (avatarFile && userId) {
       const filePath = `${userId}.avatar`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, avatarFile, {
-          upsert: true,
-          contentType: avatarFile.type,
-        });
+      const uploadTimeout = new Promise<{ error: { message: string } }>(
+        (resolve) => setTimeout(() => resolve({ error: { message: "Upload timed out. Your profile info was saved. Try uploading the photo again." } }), 15000)
+      );
 
-      if (uploadError) {
-        setSaveError(`Avatar upload failed: ${uploadError.message}. Make sure the "avatars" storage bucket exists in Supabase (Storage → New bucket → "avatars", Public ON).`);
-        setUploading(false);
-        return;
+      const uploadResult = await Promise.race([
+        supabase.storage.from("avatars").upload(filePath, avatarFile, { upsert: true, contentType: avatarFile.type }),
+        uploadTimeout,
+      ]);
+
+      if (uploadResult.error) {
+        setSaveError(uploadResult.error.message);
+      } else {
+        const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+        avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+        setAvatarFile(null);
       }
-
-      const { data: urlData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-      avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-      setAvatarFile(null);
     }
 
+    // Always save text fields regardless of avatar upload outcome
     const ok = await updateProfile({
       username,
       display_name: displayName || null,
