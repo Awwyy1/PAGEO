@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, Playfair_Display, JetBrains_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { CookieBanner } from "@/components/cookie-banner";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 
@@ -78,6 +79,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${plusJakartaSans.variable} ${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable} ${syne.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <CookieBanner />
         {/* Microsoft Clarity */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){
