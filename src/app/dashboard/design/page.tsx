@@ -115,6 +115,7 @@ export default function DesignPage() {
     const [uploading, setUploading] = useState(false);
     const [editingFile, setEditingFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const colorDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     /* — Theme section state — */
     const [showCustom, setShowCustom] = useState(profile.theme === "custom");
@@ -231,7 +232,11 @@ export default function DesignPage() {
 
     const handleCustomColorChange = (key: keyof CustomColors, value: string) => {
         const newColors = { ...colors, [key]: value };
-        updateProfile({ theme: "custom", custom_colors: newColors });
+        updateProfileLocal({ theme: "custom", custom_colors: newColors });
+        if (colorDebounceRef.current) clearTimeout(colorDebounceRef.current);
+        colorDebounceRef.current = setTimeout(() => {
+            updateProfile({ theme: "custom", custom_colors: newColors });
+        }, 400);
     };
 
     return (
