@@ -110,17 +110,21 @@ export default function RegisterPage() {
       return;
     }
 
-    // Create profile row immediately so the dashboard has data on first load
+    // Upsert profile — DB trigger may have already inserted a row without email,
+    // so we upsert to guarantee email and username are saved correctly.
     if (signUpData.user) {
-      await supabase.from("profiles").insert({
-        id: signUpData.user.id,
-        username,
-        display_name: username,
-        email,
-        bio: null,
-        avatar_url: null,
-        theme: "light",
-      });
+      await supabase.from("profiles").upsert(
+        {
+          id: signUpData.user.id,
+          username,
+          display_name: username,
+          email,
+          bio: null,
+          avatar_url: null,
+          theme: "light",
+        },
+        { onConflict: "id" }
+      );
     }
 
     router.push("/dashboard");
