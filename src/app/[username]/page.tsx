@@ -1,5 +1,6 @@
 // Public profile page — server-rendered, fetches from Supabase by username
 import { notFound } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, Link } from "@/types/database";
 import type { Metadata } from "next";
@@ -41,6 +42,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  noStore();
   const { username } = await params;
   const supabase = createClient();
 
@@ -115,6 +117,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function UserProfilePage({ params }: Props) {
+  noStore();
   const { username } = await params;
 
   // Skip static routes that aren't usernames
