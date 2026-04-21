@@ -30,6 +30,7 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value, options }) => {
           const cookieOptions = {
             ...options,
+            httpOnly: false, // must be readable by createBrowserClient
             sameSite: (options?.sameSite ?? "lax") as "lax" | "strict" | "none",
             secure: options?.secure ?? isSecure,
             path: options?.path ?? "/",

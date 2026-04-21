@@ -12,6 +12,7 @@ import {
   type SetStateAction,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidateProfilePage } from "@/app/actions";
 import type { Profile, Link } from "@/types/database";
 
 const emptyProfile: Profile = {
@@ -263,6 +264,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           setProfile(prev);
           return false;
         }
+
+        if (profile.username) revalidateProfilePage(profile.username);
       }
       return true;
     },
@@ -310,11 +313,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           setLinks((prev) =>
             prev.map((l) => (l.id === tempId ? (data as Link) : l))
           );
+          if (profile.username) revalidateProfilePage(profile.username);
         }
-        if (error) console.error("Failed to add link:", error.message);
+        if (error) {
+          console.error("Failed to add link:", error.message);
+          setLinks((prev) => prev.filter((l) => l.id !== tempId));
+        }
       }
     },
-    [userId, links.length, supabase]
+    [userId, links.length, supabase, profile]
   );
 
   const removeLink = useCallback(
@@ -341,9 +348,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           .update(rest)
           .eq("id", id);
         if (error) console.error("Failed to update link:", error.message);
+        else if (profile.username) revalidateProfilePage(profile.username);
       }
     },
-    [userId, supabase]
+    [userId, supabase, profile]
   );
 
   const reorderLinks = useCallback(
@@ -366,13 +374,16 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
         const failed = results.some((r) => r.error || !r.data || r.data.length === 0);
         if (failed) {
-          console.error("Failed to reorder links — some updates blocked");
+          const firstError = results.find((r) => r.error)?.error;
+          console.error("Failed to reorder links — some updates blocked", firstError?.message ?? "(0 rows)");
           setLastSaveError("Link reorder failed. Check database permissions.");
           setLinks(prev);
+        } else if (profile.username) {
+          revalidateProfilePage(profile.username);
         }
       }
     },
-    [userId, links, supabase]
+    [userId, links, supabase, profile]
   );
 
   const refreshData = useCallback(async () => {
