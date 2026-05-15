@@ -1,8 +1,12 @@
 // Server-side password update — bypasses Chrome AbortError
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+    const limited = await rateLimit(request, { maxRequests: 5, window: "60 s" });
+    if (limited) return limited;
+
     try {
         const { password } = await request.json();
 

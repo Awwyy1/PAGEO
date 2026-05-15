@@ -1,6 +1,7 @@
 // GET endpoint — aggregated analytics data for the authenticated user
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const PERIOD_DAYS: Record<string, number | null> = {
   "7d": 7,
@@ -10,6 +11,9 @@ const PERIOD_DAYS: Record<string, number | null> = {
 };
 
 export async function GET(request: NextRequest) {
+  const limited = await rateLimit(request, { maxRequests: 15, window: "60 s" });
+  if (limited) return limited;
+
   const supabase = createClient();
   const {
     data: { user },

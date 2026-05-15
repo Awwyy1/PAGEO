@@ -2,8 +2,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { maxRequests: 5, window: "60 s" });
+  if (limited) return limited;
+
   const body = await request.json().catch(() => null);
   const code = body?.code;
 

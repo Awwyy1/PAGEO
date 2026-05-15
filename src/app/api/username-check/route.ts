@@ -1,9 +1,13 @@
 // API route to check username availability — works without auth (for registration)
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { RESERVED_USERNAMES } from "@/lib/reserved-usernames";
+import { rateLimit } from "@/lib/rate-limit";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+    const limited = await rateLimit(request, { maxRequests: 20, window: "60 s" });
+    if (limited) return limited;
+
     const { searchParams } = new URL(request.url);
     const username = searchParams.get("username")?.toLowerCase();
     const plan = searchParams.get("plan") || "free";

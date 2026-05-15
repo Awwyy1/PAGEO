@@ -1,8 +1,12 @@
 // API route to delete user account — removes profile, links, avatar, and signs out
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const limited = await rateLimit(request, { maxRequests: 5, window: "60 s" });
+  if (limited) return limited;
+
   const supabase = createClient();
 
   const {

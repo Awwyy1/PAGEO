@@ -2,12 +2,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { parseDevice, parseReferrerDomain } from "@/lib/analytics-utils";
+import { rateLimit } from "@/lib/rate-limit";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { maxRequests: 30, window: "60 s" });
+  if (limited) return limited;
+
   let body: Record<string, unknown> | null = null;
   try {
     const text = await request.text();

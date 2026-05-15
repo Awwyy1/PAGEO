@@ -1,6 +1,7 @@
 // API route to create a Creem checkout session
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const CREEM_API_KEY = process.env.CREEM_API_KEY || "";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://allme.site";
@@ -14,6 +15,9 @@ const PRODUCT_MAP: Record<string, string | undefined> = {
 };
 
 export async function POST(request: NextRequest) {
+  const limited = await rateLimit(request, { maxRequests: 5, window: "60 s" });
+  if (limited) return limited;
+
   try {
     const body = await request.json();
     const { plan, billing } = body as { plan: string; billing: string };

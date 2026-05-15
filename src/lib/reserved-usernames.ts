@@ -58,4 +58,6 @@ export const RESERVED_USERNAMES = [
   "webhooks",
   "og",
   "promo",
+  "for",
+  "vs",
 ];
