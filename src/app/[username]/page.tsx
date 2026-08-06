@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createClient();
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("id, display_name, bio, avatar_url")
     .eq("username", username)
     .maybeSingle();
@@ -127,8 +127,10 @@ export default async function UserProfilePage({ params }: Props) {
 
   const supabase = createClient();
 
+  // public_profiles exposes only the columns a visitor is allowed to see —
+  // email, subscription_id, plan_source and page_views stay on the base table
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("*")
     .eq("username", username)
     .maybeSingle();

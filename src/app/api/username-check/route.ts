@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     const supabase = createClient();
 
     const { data } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id")
         .eq("username", username)
         .maybeSingle();

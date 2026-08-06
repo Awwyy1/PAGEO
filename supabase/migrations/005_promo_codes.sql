@@ -92,28 +92,11 @@ $$ language plpgsql security definer;
 
 grant execute on function public.redeem_promo_code(text, uuid) to authenticated;
 
--- Insert 10 PRO promo codes (valid for 30 days, single use each)
-insert into public.promo_codes (code, plan, max_uses, expires_at) values
-  ('PRO-AX7K2M', 'pro', 1, now() + interval '30 days'),
-  ('PRO-BN4R8W', 'pro', 1, now() + interval '30 days'),
-  ('PRO-CT9F3L', 'pro', 1, now() + interval '30 days'),
-  ('PRO-DQ6H5J', 'pro', 1, now() + interval '30 days'),
-  ('PRO-EW2P7V', 'pro', 1, now() + interval '30 days'),
-  ('PRO-FZ8S1X', 'pro', 1, now() + interval '30 days'),
-  ('PRO-GU5M4C', 'pro', 1, now() + interval '30 days'),
-  ('PRO-HY3N6B', 'pro', 1, now() + interval '30 days'),
-  ('PRO-JR9T2D', 'pro', 1, now() + interval '30 days'),
-  ('PRO-KL7W8G', 'pro', 1, now() + interval '30 days');
-
--- Insert 10 BUSINESS promo codes
-insert into public.promo_codes (code, plan, max_uses, expires_at) values
-  ('BIZ-MX4Q9N', 'business', 1, now() + interval '30 days'),
-  ('BIZ-PV7R3H', 'business', 1, now() + interval '30 days'),
-  ('BIZ-SW2K6F', 'business', 1, now() + interval '30 days'),
-  ('BIZ-TY8L1J', 'business', 1, now() + interval '30 days'),
-  ('BIZ-UZ5N4W', 'business', 1, now() + interval '30 days'),
-  ('BIZ-VA3P7C', 'business', 1, now() + interval '30 days'),
-  ('BIZ-WB9M2X', 'business', 1, now() + interval '30 days'),
-  ('BIZ-XD6S8K', 'business', 1, now() + interval '30 days'),
-  ('BIZ-YF1T5G', 'business', 1, now() + interval '30 days'),
-  ('BIZ-ZH4W9L', 'business', 1, now() + interval '30 days');
+-- Promo codes are NOT seeded here.
+--
+-- This migration originally inserted 20 hardcoded codes in plaintext, which put
+-- them permanently into git history. Those codes are deactivated in
+-- 010_secure_promo_codes.sql, which also seeds replacements generated inside the
+-- database so that no code value is ever committed to the repo.
+--
+-- Never add literal promo codes to a migration file.

@@ -102,28 +102,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch only profiles that have at least one active link
-  // Uses inner join: only profiles with matching active links are returned
+  // List only profiles that have at least one active link.
+  // Profiles come from the public_profiles view — the base table is readable
+  // only by its owner so private columns (email, subscription_id) can't leak.
+  // A view carries no foreign keys, so the active-link filter runs as a second
+  // query instead of a PostgREST embed.
   // When is_public field is added to DB — append: .eq('is_public', true)
   const supabase = createSupabaseClient();
 
-  const { data: profiles, error } = await supabase
-    .from('profiles')
-    .select('username, created_at, links!inner(id)')
-    .eq('links.is_active', true);
+  const [profilesResult, linksResult] = await Promise.all([
+    supabase.from('public_profiles').select('id, username, created_at'),
+    supabase.from('links').select('profile_id').eq('is_active', true),
+  ]);
 
+  const error = profilesResult.error ?? linksResult.error;
   if (error) {
     console.error('[sitemap] Failed to fetch profiles:', error.message);
     return staticPages;
   }
 
-  // Deduplicate: inner join returns one row per active link, not per profile
-  const seen = new Set<string>();
+  const hasActiveLink = new Set(
+    (linksResult.data ?? []).map((l) => l.profile_id)
+  );
+
   const profilePages: MetadataRoute.Sitemap = [];
 
-  for (const profile of profiles ?? []) {
-    if (seen.has(profile.username)) continue;
-    seen.add(profile.username);
+  for (const profile of profilesResult.data ?? []) {
+    if (!hasActiveLink.has(profile.id)) continue;
 
     profilePages.push({
       url: `${BASE_URL}/${profile.username}`,
