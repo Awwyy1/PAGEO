@@ -201,14 +201,24 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     init();
 
     // Listen for auth changes (login, logout, token refresh)
+    //
+    // This callback must stay synchronous and must not await Supabase calls.
+    // supabase-js holds an internal lock while it dispatches an auth event, and
+    // any query issued from inside the callback waits on that same lock — so
+    // signInWithPassword never resolves and the login button spins forever.
+    // Browsers without navigator.locks (Safari) were unaffected, which is why
+    // this only ever reproduced in Chrome and Firefox. Defer the load instead.
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
 
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        if (session?.user) {
-          await loadUserData(session.user.id);
+        const uid = session?.user?.id;
+        if (uid) {
+          setTimeout(() => {
+            if (mounted) loadUserData(uid);
+          }, 0);
         }
       } else if (event === "SIGNED_OUT") {
         setUserId(null);
