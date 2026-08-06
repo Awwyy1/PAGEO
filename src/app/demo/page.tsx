@@ -6,6 +6,7 @@ import { useProfile } from "@/lib/profile-context";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { safeUrl } from "@/lib/url-safety";
 
 const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
@@ -132,7 +133,7 @@ export default function DemoPage() {
           {activeLinks.map((link, i) => (
             <motion.a
               key={link.id}
-              href={link.url}
+              href={safeUrl(link.url) ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}

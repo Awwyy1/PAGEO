@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { getSocialIcon } from "@/lib/social-icons";
+import { safeUrl } from "@/lib/url-safety";
 import type { Link } from "@/types/database";
 
 interface LinkCardProps {
@@ -36,8 +37,17 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
     transition,
   };
 
+  const [urlError, setUrlError] = useState(false);
+
   const handleSave = () => {
-    onUpdate(link.id, { title, url });
+    const normalized = safeUrl(url);
+    if (!normalized) {
+      setUrlError(true);
+      return;
+    }
+    setUrlError(false);
+    setUrl(normalized);
+    onUpdate(link.id, { title, url: normalized });
     setIsEditing(false);
   };
 
@@ -76,9 +86,13 @@ export function LinkCard({ link, onUpdate, onDelete }: LinkCardProps) {
             />
             <Input
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => { setUrl(e.target.value); if (urlError) setUrlError(false); }}
               placeholder="https://..."
+              className={urlError ? "border-destructive focus-visible:ring-destructive" : ""}
             />
+            {urlError && (
+              <p className="text-xs text-destructive">Enter a web address, like example.com</p>
+            )}
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave}>
                 <Check className="h-3 w-3 mr-1" /> Save

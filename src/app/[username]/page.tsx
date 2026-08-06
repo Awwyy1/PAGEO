@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { safeUrl } from "@/lib/url-safety";
 import type { Profile, Link } from "@/types/database";
 import type { Metadata } from "next";
 import { ProfilePageClient } from "./profile-page-client";
@@ -21,15 +22,21 @@ function ProfileJsonLd({ profile, links }: { profile: Profile; links: Link[] }) 
       ...(profile.avatar_url && { image: profile.avatar_url }),
       url: `https://allme.site/${profile.username}`,
       sameAs: links
-        .filter((l) => l.is_active && l.url)
-        .map((l) => l.url),
+        .filter((l) => l.is_active)
+        .map((l) => safeUrl(l.url))
+        .filter((u): u is string => u !== null),
     },
   };
+
+  // JSON.stringify does not escape "<", so a bio containing "</script>" would
+  // close this tag and inject markup into the page. Escaping the angle bracket
+  // keeps the JSON valid while making the break-out impossible.
+  const json = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: json }}
     />
   );
 }
@@ -146,12 +153,18 @@ export default async function UserProfilePage({ params }: Props) {
     .eq("is_active", true)
     .order("position", { ascending: true });
 
-  // Filter out scheduled links that haven't arrived yet (server-side)
+  // Filter out scheduled links that haven't arrived yet (server-side), and
+  // normalize every URL so the browser only ever receives http/https/mailto/tel.
+  // Links saved before URL validation existed are repaired here where possible
+  // ("example.com" → "https://example.com") and dropped when they aren't safe.
   const now = new Date();
-  const visibleLinks = (links || []).filter((link: Link) => {
-    if (!link.scheduled_at) return true;
-    return new Date(link.scheduled_at) <= now;
-  });
+  const visibleLinks = (links || [])
+    .filter((link: Link) => {
+      if (!link.scheduled_at) return true;
+      return new Date(link.scheduled_at) <= now;
+    })
+    .map((link: Link) => ({ ...link, url: safeUrl(link.url) }))
+    .filter((link): link is Link => link.url !== null);
 
   return (
     <>

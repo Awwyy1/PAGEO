@@ -8,6 +8,7 @@ import { getSocialIcon } from "@/lib/social-icons";
 import { Share2, Check } from "lucide-react";
 import type { Profile, Link } from "@/types/database";
 import { getFontClass, getAlignmentClass } from "@/lib/fonts";
+import { safeUrl } from "@/lib/url-safety";
 
 const themeBg: Record<string, string> = {
   gradient: "bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white",
@@ -247,11 +248,15 @@ export function ProfilePageClient({ profile, links }: Props) {
         {/* Links with social icons */}
         <div className="w-full space-y-3 mt-4">
           {visibleLinks.map((link, i) => {
+            // The server already normalizes these; this is the last guard before
+            // a user-supplied string reaches an href attribute.
+            const href = safeUrl(link.url);
+            if (!href) return null;
             const social = getSocialIcon(link.url);
             return (
               <motion.a
                 key={link.id}
-                href={link.url}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => handleLinkClick(link.id)}
