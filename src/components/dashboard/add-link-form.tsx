@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Plus, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { safeUrl } from "@/lib/url-safety";
 
 interface AddLinkFormProps {
   onAdd: (title: string, url: string, scheduledAt?: string) => void;
@@ -22,13 +23,16 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // safeUrl also fills in a missing scheme, so "example.com" is accepted and
+    // stored as "https://example.com" instead of a broken relative link.
+    const normalized = safeUrl(url);
     const newErrors = {
       title: !title.trim(),
-      url: !url.trim(),
+      url: !normalized,
     };
     setErrors(newErrors);
-    if (newErrors.title || newErrors.url) return;
-    onAdd(title.trim(), url.trim(), showSchedule && scheduledAt ? scheduledAt : undefined);
+    if (newErrors.title || newErrors.url || !normalized) return;
+    onAdd(title.trim(), normalized, showSchedule && scheduledAt ? scheduledAt : undefined);
     setTitle("");
     setUrl("");
     setScheduledAt("");
@@ -81,7 +85,7 @@ export function AddLinkForm({ onAdd, canSchedule = false, onScheduleGate }: AddL
           onChange={(e) => { setUrl(e.target.value); if (errors.url) setErrors((p) => ({ ...p, url: false })); }}
           className={errors.url ? "border-destructive focus-visible:ring-destructive" : ""}
         />
-        {errors.url && <p className="text-xs text-destructive mt-1">URL is required</p>}
+        {errors.url && <p className="text-xs text-destructive mt-1">Enter a web address, like example.com</p>}
       </div>
 
       {/* Schedule toggle */}

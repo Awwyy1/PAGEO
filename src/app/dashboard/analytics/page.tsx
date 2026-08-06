@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
+import { safeUrl } from "@/lib/url-safety";
 
 type Period = "7d" | "30d" | "90d" | "all";
 
@@ -632,7 +633,7 @@ export default function AnalyticsPage() {
                           {link.title}
                         </p>
                         <a
-                          href={link.url}
+                          href={safeUrl(link.url) ?? "#"}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-muted-foreground truncate hover:underline flex items-center gap-1"
