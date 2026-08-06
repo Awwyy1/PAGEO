@@ -96,7 +96,7 @@ export default function SettingsPage() {
 
     const timer = setTimeout(async () => {
       const { data } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id")
         .eq("username", username)
         .maybeSingle();

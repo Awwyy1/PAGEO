@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
   // Fetch profile + id in one query
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("public_profiles")
     .select("id, display_name, bio, avatar_url, username, theme")
     .eq("username", username)
     .maybeSingle();
