@@ -43,6 +43,7 @@ interface AnalyticsData {
     url: string;
     is_active: boolean;
     clicks: number;
+    ctr: number;
     trend: number;
   }>;
   devices: Array<{ device: string; count: number; percentage: number }>;
@@ -654,6 +655,12 @@ export default function AnalyticsPage() {
                       </div>
                       <span className="text-sm font-medium w-10 text-right tabular-nums">
                         {link.clicks}
+                      </span>
+                      <span
+                        className="text-xs text-muted-foreground w-12 text-right tabular-nums"
+                        title="Share of visitors who opened this link"
+                      >
+                        {link.ctr}%
                       </span>
                       {link.trend !== 0 && (
                         <span
