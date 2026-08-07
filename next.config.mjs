@@ -28,6 +28,10 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self' ${supabaseOrigin()} https://*.supabase.co https://*.clarity.ms https://api.qrserver.com https://vitals.vercel-insights.com`,
+  // Clarity creates a hidden same-domain iframe for cross-origin storage.
+  "frame-src 'self' https://*.clarity.ms",
+  // blob: because bundlers and some libraries start workers from a Blob URL.
+  "worker-src 'self' blob:",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -60,12 +64,13 @@ const securityHeaders = [
     value: "max-age=31536000; includeSubDomains",
   },
 
-  // Report-only on purpose. A CSP that blocks a resource the app genuinely
-  // needs breaks the page with no obvious cause, so this ships in the mode that
-  // reports violations to the browser console without enforcing them. Once the
-  // console stays clean across the dashboard, a public page, the QR modal and
-  // checkout, rename this key to Content-Security-Policy to start enforcing.
-  { key: "Content-Security-Policy-Report-Only", value: csp },
+  // Enforcing, after a report-only pass over the dashboard, a public page, the
+  // QR modal and pricing produced no violations.
+  //
+  // To roll back: rename this key to Content-Security-Policy-Report-Only and
+  // redeploy. That reverts to reporting without blocking, and nothing else in
+  // this file has to change.
+  { key: "Content-Security-Policy", value: csp },
 ];
 
 const nextConfig = {
