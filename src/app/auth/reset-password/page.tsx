@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check } from "lucide-react";
 
@@ -93,22 +93,22 @@ export default function ResetPasswordPage() {
                         <form onSubmit={handleSetPassword} className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">New password</label>
-                                <Input
-                                    type="password"
+                                <PasswordInput
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
+                                    autoComplete="new-password"
                                     required
                                     minLength={6}
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Confirm password</label>
-                                <Input
-                                    type="password"
+                                <PasswordInput
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="••••••••"
+                                    autoComplete="new-password"
                                     required
                                     minLength={6}
                                 />
