@@ -21,6 +21,12 @@ export function createClient() {
           cookiesToSet.forEach(({ name, value, options }) =>
             cookieStore.set(name, value, {
               ...options,
+              // Must match the middleware. /auth/callback writes the session
+              // here after exchanging a recovery or OAuth code, and
+              // createBrowserClient reads that session out of document.cookie —
+              // an HttpOnly cookie is invisible to it, so the browser would land
+              // on the dashboard behaving as if nobody were signed in.
+              httpOnly: false,
               sameSite: (options?.sameSite ?? "lax") as "lax" | "strict" | "none",
               secure: options?.secure ?? isSecure,
               path: options?.path ?? "/",
