@@ -154,15 +154,26 @@ export async function GET(request: NextRequest) {
       );
     }
   }
+  // Per-link CTR: of the people who saw the page, how many opened this link.
+  // Both sides are deduplicated per visitor, so this answers "is this link
+  // pulling its weight" rather than "how many raw taps did it get" — a link
+  // with lots of views and few clicks usually has a naming problem.
   const topLinks = links
-    .map((l) => ({
-      id: l.id,
-      title: l.title,
-      url: l.url,
-      is_active: l.is_active,
-      clicks: linkClicksCurrent.get(l.id) || 0,
-      trend: (linkClicksCurrent.get(l.id) || 0) - (linkClicksPrev.get(l.id) || 0),
-    }))
+    .map((l) => {
+      const clicks = linkClicksCurrent.get(l.id) || 0;
+      return {
+        id: l.id,
+        title: l.title,
+        url: l.url,
+        is_active: l.is_active,
+        clicks,
+        ctr:
+          currentViews > 0
+            ? Math.round((clicks / currentViews) * 1000) / 10
+            : 0,
+        trend: clicks - (linkClicksPrev.get(l.id) || 0),
+      };
+    })
     .sort((a, b) => b.clicks - a.clicks);
 
   // Devices

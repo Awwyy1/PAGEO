@@ -2,6 +2,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { parseDevice, parseReferrerDomain } from "@/lib/analytics-utils";
+import { visitorHash, dedupWindowStart } from "@/lib/visitor";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -46,6 +47,24 @@ export async function POST(request: NextRequest) {
       if (selectError) {
         console.error("View select failed:", selectError.message);
       } else if (profile) {
+        // Has this visitor already been counted on this page recently?
+        // Without this, a refresh, a back-navigation, or the owner checking
+        // their own page each added a view, and CTR was computed against a
+        // denominator nobody could trust.
+        const hash = visitorHash(request, profile.id);
+        const { data: recent } = await supabase
+          .from("analytics_events")
+          .select("id")
+          .eq("profile_id", profile.id)
+          .eq("visitor_hash", hash)
+          .eq("event_type", "page_view")
+          .gte("created_at", dedupWindowStart())
+          .limit(1);
+
+        if (recent && recent.length > 0) {
+          return NextResponse.json({ success: true, counted: false });
+        }
+
         const { error: updateError } = await supabase
           .from("profiles")
           .update({ page_views: (profile.page_views || 0) + 1 })
@@ -63,10 +82,11 @@ export async function POST(request: NextRequest) {
           referrer: referrerDomain,
           country,
           device,
+          visitor_hash: hash,
         });
 
         if (!updateError) {
-          return NextResponse.json({ success: true });
+          return NextResponse.json({ success: true, counted: true });
         }
       }
     } catch (e) {

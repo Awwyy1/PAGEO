@@ -46,8 +46,22 @@ export function ProfilePageClient({ profile, links }: Props) {
     "?"
   )[0].toUpperCase();
 
-  // Track page view once on mount
+  // Track page view once per browser session.
+  //
+  // The server deduplicates too, but stopping the request here means a refresh
+  // or a back-navigation costs nothing at all. sessionStorage is per tab and
+  // clears when the tab closes, which matches what a "visit" should mean.
   useEffect(() => {
+    const key = `allme:viewed:${profile.username}`;
+
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      // Private mode or storage disabled — fall through and let the server
+      // deduplicate instead.
+    }
+
     fetch("/api/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
