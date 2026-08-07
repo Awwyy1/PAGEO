@@ -43,7 +43,7 @@ select
   'PRO-' || upper(substring(replace(gen_random_uuid()::text, '-', '') from 1 for 8)),
   'pro',
   1,
-  now() + interval '30 days'
+  now() + interval '90 days'
 from generate_series(1, 10)
 on conflict (code) do nothing;
 
@@ -52,7 +52,7 @@ select
   'BIZ-' || upper(substring(replace(gen_random_uuid()::text, '-', '') from 1 for 8)),
   'business',
   1,
-  now() + interval '30 days'
+  now() + interval '90 days'
 from generate_series(1, 10)
 on conflict (code) do nothing;
 
